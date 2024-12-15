@@ -20,7 +20,7 @@ export const ConcertsForDate: FC<ConcertsForDateProps> = ({ date, concerts, filt
 
     return (
         <>
-            <tr className='bg-gray-700 font-bold'>
+            <tr className='bg-base-200 font-bold'>
                 <td colSpan={4}>{date}</td>
             </tr>
             {filteredConcerts.map((concert, index) => (

@@ -54,7 +54,7 @@ export const ConcertList: FC = () => {
                 <GenreFilter genre='unknown' genreName='Unknown' filters={filters} setFilters={setFilters} />
             </div>
             <table className='table max-w-7xl'>
-                <thead className='bg-black text-primary'>
+                <thead className='bg-neutral font-bold text-lg text-primary'>
                     <tr>
                         <th>Band/Date</th>
                         <th>Genre</th>
