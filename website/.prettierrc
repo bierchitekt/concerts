@@ -1,0 +1,20 @@
+{
+    "printWidth": 120,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "semi": true,
+    "jsxSingleQuote": true,
+    "singleQuote": true,
+    "quoteProps": "consistent",
+    "plugins": [
+        "prettier-plugin-tailwindcss"
+    ],
+    "overrides": [
+        {
+            "files": "*.astro",
+            "options": {
+                "parser": "astro"
+            }
+        }
+    ]
+}
