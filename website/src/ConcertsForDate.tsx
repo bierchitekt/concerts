@@ -31,6 +31,10 @@ export const ConcertsForDate: FC<ConcertsForDateProps> = ({ date, concerts, filt
 };
 
 function matchesGenre(concert: Concert, filters: GenreFilters) {
+    if (Object.values(filters).every((filter) => !filter)) {
+        return true;
+    }
+
     const cleanedGenres = cleanGenres(concert.genre);
     return cleanedGenres.some((genre) => filters[genre]);
 }

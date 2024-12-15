@@ -13,7 +13,7 @@ export const GenreFilter: FC<GenreFilterProps> = ({ genre, genreName, filters, s
         <label className='label cursor-pointer py-2'>
             <span className='mx-2'>{genreName}</span>
             <input
-                className='toggle'
+                className='toggle toggle-primary'
                 type='checkbox'
                 checked={filters[genre]}
                 onChange={() => setFilters((prevFilters) => ({ ...prevFilters, [genre]: !prevFilters[genre] }))}

@@ -7,7 +7,7 @@ export type Concert = {
     supportBands: string;
 };
 
-export const initialGenreFilters = { metal: true, rock: true, punk: true, unknown: true };
+export const initialGenreFilters = { metal: false, rock: false, punk: false, unknown: false };
 
 export type GenreFilters = typeof initialGenreFilters;
 export type Genre = keyof GenreFilters;
