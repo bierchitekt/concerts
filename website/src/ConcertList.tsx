@@ -39,6 +39,15 @@ export const ConcertList: FC = () => {
     return (
         <div>
             <div className='flex flex-col items-center'>
+                <a className='link' href='https://t.me/MunichMetalConcerts'>
+                    join the telegram METAL channel to get the newest updates
+                </a>
+                <a className='link' href='https://t.me/MunichRockConcerts'>
+                    join the telegram ROCK channel to get the newest updates
+                </a>
+                <a className='link mb-4' href='https://t.me/MunichPunkConcerts'>
+                    join the telegram PUNK channel to get the newest updates
+                </a>
                 <GenreFilter genre='metal' genreName='Metal' filters={filters} setFilters={setFilters} />
                 <GenreFilter genre='rock' genreName='Rock' filters={filters} setFilters={setFilters} />
                 <GenreFilter genre='punk' genreName='Punk' filters={filters} setFilters={setFilters} />
