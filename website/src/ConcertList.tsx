@@ -1,64 +1,64 @@
-import {useEffect, useState} from "react";
-import concertsJson from "./concerts.json";
-import ConcertItem from "./ConcertItem.tsx";
+import { FC, useEffect, useMemo, useState } from 'react';
+import concertsJson from './concerts.json';
+import { Concert, initialGenreFilters } from './types.ts';
+import { ConcertsForDate } from './ConcertsForDate.tsx';
+import { GenreFilter } from './GenreFilter.tsx';
 
-export function ConcertList() {
-
-    const [concerts, setConcerts] = useState([]);
-    const [filters, setFilters] = useState({metal: false, rock: false, punk: false});
+export const ConcertList: FC = () => {
+    const [concerts, setConcerts] = useState<Concert[]>([]);
+    const [filters, setFilters] = useState(initialGenreFilters);
 
     useEffect(() => {
-        setConcerts(concertsJson);
+        setConcerts(concertsJson as Concert[]);
         // fetch('URL_TO_YOUR_JSON_FILE')
         //     .then(response => response.json())
         //     .then(data => setConcerts(data));
     }, []);
 
-    const handleFilterChange = (genre) => {
-        setFilters(prevFilters => ({
-            ...prevFilters,
-            [genre]: !prevFilters[genre]
-        }));
-    };
+    const concertsByDate = useMemo(() => {
+        const concertsByDate = new Map<string, Concert[]>();
 
-    const filteredConcerts = concerts.filter(concert => {
-        if (filters.metal && concert.genre.includes('Metal')) return true;
-        if (filters.rock && concert.genre.includes('Rock')) return true;
-        if (filters.punk && concert.genre.includes('Punk')) return true;
-        return !filters.metal && !filters.rock && !filters.punk;
-    });
+        for (const concert of concerts) {
+            const [year, month, day] = concert.date;
+            let dateString = new Date(year, month - 1, day).toLocaleDateString('en-us', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+            if (!concertsByDate.has(dateString)) {
+                concertsByDate.set(dateString, []);
+            }
+
+            concertsByDate.get(dateString)!.push(concert);
+        }
+
+        return concertsByDate;
+    }, [concerts]);
 
     return (
         <div>
-            <div>
-                <label>
-                    <input type="checkbox" checked={filters.metal} onChange={() => handleFilterChange('metal')}/>
-                    Metal
-                </label>
-                <label>
-                    <input type="checkbox" checked={filters.rock} onChange={() => handleFilterChange('rock')}/>
-                    Rock
-                </label>
-                <label>
-                    <input type="checkbox" checked={filters.punk} onChange={() => handleFilterChange('punk')}/>
-                    Punk
-                </label>
+            <div className='flex flex-col items-center'>
+                <GenreFilter genre='metal' genreName='Metal' filters={filters} setFilters={setFilters} />
+                <GenreFilter genre='rock' genreName='Rock' filters={filters} setFilters={setFilters} />
+                <GenreFilter genre='punk' genreName='Punk' filters={filters} setFilters={setFilters} />
+                <GenreFilter genre='unknown' genreName='Unknown' filters={filters} setFilters={setFilters} />
             </div>
-            <table>
-                <thead>
-                <tr>
-                    <th>Band/Date</th>
-                    <th>Genre</th>
-                    <th>Support</th>
-                    <th>Location</th>
-                </tr>
+            <table className='table max-w-7xl'>
+                <thead className='bg-black text-primary'>
+                    <tr>
+                        <th>Band/Date</th>
+                        <th>Genre</th>
+                        <th>Support</th>
+                        <th>Location</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {filteredConcerts.map((concert, index) => (
-                    <ConcertItem key={index} concert={concert}/>
-                ))}
+                    {[...concertsByDate.entries()].map(([date, concerts]) => (
+                        <ConcertsForDate key={date} filters={filters} date={date} concerts={concerts} />
+                    ))}
                 </tbody>
             </table>
         </div>
     );
-}
+};
