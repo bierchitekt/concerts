@@ -4,6 +4,7 @@ import com.bierchitekt.concerts.venues.StringUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
@@ -23,6 +24,11 @@ public class LastFMClient {
     @Value("${lastfm.apikey}")
     @NotEmpty
     private String apiKey;
+
+    @PostConstruct
+    public void init() {
+        log.info("LastFMClient initialized with apiKey: {}", apiKey.substring(0, 3));
+    }
 
     public Set<String> getGenres(String artist) {
         try {
