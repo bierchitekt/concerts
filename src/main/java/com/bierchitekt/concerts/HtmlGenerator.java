@@ -1,8 +1,11 @@
 package com.bierchitekt.concerts;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +20,13 @@ public class HtmlGenerator {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd LLLL yyyy").localizedBy(ENGLISH);
 
     public void generateHtml(List<ConcertDTO> concertDTOS) {
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        try {
+            objectMapper.writeValue(new File("concerts.json"), concertDTOS);
+        } catch (IOException e) {
+            log.error("error while writing concerts to json", e);
+            throw new RuntimeException(e);
+        }
 
         String tdOpenTag = "<td>";
         String tdCloseTag = "</td>";
