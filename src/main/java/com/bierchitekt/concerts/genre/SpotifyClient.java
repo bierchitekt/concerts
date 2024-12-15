@@ -3,7 +3,6 @@ package com.bierchitekt.concerts.genre;
 import com.bierchitekt.concerts.venues.StringUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,11 +32,6 @@ public class SpotifyClient {
     private SpotifyResponse spotifyResponse;
 
     RestClient restClient = RestClient.create();
-
-    @PostConstruct
-    public void init() {
-        log.info("SpotifyClient initialized: clientId: {}, clientSecret: {}", clientId.substring(0, 3), clientSecret.substring(0, 3));
-    }
 
 
     public Set<String> getGenres(String artist) {
