@@ -3,17 +3,16 @@ import { Dispatch, FC, SetStateAction } from 'react';
 
 type GenreFilterProps = {
     genre: keyof GenreFilters;
-    genreName: string;
     filters: GenreFilters;
     setFilters: Dispatch<SetStateAction<GenreFilters>>;
 };
 
-export const GenreFilter: FC<GenreFilterProps> = ({ genre, genreName, filters, setFilters }) => {
+export const GenreFilter: FC<GenreFilterProps> = ({ genre, filters, setFilters }) => {
     return (
         <label className='label cursor-pointer py-2'>
-            <div className='mx-2 flex items-center'>
+            <div className='mx-2 flex items-center capitalize'>
                 <span className={`iconify ${iconMap[genre]} mr-1`} />
-                {genreName}
+                {genre}
             </div>
             <input
                 className='toggle toggle-primary'
