@@ -1,8 +1,8 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { Dispatch, FC, PropsWithChildren, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { Concert, initialGenreFilters } from './types.ts';
 import { ConcertsForDate } from './ConcertsForDate.tsx';
 import { GenreFilter } from './GenreFilter.tsx';
-import { matchesGenre } from './matchesGenre.ts';
+import { ConcertFilter, GenreConcertFilter, TextConcertFilter } from './ConcertFilter.ts';
 
 export const ConcertList: FC = () => {
     const [concerts, setConcerts] = useState<Concert[] | Error | undefined>(undefined);
@@ -42,10 +42,10 @@ export const ConcertList: FC = () => {
 };
 
 const ConcertListInner: FC<{ concerts: Concert[] }> = ({ concerts }) => {
-    const [filters, setFilters] = useState(initialGenreFilters);
+    const [concertsFilter, setConcertsFilter] = useState<ConcertFilter>({ filter: () => true });
 
     const concertsByDate = useMemo(() => {
-        const filteredConcerts = concerts.filter((concert) => matchesGenre(concert, filters));
+        const filteredConcerts = concerts.filter((concert) => concertsFilter.filter(concert));
 
         const concertsByDate = new Map<string, Concert[]>();
 
@@ -65,22 +65,81 @@ const ConcertListInner: FC<{ concerts: Concert[] }> = ({ concerts }) => {
         }
 
         return concertsByDate;
-    }, [concerts, filters]);
+    }, [concerts, concertsFilter]);
 
     return (
         <>
-            <div className='flex flex-col items-center'>
-                <p className='font-bold'>Filter by genre:</p>
-                <GenreFilter genre='metal' filters={filters} setFilters={setFilters} />
-                <GenreFilter genre='rock' filters={filters} setFilters={setFilters} />
-                <GenreFilter genre='punk' filters={filters} setFilters={setFilters} />
-                <GenreFilter genre='unknown' filters={filters} setFilters={setFilters} />
-            </div>
+            <ConcertFilters setConcertsFilter={setConcertsFilter} />
             <div>
                 {[...concertsByDate.entries()].map(([date, concerts]) => (
                     <ConcertsForDate key={date} date={date} concerts={concerts} />
                 ))}
             </div>
         </>
+    );
+};
+
+type ConcertFiltersProps = {
+    setConcertsFilter: Dispatch<SetStateAction<ConcertFilter>>;
+};
+
+const ConcertFilters: FC<ConcertFiltersProps> = ({ setConcertsFilter }: ConcertFiltersProps) => {
+    const [genreFilters, setGenreFilters] = useState(initialGenreFilters);
+    const [textFilter, setTextFilter] = useState('');
+
+    useEffect(() => {
+        setConcertsFilter(
+            new GenreConcertFilter(genreFilters).combine(new TextConcertFilter(textFilter.toLowerCase())),
+        );
+    }, [genreFilters, textFilter]);
+
+    return (
+        <div className='my-2'>
+            <p className='text-center text-xl font-bold text-primary'>Filter concerts</p>
+            <div className='flex flex-wrap justify-center'>
+                <FilterGroupContainer>
+                    <p className='font-bold'>By genre:</p>
+                    <GenreFilter genre='metal' filters={genreFilters} setFilters={setGenreFilters} />
+                    <GenreFilter genre='rock' filters={genreFilters} setFilters={setGenreFilters} />
+                    <GenreFilter genre='punk' filters={genreFilters} setFilters={setGenreFilters} />
+                    <GenreFilter genre='unknown' filters={genreFilters} setFilters={setGenreFilters} />
+                </FilterGroupContainer>
+                <FilterGroupContainer>
+                    <p className='font-bold'>By text:</p>
+                    <label className='input input-bordered my-2 flex items-center gap-2'>
+                        <span className='iconify text-xl mdi--magnify' />
+                        <input
+                            placeholder='Search...'
+                            className='flex-grow'
+                            value={textFilter}
+                            onChange={(e) => setTextFilter(e.target.value)}
+                        />
+                        <ResetButton hidden={textFilter.length == 0} onClick={() => setTextFilter('')} />
+                    </label>
+                </FilterGroupContainer>
+            </div>
+        </div>
+    );
+};
+
+const FilterGroupContainer: FC<PropsWithChildren> = ({ children }) => (
+    <div className='bottom-1 m-1 min-w-60 max-w-80 flex-grow'>{children}</div>
+);
+
+type ResetButtonProps = { hidden: boolean; onClick: () => void };
+
+const ResetButton: FC<ResetButtonProps> = ({ hidden, onClick }) => {
+    return (
+        <button className={`z-10 text-xl ${hidden ? 'hidden' : ''}`} onClick={onClick}>
+            <svg
+                xmlns='http://www.w3.org/2000/svg'
+                className='h-6 w-6'
+                fill='none'
+                viewBox='0 0 24 24'
+                stroke='currentColor'
+            >
+                <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12' />
+            </svg>
+        </button>
     );
 };

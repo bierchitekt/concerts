@@ -60,7 +60,7 @@ type TelegramButtonProps = {
 
 const TelegramButton: FC<TelegramButtonProps> = ({ genre, href }) => {
     return (
-        <a role='button' className='btn btn-neutral btn-sm' href={href}>
+        <a role='button' className='btn btn-sm' href={href}>
             <span className={`iconify ${iconMap[genre]}`} />
             <span className='capitalize'>{genre} Channel</span>
         </a>
