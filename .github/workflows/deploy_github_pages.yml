@@ -17,6 +17,7 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: production
     defaults:
       run:
         working-directory: ./website
