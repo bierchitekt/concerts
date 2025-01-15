@@ -2,10 +2,10 @@
 Description=Concert Downloader
 
 [Service]
-User=myusr
-Group=myusr
-WorkingDirectory=/path/to/your/app
-ExecStart=/usr/bin/java -jar your_app.jar
+User=bierchitekt
+Group=bierchitekt
+WorkingDirectory=/home/bierchitekt/concerts
+ExecStart=./concerts --spring.config.location=application.properties
 Restart=on-failure
 RestartSec=10
 

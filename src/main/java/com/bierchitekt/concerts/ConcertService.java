@@ -13,12 +13,16 @@ import com.bierchitekt.concerts.venues.OlympiaparkService;
 import com.bierchitekt.concerts.venues.StromService;
 import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.ZenithService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -53,32 +57,23 @@ public class ConcertService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
 
+    @Transactional
     public void notifyNewConcerts() {
         log.info("notifying for new concerts");
-        List<ConcertEntity> newMetalConcerts = new ArrayList<>();
-        List<ConcertEntity> newRockConcerts = new ArrayList<>();
-        List<ConcertEntity> newPunkConcerts = new ArrayList<>();
-        for (ConcertEntity concertEntity : concertRepository.findByNotifiedOrderByDate(false)) {
-            Set<String> genres = concertEntity.getGenre();
-            for (String genre : genres) {
-                if (genre.toLowerCase().contains("rock") && !newRockConcerts.contains(concertEntity)){
-                        newRockConcerts.add(concertEntity);}
-
-                if (genre.toLowerCase().contains("metal") && !newMetalConcerts.contains(concertEntity)) {
-                    newMetalConcerts.add(concertEntity);
-                }
-                if (genre.toLowerCase().contains("punk")  && !newPunkConcerts.contains(concertEntity)) {
-                    newPunkConcerts.add(concertEntity);
-                }
-            }
-            concertEntity.setNotified(true);
-            concertRepository.save(concertEntity);
-        }
-
+        List<ConcertEntity> newMetalConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("metal");
+        List<ConcertEntity> newRockConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("rock");
+        List<ConcertEntity> newPunkConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("punk");
 
         notifyNewConcerts("Good news everyone! I found some new metal concerts for you\n\n", newMetalConcerts, "@MunichMetalConcerts");
         notifyNewConcerts("Good news everyone! I found some new rock concerts for you\n\n", newRockConcerts, "@MunichRockConcerts");
         notifyNewConcerts("Good news everyone! I found some new punk concerts for you\n\n", newPunkConcerts, "@MunichPunkConcerts");
+    }
+
+    private void setNotified(List<ConcertEntity> concerts) {
+        for (ConcertEntity concert : concerts) {
+            concert.setNotified(true);
+            concertRepository.save(concert);
+        }
     }
 
     private void notifyNewConcerts(String message, List<ConcertEntity> newConcerts, String channelName) {
@@ -96,6 +91,7 @@ public class ConcertService {
             }
             telegramService.sendMessage(channelName, stringBuilder.toString());
         }
+        setNotified(newConcerts);
     }
 
 
@@ -159,7 +155,9 @@ public class ConcertService {
                 concertRepository.save(concertEntity);
             }
         }
-        generateHtml();
+        List<ConcertDTO> concertDTOs = getConcertDTOs();
+        generateHtml(concertDTOs);
+        generateJSON(concertDTOs);
     }
 
     private Collection<ConcertDTO> getCircusKroneConcerts() {
@@ -245,7 +243,7 @@ public class ConcertService {
     List<ConcertDTO> getZenithConcerts() {
         List<ConcertDTO> zenithConcerts = new ArrayList<>();
         zenithService.getConcerts().forEach(concert -> {
-            if (concertRepository.findByTitle(concert.title()).isEmpty()) {
+            if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
                 Set<String> genres = genreService.getGenres(concert.title());
                 zenithConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), ""));
             }
@@ -269,7 +267,7 @@ public class ConcertService {
         List<ConcertDTO> muffatHalleConcerts = new ArrayList<>();
 
         for (ConcertDTO muffathalleConcert : muffathalleService.getConcerts()) {
-            if (concertRepository.findByTitle(muffathalleConcert.title()).isEmpty()) { // new Concert found, need to get date and genre
+            if (concertRepository.findByTitleAndDate(muffathalleConcert.title(), muffathalleConcert.date()).isEmpty()) { // new Concert found, need to get date and genre
                 LocalDate date = muffathalleService.getDate(muffathalleConcert.link());
                 Set<String> genres = genreService.getGenres(muffathalleConcert.title());
                 muffatHalleConcerts.add(new ConcertDTO(muffathalleConcert.title(), date, muffathalleConcert.link(), genres, muffathalleConcert.location(), ""));
@@ -279,10 +277,22 @@ public class ConcertService {
 
     }
 
-    public void generateHtml() {
-        List<ConcertEntity> concerts = concertRepository.findByDateAfterOrderByDate(LocalDate.now().minusDays(1));
+    private void generateHtml(List<ConcertDTO> concertDTOs) {
+        htmlGenerator.generateHtml(concertDTOs);
+    }
 
-        htmlGenerator.generateHtml(concertMapper.toConcertDto(concerts));
+    private List<ConcertDTO> getConcertDTOs() {
+        List<ConcertEntity> concerts = concertRepository.findByDateAfterOrderByDate(LocalDate.now().minusDays(1));
+        return concertMapper.toConcertDto(concerts);
+    }
+
+    private void generateJSON(List<ConcertDTO> concertDTOs) {
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        try {
+            objectMapper.writeValue(new File("concerts.json"), concertDTOs);
+        } catch (IOException e) {
+            log.error("error while writing concerts to json", e);
+        }
     }
 
     public List<ConcertDTO> getNextWeekConcerts() {

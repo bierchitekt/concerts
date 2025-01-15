@@ -24,7 +24,6 @@ public class SchedulerService {
     @Scheduled(cron = "${download-concerts.cron}")
     public void getNewConcerts() {
         concertService.getNewConcerts();
-        concertService.generateHtml();
     }
 
     @Scheduled(cron = "${notify-nextweek-concerts.cron}")
