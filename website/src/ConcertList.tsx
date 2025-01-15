@@ -91,7 +91,7 @@ const ConcertFilters: FC<ConcertFiltersProps> = ({ setConcertsFilter }: ConcertF
         setConcertsFilter(
             new GenreConcertFilter(genreFilters).combine(new TextConcertFilter(textFilter.toLowerCase())),
         );
-    }, [genreFilters, textFilter]);
+    }, [genreFilters, textFilter, setConcertsFilter]);
 
     return (
         <div className='my-2'>
