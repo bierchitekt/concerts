@@ -14,8 +14,6 @@ import java.util.Set;
 public interface ConcertRepository extends JpaRepository<ConcertEntity, String> {
     List<ConcertEntity> findAllByDateBefore(LocalDate now);
 
-    List<ConcertEntity> findByNotifiedOrderByDate(boolean notified);
-
     List<ConcertEntity> findByDateAfterOrderByDate(LocalDate date);
 
     List<ConcertEntity> findByDateAfterAndDateBeforeOrderByDate(LocalDate from, LocalDate to);
@@ -28,4 +26,7 @@ public interface ConcertRepository extends JpaRepository<ConcertEntity, String> 
 
     @Query(value = "SELECT distinct * FROM concert_entity ce where genre::text ilike CONCAT('%', :genre, '%') and date >= now() and notified = false order by date;", nativeQuery = true)
     List<ConcertEntity> findConcertsByGenreAndNotNotifiedOrderByDate(@Param("genre") String genre);
+
+    @Query(value = "SELECT distinct * FROM concert_entity ce where genre::text ilike CONCAT('%', :genre, '%') and date >= :from and date < :to order by date;", nativeQuery = true)
+    List<ConcertEntity> findByGenreAndDateAfterAndDateBeforeOrderByDate(String genre, LocalDate from, LocalDate to);
 }

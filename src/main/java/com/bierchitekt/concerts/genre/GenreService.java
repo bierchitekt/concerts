@@ -14,16 +14,16 @@ public class GenreService {
     private final LastFMClient lastFMClient;
 
     public Set<String> getGenres(String artist) {
-        Set<String> genres = spotifyClient.getGenres(artist);
+        Set<String> genres = lastFMClient.getGenres(artist);
         if (!genres.isEmpty()) {
             return genres;
-        } else {
-            log.info("did not get any result from spotify for artist {}, trying lastFM", artist);
-            genres = lastFMClient.getGenres(artist);
-            if(genres.isEmpty()){
-                log.info("did not get any result from lastFM for artist {}", artist);
-            }
-            return genres;
         }
+
+        genres = spotifyClient.getGenres(artist);
+        if (genres.isEmpty()) {
+            log.info("did not get any result from spotify for artist {}", artist);
+            return Set.of();
+        }
+        return genres;
     }
 }

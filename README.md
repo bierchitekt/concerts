@@ -18,10 +18,18 @@ These venues are currently downloaded:
 
 You need 
 java >= 21
+postgresql >= 17
 
 # Spotify and LastFM
 
 add an api key for spotify and lastfm. Create an account, create a key and paste it in application.properties
+
+# Start postgres docker container
+You need a running postgres DB to run the project. To use docker, use
+```
+  cd setup
+  docker compose up -d
+```
 
 # Run the project
 ```
@@ -29,6 +37,8 @@ add an api key for spotify and lastfm. Create an account, create a key and paste
 ```
 
 # Build the project
+
+Docker must be started to run the tests. The test are using testcontainers so you don't have to start postgres before.
 
 ```
 ./mvnw package
