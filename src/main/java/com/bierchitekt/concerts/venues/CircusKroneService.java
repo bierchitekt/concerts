@@ -22,13 +22,19 @@ import java.util.Objects;
 @Service
 public class CircusKroneService {
 
-    private static final Map<String, Integer> calendarMap = Map.ofEntries(Map.entry("Januar", 1), Map.entry("Februar", 2),
+    private static final Map<String, Integer> calendarMap = Map.ofEntries(
+            Map.entry("Januar", 1),
+            Map.entry("Februar", 2), Map.entry("Feb", 2),
             Map.entry("März", 3),
-            Map.entry("April", 4),
-            Map.entry("Apr", 4),
-            Map.entry("Apr.", 4),
-            Map.entry("Mai", 5), Map.entry("Juni", 6), Map.entry("Juli", 7),
-            Map.entry("August", 8), Map.entry("Sept.", 9), Map.entry("Okt.", 10), Map.entry("Nov.", 11), Map.entry("Dezember", 12));
+            Map.entry("April", 4), Map.entry("Apr", 4), Map.entry("Apr.", 4),
+            Map.entry("Mai", 5),
+            Map.entry("Juni", 6),
+            Map.entry("Juli", 7),
+            Map.entry("August", 8),
+            Map.entry("Sept.", 9),
+            Map.entry("Okt.", 10), Map.entry("Okt", 10),
+            Map.entry("Nov.", 11),
+            Map.entry("Dezember", 12));
 
     public List<ConcertDTO> getConcerts() {
         List<ConcertDTO> allConcerts = new ArrayList<>();
@@ -47,7 +53,10 @@ public class CircusKroneService {
                         List<String> dates = Arrays.stream(dateString.split("/")).toList();
                         for (String d : dates) {
                             int day = Integer.parseInt(d.substring(0, 2));
-                            int month = calendarMap.get(StringUtils.substringBetween(dateString, " ", " "));
+                            Integer month = getMonth(dateString);
+                            if(month == null){
+                                continue;
+                            }
                             int year = Integer.parseInt(StringUtils.substringAfterLast(dateString, " "));
                             LocalDate date = LocalDate.of(year, month, day);
                             ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "");
@@ -55,7 +64,10 @@ public class CircusKroneService {
                         }
                     } else {
                         int day = Integer.parseInt(dateString.substring(0, 2));
-                        int month = calendarMap.get(StringUtils.substringBetween(dateString, " ", " "));
+                        Integer month = getMonth(dateString);
+                        if(month == null){
+                            continue;
+                        }
                         int year = Integer.parseInt(StringUtils.substringAfterLast(dateString, " "));
                         LocalDate date = LocalDate.of(year, month, day);
 
@@ -65,13 +77,19 @@ public class CircusKroneService {
                     }
                 }
             }
-
         } catch (IOException e) {
             if (!(e instanceof HttpStatusException)) {
                 log.warn("error getting concerts from Circus Krone", e);
-
             }
         }
         return allConcerts;
+    }
+
+    private Integer getMonth(String dateString) {
+        Integer i = calendarMap.get(StringUtils.substringBetween(dateString, " ", " "));
+        if (i == null) {
+            log.warn("Cannot get month for input {}", dateString);
+        }
+        return i;
     }
 }
