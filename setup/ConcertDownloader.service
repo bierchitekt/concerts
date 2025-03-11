@@ -1,0 +1,13 @@
+[Unit]
+Description=Concert Downloader
+
+[Service]
+User=bierchitekt
+Group=bierchitekt
+WorkingDirectory=/home/bierchitekt/concerts
+ExecStart=./concerts --spring.config.location=application.properties
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
