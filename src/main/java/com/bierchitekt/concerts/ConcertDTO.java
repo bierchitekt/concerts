@@ -9,5 +9,5 @@ import java.util.Set;
 
 @Builder
 public record ConcertDTO(String title, LocalDate date, String link, Set<String> genre, String location,
-                         String supportBands) implements Serializable {
+                         String supportBands, LocalDate addedAt) implements Serializable {
 }

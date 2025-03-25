@@ -59,7 +59,7 @@ public class Kult9Service {
                 if (!linkElement.isEmpty()) {
                     link = event.select("div.btnarea").select("a[href]").getFirst().attr("href");
                 }
-                ConcertDTO concertDTO = new ConcertDTO(title, date, link, allGenres, VENUE_NAME, "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date, link, allGenres, VENUE_NAME, "", LocalDate.now());
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {

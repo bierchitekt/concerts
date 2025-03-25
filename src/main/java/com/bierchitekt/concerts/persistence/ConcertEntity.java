@@ -38,6 +38,7 @@ public class ConcertEntity implements Comparable<ConcertEntity> {
     private Set<String> genre;
     private String location;
     private boolean notified;
+    private LocalDate addedAt;
 
     @Override
     public int compareTo(@NotNull ConcertEntity other) {

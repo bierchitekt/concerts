@@ -20,6 +20,9 @@ public interface ConcertRepository extends JpaRepository<ConcertEntity, String> 
 
     List<ConcertEntity> findByTitleAndDate(String title, LocalDate date);
 
+    @Query(value = "SELECT * FROM concert_entity WHERE date = :date AND similarity(title, :title ) > 0.6", nativeQuery = true)
+    List<ConcertEntity> similarTitleAtSameDate(String title, LocalDate date);
+
     List<ConcertEntity> findByGenreIn(Set<String> s);
 
     Optional<ConcertEntity> findByLink(String url);

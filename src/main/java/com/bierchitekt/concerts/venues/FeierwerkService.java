@@ -67,7 +67,7 @@ public class FeierwerkService {
             }
             String supportBands = String.join(", ", bands);
 
-            return Optional.of(new ConcertDTO(bands.getFirst(), date, url, genres, VENUE_NAME, supportBands));
+            return Optional.of(new ConcertDTO(bands.getFirst(), date, url, genres, VENUE_NAME, supportBands, LocalDate.now()));
         } catch (IOException e) {
             return Optional.empty();
         }

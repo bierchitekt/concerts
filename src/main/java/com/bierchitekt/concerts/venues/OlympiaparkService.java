@@ -54,7 +54,7 @@ public class OlympiaparkService {
             }
 
             for (LocalDate date : concertDates) {
-                allConcerts.add(new ConcertDTO(title, date, "https://www.olympiapark.de" + link, null, location, ""));
+                allConcerts.add(new ConcertDTO(title, date, "https://www.olympiapark.de" + link, null, location, "", LocalDate.now()));
             }
 
         }
