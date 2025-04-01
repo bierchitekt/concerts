@@ -1,5 +1,5 @@
-import { Concert, GenreFilters } from './types.ts';
-import { matchesGenre } from './matchesGenre.ts';
+import {Concert, GenreFilters} from './types.ts';
+import {matchesGenre} from './matchesGenre.ts';
 
 export interface ConcertFilter {
     filter(concert: Concert): boolean;
@@ -39,7 +39,7 @@ export class TextConcertFilter extends BaseConcertFilter {
 
         return Object.values(propertiesToFilter).some((value) => {
             if (Array.isArray(value)) {
-                return value.some((it) => it.toLowerCase().includes(this.searchString));
+                return value.some((it) => it !== null ? it.toString().toLowerCase().includes(this.searchString): false);
             }
             return value.toLowerCase().includes(this.searchString);
         });
