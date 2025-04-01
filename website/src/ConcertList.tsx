@@ -1,8 +1,8 @@
-import {Dispatch, FC, PropsWithChildren, SetStateAction, useEffect, useMemo, useState} from 'react';
-import {Concert, initialGenreFilters} from './types.ts';
-import {ConcertsForDate} from './ConcertsForDate.tsx';
-import {GenreFilter} from './GenreFilter.tsx';
-import {ConcertFilter, GenreConcertFilter, TextConcertFilter} from './ConcertFilter.ts';
+import { Dispatch, FC, PropsWithChildren, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Concert, initialGenreFilters } from './types.ts';
+import { ConcertsForDate } from './ConcertsForDate.tsx';
+import { GenreFilter } from './GenreFilter.tsx';
+import { ConcertFilter, GenreConcertFilter, TextConcertFilter } from './ConcertFilter.ts';
 
 export const ConcertList: FC = () => {
     const [concerts, setConcerts] = useState<Concert[] | Error | undefined>(undefined);
