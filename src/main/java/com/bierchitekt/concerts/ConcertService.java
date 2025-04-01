@@ -124,9 +124,21 @@ public class ConcertService {
 
         log.info("found {} concerts, saving now", allConcerts.size());
         for (ConcertDTO concertDTO : allConcerts) {
+            if(concertDTO.date() == null){
+                log.info(concertDTO.toString());
+                continue;
+            }
+            if (concertDTO.date().isBefore(LocalDate.now())) {
+                log.info("Not adding concert {} because it's on {} and older than today", concertDTO.title(), concertDTO.date());
+                continue;
+            }
             if (concertRepository.findByTitleAndDate(concertDTO.title(), concertDTO.date()).isEmpty()) {
+                if (!concertRepository.similarTitleAtSameDate(concertDTO.title(), concertDTO.date()).isEmpty()) {
+                    log.warn("entry exists {}", concertDTO.title());
+                }
                 log.info("new concert found. Title: {}", concertDTO.title());
                 ConcertEntity concertEntity = concertMapper.toConcertEntity(concertDTO);
+                concertEntity.setAddedAt(LocalDate.now());
                 concertRepository.save(concertEntity);
             }
         }
@@ -164,25 +176,58 @@ public class ConcertService {
     }
 
     private Collection<ConcertDTO> getCircusKroneConcerts() {
-        List<ConcertDTO> circusKroneConcerts = new ArrayList<>();
-        circusKroneService.getConcerts().forEach(concert -> {
-            if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                Set<String> genres = genreService.getGenres(concert.title());
-                circusKroneConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), ""));
-            }
-        });
-        return circusKroneConcerts;
+        return getNewConcerts(circusKroneService.getConcerts());
     }
 
     private Collection<ConcertDTO> getEventfabrikConcerts() {
-        List<ConcertDTO> eventFabrikConcerts = new ArrayList<>();
-        eventFabrikService.getConcerts().forEach(concert -> {
+        return getNewConcerts(eventFabrikService.getConcerts());
+    }
+
+    private Collection<ConcertDTO> getTheaterfabrikConcerts() {
+        return getNewConcerts(theaterfabrikService.getConcerts());
+    }
+
+
+    private Collection<ConcertDTO> getOlympiaparkConcerts() {
+        return getNewConcerts(olympiaparkService.getConcerts());
+    }
+
+
+    List<ConcertDTO> getZenithConcerts() {
+        return getNewConcerts(zenithService.getConcerts());
+    }
+
+
+    List<ConcertDTO> getStromConcerts() {
+        return getNewConcerts(stromService.getConcerts());
+    }
+
+
+    List<ConcertDTO> getMuffathalleConcerts() {
+        List<ConcertDTO> muffatHalleConcerts = new ArrayList<>();
+        for (ConcertDTO muffathalleConcert : muffathalleService.getConcerts()) {
+            if (concertRepository.findByTitleAndDate(muffathalleConcert.title(), muffathalleConcert.date()).isEmpty()) { // new Concert found, need to get date and genre
+                LocalDate date = muffathalleService.getDate(muffathalleConcert.link());
+                Set<String> genres = genreService.getGenres(muffathalleConcert.title());
+                muffatHalleConcerts.add(new ConcertDTO(muffathalleConcert.title(), date, muffathalleConcert.link(), genres, muffathalleConcert.location(), "", LocalDate.now()));
+            }
+        }
+        return muffatHalleConcerts;
+
+    }
+    private Collection<ConcertDTO> getKafeKultConcerts() {
+        return getNewConcerts(kafeKultService.getConcerts());
+    }
+
+    private List<ConcertDTO> getNewConcerts(List<ConcertDTO> concerts) {
+        List<ConcertDTO> newConcerts = new ArrayList<>();
+        concerts.forEach(concert -> {
             if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
                 Set<String> genres = genreService.getGenres(concert.title());
-                eventFabrikConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), ""));
+                newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), "", LocalDate.now()));
             }
         });
-        return eventFabrikConcerts;
+        return newConcerts;
     }
 
     private Collection<ConcertDTO> getKult9Concerts() {
@@ -193,28 +238,6 @@ public class ConcertService {
             }
         });
         return kult9Concerts;
-    }
-
-    private Collection<ConcertDTO> getTheaterfabrikConcerts() {
-        List<ConcertDTO> theaterfabrikConcerts = new ArrayList<>();
-        theaterfabrikService.getConcerts().forEach(concert -> {
-            if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                Set<String> genres = genreService.getGenres(concert.title());
-                theaterfabrikConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), ""));
-            }
-        });
-        return theaterfabrikConcerts;
-    }
-
-    private Collection<ConcertDTO> getOlympiaparkConcerts() {
-        List<ConcertDTO> olypiaparkConcerts = new ArrayList<>();
-        olympiaparkService.getConcerts().forEach(concert -> {
-            if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                Set<String> genres = genreService.getGenres(concert.title());
-                olypiaparkConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), ""));
-            }
-        });
-        return olypiaparkConcerts;
     }
 
     public Collection<ConcertDTO> getFeierwerkConcerts() {
@@ -237,59 +260,10 @@ public class ConcertService {
         backstageService.getConcerts().forEach(concert -> {
             if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
                 String supportBands = backstageService.getSupportBands(concert.link());
-                backstageConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), concert.genre(), concert.location(), supportBands));
+                backstageConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), concert.genre(), concert.location(), supportBands, LocalDate.now()));
             }
         });
         return backstageConcerts;
-    }
-
-    List<ConcertDTO> getZenithConcerts() {
-        List<ConcertDTO> zenithConcerts = new ArrayList<>();
-        zenithService.getConcerts().forEach(concert -> {
-            if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                Set<String> genres = genreService.getGenres(concert.title());
-                zenithConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), ""));
-            }
-        });
-        return zenithConcerts;
-    }
-
-    List<ConcertDTO> getStromConcerts() {
-        List<ConcertDTO> stromConcerts = new ArrayList<>();
-        for (ConcertDTO concert : stromService.getConcerts()) {
-            if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                Set<String> genres = genreService.getGenres(concert.title());
-                stromConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, "Strom", ""));
-            }
-        }
-        return stromConcerts;
-
-    }
-
-    List<ConcertDTO> getMuffathalleConcerts() {
-        List<ConcertDTO> muffatHalleConcerts = new ArrayList<>();
-
-        for (ConcertDTO muffathalleConcert : muffathalleService.getConcerts()) {
-            if (concertRepository.findByTitleAndDate(muffathalleConcert.title(), muffathalleConcert.date()).isEmpty()) { // new Concert found, need to get date and genre
-                LocalDate date = muffathalleService.getDate(muffathalleConcert.link());
-                Set<String> genres = genreService.getGenres(muffathalleConcert.title());
-                muffatHalleConcerts.add(new ConcertDTO(muffathalleConcert.title(), date, muffathalleConcert.link(), genres, muffathalleConcert.location(), ""));
-            }
-        }
-        return muffatHalleConcerts;
-
-    }
-
-
-    private Collection<ConcertDTO> getKafeKultConcerts() {
-        List<ConcertDTO> kafeKultConcerts = new ArrayList<>();
-        for (ConcertDTO concert : kafeKultService.getConcerts()) {
-            if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                Set<String> genres = genreService.getGenres(concert.title());
-                kafeKultConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, "KafeKult", concert.supportBands()));
-            }
-        }
-        return kafeKultConcerts;
     }
 
 

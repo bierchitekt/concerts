@@ -9,6 +9,7 @@
         <ignoreVersion type="regex">(?i).*Beta.*</ignoreVersion>
         <ignoreVersion type="regex">(?i).*Alpha.*</ignoreVersion>
         <ignoreVersion type="regex">(?i).*-rc([-.]?\d+)?</ignoreVersion>
+        <ignoreVersion type="regex">(?i).*CR(\d+)*</ignoreVersion>
         <ignoreVersion type="regex">(?i).*-m([-.]?\d+)?</ignoreVersion>
     </ignoreVersions>
     <rules>

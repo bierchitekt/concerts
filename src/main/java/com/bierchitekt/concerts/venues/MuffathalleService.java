@@ -19,7 +19,7 @@ public class MuffathalleService {
 
     private static final String URL = "https://www.muffatwerk.de/de/events/concert";
 
-    private static final String BASE_URL = "https://www.muffatwerk.de/";
+    private static final String BASE_URL = "https://www.muffatwerk.de";
 
     private static final String VENUE_NAME = "Muffathalle";
 
@@ -46,7 +46,7 @@ public class MuffathalleService {
                     String link = BASE_URL + select.select("a[href]").getFirst().attr("href");
 
 
-                    ConcertDTO concertDTO = new ConcertDTO(title, null, link, null, VENUE_NAME,  "");
+                    ConcertDTO concertDTO = new ConcertDTO(title, null, link, null, VENUE_NAME,  "", LocalDate.now());
 
                     allConcerts.add(concertDTO);
                 }

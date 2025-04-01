@@ -45,7 +45,7 @@ public class EventFabrikService {
                     // Do. | 19.12.2024
                     String dateString = concert.select("article").text();
                     LocalDate date = LocalDate.parse(dateString.substring(6, 16), formatter);
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, location, "");
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, location, "", LocalDate.now());
                     allConcerts.add(concertDTO);
                 }
 

@@ -129,7 +129,7 @@ public class BackstageService {
                 allGenres.add(genres.trim());
             }
 
-            ConcertDTO concertDto = new ConcertDTO(title, date, link, allGenres, location, "");
+            ConcertDTO concertDto = new ConcertDTO(title, date, link, allGenres, location, "", LocalDate.now());
             concerts.add(concertDto);
         }
 

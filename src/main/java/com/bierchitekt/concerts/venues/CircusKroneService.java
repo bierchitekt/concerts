@@ -59,7 +59,7 @@ public class CircusKroneService {
                             }
                             int year = Integer.parseInt(StringUtils.substringAfterLast(dateString, " "));
                             LocalDate date = LocalDate.of(year, month, day);
-                            ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "");
+                            ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "", LocalDate.now());
                             allConcerts.add(concertDTO);
                         }
                     } else {
@@ -71,7 +71,7 @@ public class CircusKroneService {
                         int year = Integer.parseInt(StringUtils.substringAfterLast(dateString, " "));
                         LocalDate date = LocalDate.of(year, month, day);
 
-                        ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "");
+                        ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "", LocalDate.now());
                         allConcerts.add(concertDTO);
 
                     }

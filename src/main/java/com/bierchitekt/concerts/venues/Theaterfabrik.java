@@ -51,11 +51,11 @@ public class Theaterfabrik {
                         dateString = new StringBuilder(dateString).insert(dateString.length() - 3, "20").toString();
                     }
                     LocalDate date = LocalDate.parse(dateString.trim(), formatter);
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME,  "");
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME,  "", LocalDate.now());
                     allConcerts.add(concertDTO);
                 } else {
                     for (LocalDate singleDate : dates) {
-                        ConcertDTO concertDTO = new ConcertDTO(title, singleDate, link, null, VENUE_NAME,  "");
+                        ConcertDTO concertDTO = new ConcertDTO(title, singleDate, link, null, VENUE_NAME,  "", LocalDate.now());
                         allConcerts.add(concertDTO);
 
                     }
