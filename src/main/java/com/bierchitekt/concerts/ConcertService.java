@@ -124,6 +124,10 @@ public class ConcertService {
 
         log.info("found {} concerts, saving now", allConcerts.size());
         for (ConcertDTO concertDTO : allConcerts) {
+            if(concertDTO.date() == null){
+                log.info(concertDTO.toString());
+                continue;
+            }
             if (concertDTO.date().isBefore(LocalDate.now())) {
                 log.info("Not adding concert {} because it's on {} and older than today", concertDTO.title(), concertDTO.date());
                 continue;
@@ -198,10 +202,19 @@ public class ConcertService {
         return getNewConcerts(stromService.getConcerts());
     }
 
-    List<ConcertDTO> getMuffathalleConcerts() {
-        return getNewConcerts(muffathalleService.getConcerts());
-    }
 
+    List<ConcertDTO> getMuffathalleConcerts() {
+        List<ConcertDTO> muffatHalleConcerts = new ArrayList<>();
+        for (ConcertDTO muffathalleConcert : muffathalleService.getConcerts()) {
+            if (concertRepository.findByTitleAndDate(muffathalleConcert.title(), muffathalleConcert.date()).isEmpty()) { // new Concert found, need to get date and genre
+                LocalDate date = muffathalleService.getDate(muffathalleConcert.link());
+                Set<String> genres = genreService.getGenres(muffathalleConcert.title());
+                muffatHalleConcerts.add(new ConcertDTO(muffathalleConcert.title(), date, muffathalleConcert.link(), genres, muffathalleConcert.location(), "", LocalDate.now()));
+            }
+        }
+        return muffatHalleConcerts;
+
+    }
     private Collection<ConcertDTO> getKafeKultConcerts() {
         return getNewConcerts(kafeKultService.getConcerts());
     }
