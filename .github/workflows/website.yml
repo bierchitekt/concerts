@@ -5,6 +5,10 @@ on: [push]
 jobs:
   checks:
     name: Checks
+    publish:
+      permissions:
+        contents: read
+        pull-requests: write
     runs-on: ubuntu-latest
     defaults:
       run:
