@@ -18,7 +18,7 @@ These venues are currently downloaded:
 
 You need 
 java >= 21
-postgresql >= 17
+postgresql >= 17 with pg_trgm extension
 
 # Spotify and LastFM
 

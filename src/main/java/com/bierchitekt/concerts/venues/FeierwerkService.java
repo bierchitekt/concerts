@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -25,7 +27,7 @@ public class FeierwerkService {
     private static final String VENUE_NAME = "Feierwerk";
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    String baseUrl = "https://www.feierwerk.de";
+    private static final String BASE_URL = "https://www.feierwerk.de";
 
     public Set<String> getConcertLinks() {
         Set<String> concertLinks = new HashSet<>();
@@ -38,7 +40,7 @@ public class FeierwerkService {
                 for (Element concert : concerts) {
                     String href = concert.attr("href");
                     if (href.startsWith("/konzert-kulturprogramm/detail/")) {
-                        concertLinks.add(baseUrl + href);
+                        concertLinks.add(BASE_URL + href);
                     }
                 }
             }
@@ -66,11 +68,28 @@ public class FeierwerkService {
                 }
             }
             String supportBands = String.join(", ", bands);
+            String price = getPrice(doc);
 
-            return Optional.of(new ConcertDTO(bands.getFirst(), date, url, genres, VENUE_NAME, supportBands, LocalDate.now()));
+            return Optional.of(new ConcertDTO(bands.getFirst(), date, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price));
         } catch (IOException e) {
             return Optional.empty();
         }
+    }
+
+    private String getPrice(Document doc) {
+        Elements select = doc.select("#top > div > div.event-date-location-detail > div > span");
+
+        return extractPrice(select.text());
+    }
+
+    public String extractPrice(String input) {
+
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.find()) {
+            return matcher.group() + " €";
+        }
+        return "";
     }
 
     private Set<String> getLinks() throws IOException {
@@ -83,7 +102,7 @@ public class FeierwerkService {
         Set<String> urls = new HashSet<>();
         for (Element element : select) {
             String href = element.attr("href");
-            urls.add(baseUrl + href);
+            urls.add(BASE_URL + href);
         }
         urls.add(url);
         return urls;

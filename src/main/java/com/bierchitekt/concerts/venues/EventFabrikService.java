@@ -1,10 +1,12 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +15,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
 public class EventFabrikService {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public List<ConcertDTO> getConcerts() {
         List<ConcertDTO> allConcerts = new ArrayList<>();
@@ -29,24 +30,28 @@ public class EventFabrikService {
             int pages = getNumberOfPages();
 
             for (int page = 1; page <= pages; page++) {
-                String url = "https://www.eventfabrik-muenchen.de/events/?tribe_paged=" + page + "&s&tribe_events_cat=konzert&tribe_events_venue&tribe_events_month&hide_canceled=on";
-
+                String url = "https://www.eventfabrik-muenchen.de/event/page/" + page + "/?search&category=konzert&location&month";
                 Document doc = Jsoup.connect(url).get();
 
-                Elements concerts = doc.select("article.archive-card.type-tribe_events");
+                doc.select("script.yoast-schema-graph");
+                String result = doc.select("script.yoast-schema-graph").getFirst().childNodes().getFirst().toString();
 
-                for (Element concert : concerts) {
+                JsonArray hits = JsonParser.parseString(result).getAsJsonObject()
+                        .get("@graph").getAsJsonArray();
 
-                    String title = StringUtil.capitalizeWords(Objects.requireNonNull(concert.select("a").first()).attr("title"));
+                for (JsonElement concert : hits) {
+                    JsonElement en = concert.getAsJsonObject().get("@type");
+                    if ("\"Event\"".equals(en.toString())) {
+                        String title = concert.getAsJsonObject().get("name").getAsString().trim();
+                        title = StringUtil.capitalizeWords(title);
+                        String price = concert.getAsJsonObject().get("offers").getAsJsonObject().get("price").getAsString() + " €";
 
-                    title = title.replace(" – Verlegt", "");
-                    String link = Objects.requireNonNull(concert.select("a[href]").first()).attr("href");
-                    String location = concert.select("li.archive-card--meta-venue").text();
-                    // Do. | 19.12.2024
-                    String dateString = concert.select("article").text();
-                    LocalDate date = LocalDate.parse(dateString.substring(6, 16), formatter);
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, location, "", LocalDate.now());
-                    allConcerts.add(concertDTO);
+                        LocalDate date = LocalDate.parse(concert.getAsJsonObject().get("startDate").getAsString().substring(0, 10), formatter);
+                        String link = concert.getAsJsonObject().get("url").getAsString();
+
+                        ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "EventFabrik", "", LocalDate.now(), price);
+                        allConcerts.add(concertDTO);
+                    }
                 }
 
             }
@@ -61,11 +66,11 @@ public class EventFabrikService {
     }
 
     private int getNumberOfPages() throws IOException {
-        String url = "https://www.eventfabrik-muenchen.de/events/?tribe_paged=1&s&tribe_events_cat=konzert&tribe_events_venue&tribe_events_month";
+        String url = "https://www.eventfabrik-muenchen.de/event/?search&category=konzert&location&month";
         Document doc = Jsoup.connect(url).get();
         Elements select = doc.select("a.page-numbers");
 
         return Integer.parseInt(select.get(1).text());
     }
-
 }
+

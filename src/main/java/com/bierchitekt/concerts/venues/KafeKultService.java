@@ -48,7 +48,7 @@ public class KafeKultService {
 
                 LocalDate date = LocalDate.parse(dateString.substring(0, 10));
 
-                ConcertDTO concertDto = new ConcertDTO(mainAct, date, link, null, VENUE_NAME, supportBands.trim(), LocalDate.now());
+                ConcertDTO concertDto = new ConcertDTO(mainAct, date, link, null, VENUE_NAME, supportBands.trim(), LocalDate.now(), "");
                 allConcerts.add(concertDto);
             }
 

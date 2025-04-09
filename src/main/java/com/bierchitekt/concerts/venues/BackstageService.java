@@ -63,38 +63,43 @@ public class BackstageService {
             Elements select = doc.select("h5");
             if (!select.isEmpty()) {
                 String text = doc.select("h5").getFirst().text();
-                supportBands = StringUtils.substringAfter(text, "+ Support: ");
-                if (supportBands.equalsIgnoreCase("")) {
-                    supportBands = StringUtils.substringAfter(text, "Supports: ");
-                }
-                if (supportBands.equalsIgnoreCase("")) {
-                    supportBands = StringUtils.substringAfter(text, "Special Guest: ");
-                }
-                if (supportBands.equalsIgnoreCase("")) {
-                    supportBands = StringUtils.substringAfter(text, "special guest: ");
-                }
-                if (supportBands.equalsIgnoreCase("")) {
-                    supportBands = StringUtils.substringAfter(text, "special guests ");
-                }
-                if (supportBands.equalsIgnoreCase("")) {
-                    supportBands = StringUtils.substringAfter(text, "& Special Guest: ");
-                }
-                if (supportBands.equalsIgnoreCase("")) {
-                    supportBands = StringUtils.substringAfter(text, "Special Guests: ");
-                }
+                supportBands = removeUnwantedFillerText(text);
 
-                if (supportBands.equalsIgnoreCase("")) {
-                    supportBands = text;
-                }
-                if (supportBands.contains("presented by") || supportBands.contains("Veranstalter") || supportBands.contains("Eintritt Frei!")
-                ) {
-                    return "";
-                }
             }
             return StringUtil.capitalizeWords(supportBands);
         } catch (IOException e) {
             return "";
         }
+    }
+
+    private String removeUnwantedFillerText(String text) {
+        String supportBands = StringUtils.substringAfter(text, "+ Support: ");
+        if (supportBands.equalsIgnoreCase("")) {
+            supportBands = StringUtils.substringAfter(text, "Supports: ");
+        }
+        if (supportBands.equalsIgnoreCase("")) {
+            supportBands = StringUtils.substringAfter(text, "Special Guest: ");
+        }
+        if (supportBands.equalsIgnoreCase("")) {
+            supportBands = StringUtils.substringAfter(text, "special guest: ");
+        }
+        if (supportBands.equalsIgnoreCase("")) {
+            supportBands = StringUtils.substringAfter(text, "special guests ");
+        }
+        if (supportBands.equalsIgnoreCase("")) {
+            supportBands = StringUtils.substringAfter(text, "& Special Guest: ");
+        }
+        if (supportBands.equalsIgnoreCase("")) {
+            supportBands = StringUtils.substringAfter(text, "Special Guests: ");
+        }
+
+        if (supportBands.equalsIgnoreCase("")) {
+            supportBands = text;
+        }
+        if (supportBands.contains("presented by") || supportBands.contains("Veranstalter") || supportBands.contains("Eintritt Frei!")) {
+            return "";
+        }
+        return supportBands;
     }
 
     @SuppressWarnings("java:S1192")
@@ -129,7 +134,7 @@ public class BackstageService {
                 allGenres.add(genres.trim());
             }
 
-            ConcertDTO concertDto = new ConcertDTO(title, date, link, allGenres, location, "", LocalDate.now());
+            ConcertDTO concertDto = new ConcertDTO(title, date, link, allGenres, location, "", LocalDate.now(), "");
             concerts.add(concertDto);
         }
 
@@ -144,6 +149,18 @@ public class BackstageService {
             return Integer.parseInt(pages);
         } catch (IOException ex) {
             return 0;
+        }
+    }
+
+    public String getPrice(String link) {
+
+        try {
+            Document doc = Jsoup.connect(link).get();
+            Elements select = doc.select("span.price");
+
+            return select.text();
+        } catch (IOException e) {
+            return "";
         }
     }
 }

@@ -48,30 +48,27 @@ public class CircusKroneService {
                     String link = Objects.requireNonNull(concert.select("a[href]").first()).attr("href");
 
                     String dateString = concert.select("div.fusion-post-content").text();
+                    Integer month = getMonth(dateString);
+                    if(month == null){
+                        continue;
+                    }
+                    int year = Integer.parseInt(StringUtils.substringAfterLast(dateString, " "));
 
                     if (dateString.contains("/")) {
                         List<String> dates = Arrays.stream(dateString.split("/")).toList();
+
                         for (String d : dates) {
                             int day = Integer.parseInt(d.substring(0, 2));
-                            Integer month = getMonth(dateString);
-                            if(month == null){
-                                continue;
-                            }
-                            int year = Integer.parseInt(StringUtils.substringAfterLast(dateString, " "));
+
                             LocalDate date = LocalDate.of(year, month, day);
-                            ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "", LocalDate.now());
+                            ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "", LocalDate.now(), "");
                             allConcerts.add(concertDTO);
                         }
                     } else {
                         int day = Integer.parseInt(dateString.substring(0, 2));
-                        Integer month = getMonth(dateString);
-                        if(month == null){
-                            continue;
-                        }
-                        int year = Integer.parseInt(StringUtils.substringAfterLast(dateString, " "));
                         LocalDate date = LocalDate.of(year, month, day);
 
-                        ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "", LocalDate.now());
+                        ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "", LocalDate.now(), "");
                         allConcerts.add(concertDTO);
 
                     }

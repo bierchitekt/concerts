@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDate;
 import java.util.Set;
 
-
 @Entity
 @Builder
 @Data
@@ -39,6 +38,8 @@ public class ConcertEntity implements Comparable<ConcertEntity> {
     private String location;
     private boolean notified;
     private LocalDate addedAt;
+    @NotNull
+    private String price;
 
     @Override
     public int compareTo(@NotNull ConcertEntity other) {

@@ -45,8 +45,11 @@ public class MuffathalleService {
                     Elements select = event.select("div.entry-data.right");
                     String link = BASE_URL + select.select("a[href]").getFirst().attr("href");
 
+                    Document detailPage = Jsoup.connect(link).get();
 
-                    ConcertDTO concertDTO = new ConcertDTO(title, null, link, null, VENUE_NAME,  "", LocalDate.now());
+                    LocalDate date = getDate(detailPage);
+                    String price = getPrice(detailPage);
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME, "", LocalDate.now(), price);
 
                     allConcerts.add(concertDTO);
                 }
@@ -59,9 +62,8 @@ public class MuffathalleService {
         }
     }
 
-    public LocalDate getDate(String url) {
+    private LocalDate getDate(Document doc) {
         try {
-            Document doc = Jsoup.connect(url).get();
             String dateString = doc.select("div.date").text();
             if ("heute".equalsIgnoreCase(dateString)) {
                 return LocalDate.now();
@@ -75,8 +77,25 @@ public class MuffathalleService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM yy");
             return LocalDate.parse(substring, formatter);
         } catch (Exception e) {
-            log.warn(url, e);
             return null;
+        }
+    }
+
+    public String getPrice(Document doc) {
+            String text = doc.select("p.entry-info").first().text();
+
+            return extractVVKPreis(text);
+    }
+
+    private String extractVVKPreis(String input) {
+        String pattern = "VVK €\\s*(\\d+)";
+        java.util.regex.Pattern r = java.util.regex.Pattern.compile(pattern);
+        java.util.regex.Matcher m = r.matcher(input);
+
+        if (m.find()) {
+            return m.group(1) + " €";
+        } else {
+            return "";
         }
     }
 }

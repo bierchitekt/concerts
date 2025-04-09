@@ -41,16 +41,7 @@ public class ZenithService {
                 if ("Programm Motorworld München".equals(concert.text())) {
                     continue;
                 }
-                String title = concert.select("h1.elementor-heading-title.elementor-size-default").text();
-
-                title = title.replace("(ausverkauft)", "").trim();
-                title = title.replace("(Doppelshow)", "").trim();
-                title = title.replace("(Zusatzshow)", "").trim();
-
-                title = StringUtils.substringBefore(title, " x ").trim();
-                title = StringUtils.substringBefore(title, " + ").trim();
-
-                title = StringUtil.capitalizeWords(title);
+                String title = getTitle(concert);
                 if (ignoredEvents.contains(title)) {
                     continue;
                 }
@@ -63,7 +54,7 @@ public class ZenithService {
                     continue;
                 }
 
-                ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME,  "", LocalDate.now());
+                ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME,  "", LocalDate.now(), "");
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {
@@ -72,6 +63,19 @@ public class ZenithService {
         }
         log.info("received {} {} concerts", VENUE_NAME, allConcerts.size());
         return allConcerts;
+    }
+
+    private String getTitle(Element concert) {
+        String title = concert.select("h1.elementor-heading-title.elementor-size-default").text();
+
+        title = title.replace("(ausverkauft)", "").trim();
+        title = title.replace("(Doppelshow)", "").trim();
+        title = title.replace("(Zusatzshow)", "").trim();
+
+        title = StringUtils.substringBefore(title, " x ").trim();
+        title = StringUtils.substringBefore(title, " + ").trim();
+
+        return StringUtil.capitalizeWords(title);
     }
 
     private LocalDate getDate(Elements details) {

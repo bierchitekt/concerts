@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface ConcertRepository extends JpaRepository<ConcertEntity, String> {
@@ -23,8 +22,6 @@ public interface ConcertRepository extends JpaRepository<ConcertEntity, String> 
     @Query(value = "SELECT * FROM concert_entity WHERE date = :date AND similarity(title, :title ) > 0.6", nativeQuery = true)
     List<ConcertEntity> similarTitleAtSameDate(String title, LocalDate date);
 
-    List<ConcertEntity> findByGenreIn(Set<String> s);
-
     Optional<ConcertEntity> findByLink(String url);
 
     @Query(value = "SELECT distinct * FROM concert_entity ce where genre::text ilike CONCAT('%', :genre, '%') and date >= now() and notified = false order by date;", nativeQuery = true)
@@ -32,4 +29,5 @@ public interface ConcertRepository extends JpaRepository<ConcertEntity, String> 
 
     @Query(value = "SELECT distinct * FROM concert_entity ce where genre::text ilike CONCAT('%', :genre, '%') and date >= :from and date < :to order by date;", nativeQuery = true)
     List<ConcertEntity> findByGenreAndDateAfterAndDateBeforeOrderByDate(String genre, LocalDate from, LocalDate to);
+
 }

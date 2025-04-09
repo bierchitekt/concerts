@@ -38,6 +38,11 @@ public class Theaterfabrik {
                 String concertDetail = concert.select("div.elementor-post__excerpt").text();
 
                 String dateString = StringUtils.substringBetween(concertDetail, "Datum: ", "Einlass:");
+                String price = getPrice(concertDetail);
+                if(price == null){
+                    log.warn("no price found concert {} at {}", title, VENUE_NAME);
+                    price = "";
+                }
 
                 List<LocalDate> dates = new ArrayList<>();
                 if (dateString == null) {
@@ -51,11 +56,11 @@ public class Theaterfabrik {
                         dateString = new StringBuilder(dateString).insert(dateString.length() - 3, "20").toString();
                     }
                     LocalDate date = LocalDate.parse(dateString.trim(), formatter);
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME,  "", LocalDate.now());
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME, "", LocalDate.now(), price);
                     allConcerts.add(concertDTO);
                 } else {
                     for (LocalDate singleDate : dates) {
-                        ConcertDTO concertDTO = new ConcertDTO(title, singleDate, link, null, VENUE_NAME,  "", LocalDate.now());
+                        ConcertDTO concertDTO = new ConcertDTO(title, singleDate, link, null, VENUE_NAME, "", LocalDate.now(), price);
                         allConcerts.add(concertDTO);
 
                     }
@@ -68,5 +73,15 @@ public class Theaterfabrik {
             log.warn("exception on {}", VENUE_NAME, ex);
             return List.of();
         }
+
+
+    }
+
+    private String getPrice(String input) {
+        String price = StringUtils.substringBetween(input, "Ticketpreis: ", " + VVK Gebühr");
+        if (price == null) {
+            price = StringUtils.substringAfter(input, "Ticketpreis: ");
+        }
+        return price;
     }
 }
