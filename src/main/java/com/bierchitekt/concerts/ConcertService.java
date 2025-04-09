@@ -110,41 +110,20 @@ public class ConcertService {
         log.info("starting getting new concerts");
 
         List<ConcertDTO> allConcerts = new ArrayList<>();
-        long start = System.currentTimeMillis();
         allConcerts.addAll(getMuffathalleConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for muffathalle");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getEventfabrikConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for eventfabrik");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getCircusKroneConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for circus krone");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getFeierwerkConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for feierwerk");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getBackstageConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for backstage");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getOlympiaparkConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for olypiapark");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getKult9Concerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for kult9");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getZenithConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for zenith");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getTheaterfabrikConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for theaterfabrik");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getStromConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for strom");
-        start = System.currentTimeMillis();
         allConcerts.addAll(getKafeKultConcerts());
-        log.info("took " + ((System.currentTimeMillis() - start) / 1000) + " s for kafekult");
 
         log.info("found {} concerts, saving now", allConcerts.size());
+
         for (ConcertDTO concertDTO : allConcerts) {
             if (concertDTO.date() == null) {
                 log.info(concertDTO.toString());
@@ -210,8 +189,8 @@ public class ConcertService {
         List<ConcertDTO> muffatHalleConcerts = new ArrayList<>();
         for (ConcertDTO muffathalleConcert : muffathalleService.getConcerts()) {
             if (concertRepository.similarTitleAtSameDate(muffathalleConcert.title(), muffathalleConcert.date()).isEmpty()) { // new Concert found, need to get genre
-                String price = muffathalleService.getPrice(muffathalleConcert.link());
                 Set<String> genres = genreService.getGenres(muffathalleConcert.title());
+                String price = muffathalleService.getPrice(muffathalleConcert.link());
                 muffatHalleConcerts.add(new ConcertDTO(muffathalleConcert.title(), muffathalleConcert.date(), muffathalleConcert.link(), genres, muffathalleConcert.location(), "", LocalDate.now(), price));
             }
         }
@@ -255,7 +234,6 @@ public class ConcertService {
     public Collection<ConcertDTO> getFeierwerkConcerts() {
 
         List<ConcertDTO> feierwerkConcerts = new ArrayList<>();
-
         Set<String> concertLinks = feierwerkService.getConcertLinks();
         for (String url : concertLinks) {
             if (concertRepository.findByLink(url).isEmpty()) {
@@ -274,12 +252,12 @@ public class ConcertService {
         List<ConcertDTO> concerts = backstageService.getConcerts();
         concerts.forEach(concert -> {
             if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                //String supportBands = backstageService.getSupportBands(concert.link());
+                String supportBands = backstageService.getSupportBands(concert.link());
                 String price;
                 if (concert.title().contains("Free&easy")) {
                     price = "0 €";
                 } else {
-                   // price = backstageService.getPrice(concert.link());
+                    price = backstageService.getPrice(concert.link());
 
                 }
                 ConcertDTO concertDTO = ConcertDTO.builder()
@@ -288,9 +266,9 @@ public class ConcertService {
                         .link(concert.link())
                         .genre(concert.genre())
                         .location(concert.location())
-                        .supportBands("supportBands")
+                        .supportBands(supportBands)
                         .addedAt(LocalDate.now())
-                        .price("price")
+                        .price(price)
                         .build();
 
                 backstageConcerts.add(concertDTO);

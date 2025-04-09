@@ -8,6 +8,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -45,11 +46,8 @@ public class MuffathalleService {
                     Elements select = event.select("div.entry-data.right");
                     String link = BASE_URL + select.select("a[href]").getFirst().attr("href");
 
-                    Document detailPage = Jsoup.connect(link).get();
-
-                    LocalDate date = getDate(detailPage);
-                    String price = getPrice(detailPage);
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME, "", LocalDate.now(), price);
+                    LocalDate date = getDate(event.select("div.date").text());
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME, "", LocalDate.now(), "");
 
                     allConcerts.add(concertDTO);
                 }
@@ -62,9 +60,8 @@ public class MuffathalleService {
         }
     }
 
-    private LocalDate getDate(Document doc) {
+    private LocalDate getDate(String dateString) {
         try {
-            String dateString = doc.select("div.date").text();
             if ("heute".equalsIgnoreCase(dateString)) {
                 return LocalDate.now();
             }
@@ -81,10 +78,16 @@ public class MuffathalleService {
         }
     }
 
-    public String getPrice(Document doc) {
+    public String getPrice(String link) {
+
+        try {
+            Document doc = Jsoup.connect(link).get();
             String text = doc.select("p.entry-info").first().text();
 
             return extractVVKPreis(text);
+        } catch (IOException e) {
+            return "";
+        }
     }
 
     private String extractVVKPreis(String input) {
