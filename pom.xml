@@ -18,7 +18,7 @@
         <jsoup.version>1.19.1</jsoup.version>
         <hibernate-community-dialects.version>6.6.13.Final</hibernate-community-dialects.version>
         <commons-text.version>1.13.0</commons-text.version>
-        <gson.version>2.12.1</gson.version>
+        <gson.version>2.13.0</gson.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
         <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
         <java-telegram-bot-api.version>8.3.0</java-telegram-bot-api.version>
