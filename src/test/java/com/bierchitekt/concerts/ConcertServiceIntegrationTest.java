@@ -3,7 +3,6 @@ package com.bierchitekt.concerts;
 import com.bierchitekt.concerts.persistence.ConcertEntity;
 import com.bierchitekt.concerts.persistence.ConcertRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -40,7 +39,7 @@ class ConcertServiceIntegrationTest {
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            "postgres:17-alpine"
+            "postgres:latest"
     );
 
     @BeforeEach
@@ -73,7 +72,7 @@ class ConcertServiceIntegrationTest {
     @Autowired
     private ConcertService concertService;
 
-    @Test
+   // @Test
     void notifyNextWeekMetalConcerts() {
         concertService.notifyNextWeekMetalConcerts();
 

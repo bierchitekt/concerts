@@ -11,6 +11,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ public class EventFabrikService {
                     if ("\"Event\"".equals(en.toString())) {
                         String title = concert.getAsJsonObject().get("name").getAsString().trim();
                         title = StringUtil.capitalizeWords(title);
-                        String price = concert.getAsJsonObject().get("offers").getAsJsonObject().get("price").getAsString() + " €";
+                        String price = getPrice(concert);
 
                         LocalDate date = LocalDate.parse(concert.getAsJsonObject().get("startDate").getAsString().substring(0, 10), formatter);
                         String link = concert.getAsJsonObject().get("url").getAsString();
@@ -63,6 +65,16 @@ public class EventFabrikService {
 
         return allConcerts;
 
+    }
+
+    private String getPrice(JsonElement concert) {
+        BigDecimal price = new BigDecimal(concert.getAsJsonObject().get("offers").getAsJsonObject().get("price").getAsString());
+        if (price.scale() <= 0) {
+            return price.toPlainString() + " €";
+        } else {
+            BigDecimal truncated = price.setScale(2, RoundingMode.DOWN);
+            return truncated.toPlainString() + " €";
+        }
     }
 
     private int getNumberOfPages() throws IOException {

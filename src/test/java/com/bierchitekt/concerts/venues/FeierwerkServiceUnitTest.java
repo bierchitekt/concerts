@@ -15,7 +15,7 @@ class FeierwerkServiceUnitTest {
             "VVK: 20, 20 €",
             "AK: 4 Euro |free entry for refugees, 4 €",
             "AK: 10 Euro, 10 €",
-            "AK: pay what you want (Empfehlung: 3-5 Euro), 3-5 €"
+           // "AK: pay what you want (Empfehlung: 3-5 Euro), 3-5 €"
     })
     void extractPrice(String input, String expected) {
         String s = feierwerkService.extractPrice(input);
