@@ -106,7 +106,7 @@ const ConcertFilters: FC<ConcertFiltersProps> = ({ setConcertsFilter }: ConcertF
                 </FilterGroupContainer>
                 <FilterGroupContainer>
                     <p className='font-bold'>By text:</p>
-                    <label className='input input-bordered my-2 flex items-center gap-2'>
+                    <label className='input-bordered input my-2 flex items-center gap-2'>
                         <span className='iconify text-xl mdi--magnify' />
                         <input
                             placeholder='Search...'

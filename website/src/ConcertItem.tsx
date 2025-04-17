@@ -10,7 +10,7 @@ const ConcertItem: FC<ConcertItemProps> = ({ concert }) => {
     const { title, link, genre, location, supportBands } = concert;
 
     return (
-        <div className='card card-compact my-2 bg-base-300 shadow'>
+        <div className='card-compact card my-2 bg-base-300 shadow'>
             <div className='card-body'>
                 <div className='flex w-full items-center font-bold'>
                     <div className='flex-grow'>

@@ -45,7 +45,7 @@ const ScrollToTop = () => (
         <a
             role='button'
             href='#'
-            className='btn btn-circle btn-accent sticky bottom-4 z-[999]'
+            className='btn btn-accent btn-circle sticky bottom-4 z-[999]'
             aria-label='Scroll to top'
         >
             <span className='iconify text-2xl mdi--chevron-up' />
