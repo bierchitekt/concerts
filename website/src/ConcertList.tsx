@@ -95,7 +95,7 @@ const ConcertFilters: FC<ConcertFiltersProps> = ({ setConcertsFilter }: ConcertF
 
     return (
         <div className='my-2'>
-            <p className='text-center text-xl font-bold text-primary'>Filter concerts</p>
+            <p className='text-primary text-center text-xl font-bold'>Filter concerts</p>
             <div className='flex flex-wrap justify-center'>
                 <FilterGroupContainer>
                     <p className='font-bold'>By genre:</p>
@@ -107,10 +107,10 @@ const ConcertFilters: FC<ConcertFiltersProps> = ({ setConcertsFilter }: ConcertF
                 <FilterGroupContainer>
                     <p className='font-bold'>By text:</p>
                     <label className='input-bordered input my-2 flex items-center gap-2'>
-                        <span className='iconify text-xl mdi--magnify' />
+                        <span className='iconify mdi--magnify text-xl' />
                         <input
                             placeholder='Search...'
-                            className='flex-grow'
+                            className='grow'
                             value={textFilter}
                             onChange={(e) => setTextFilter(e.target.value)}
                         />
@@ -123,7 +123,7 @@ const ConcertFilters: FC<ConcertFiltersProps> = ({ setConcertsFilter }: ConcertF
 };
 
 const FilterGroupContainer: FC<PropsWithChildren> = ({ children }) => (
-    <div className='bottom-1 m-1 min-w-60 max-w-80 flex-grow'>{children}</div>
+    <div className='bottom-1 m-1 max-w-80 min-w-60 grow'>{children}</div>
 );
 
 type ResetButtonProps = { hidden: boolean; onClick: () => void };

@@ -6,17 +6,17 @@ import { ThemeToggle } from './ThemeToggle.tsx';
 
 function App() {
     return (
-        <div className='relative mx-auto flex max-w-3xl flex-col justify-center p-1 text-base-content'>
+        <div className='text-base-content relative mx-auto flex max-w-3xl flex-col justify-center p-1'>
             <ScrollToTop />
             <div className='mx-8 my-4 flex flex-col justify-center gap-2 text-center'>
                 <div className='flex justify-end gap-2'>
                     <ThemeToggle />
                     <a
                         href='https://github.com/bierchitekt/concerts'
-                        className='iconify float-end text-2xl mdi--github'
+                        className='iconify mdi--github float-end text-2xl'
                     />
                 </div>
-                <h1 className='mb-4 text-3xl font-bold text-primary'>All Concerts in Munich</h1>
+                <h1 className='text-primary mb-4 text-3xl font-bold'>All Concerts in Munich</h1>
 
                 <div className='flex flex-col items-center gap-2'>
                     <p>Join the Telegram channels to get the newest updates:</p>
@@ -41,14 +41,14 @@ function App() {
 }
 
 const ScrollToTop = () => (
-    <div className='absolute bottom-0 right-2 top-0 flex h-full items-end pt-[110vh] sm:hidden'>
+    <div className='absolute top-0 right-2 bottom-0 flex h-full items-end pt-[110vh] sm:hidden'>
         <a
             role='button'
             href='#'
-            className='btn btn-accent btn-circle sticky bottom-4 z-[999]'
+            className='btn btn-accent btn-circle sticky bottom-4 z-999'
             aria-label='Scroll to top'
         >
-            <span className='iconify text-2xl mdi--chevron-up' />
+            <span className='iconify mdi--chevron-up text-2xl' />
         </a>
     </div>
 );
