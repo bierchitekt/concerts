@@ -17,7 +17,7 @@
         "react-dom": "19.1.0"
     },
     "devDependencies": {
-        "@eslint/js": "9.24.0",
+        "@eslint/js": "9.25.0",
         "@iconify-json/emojione-monotone": "1.2.1",
         "@iconify-json/fluent-emoji-high-contrast": "1.2.3",
         "@iconify-json/game-icons": "1.2.1",
@@ -27,8 +27,8 @@
         "@types/react": "19.1.2",
         "@types/react-dom": "19.1.2",
         "@vitejs/plugin-react-swc": "3.9.0",
-        "daisyui": "5.0.25",
-        "eslint": "9.24.0",
+        "daisyui": "5.0.27",
+        "eslint": "9.25.0",
         "eslint-plugin-react-hooks": "5.2.0",
         "eslint-plugin-react-refresh": "0.4.19",
         "globals": "16.0.0",
@@ -38,6 +38,6 @@
         "tailwindcss": "4.1.4",
         "typescript": "5.8.3",
         "typescript-eslint": "8.30.1",
-        "vite": "6.3.1"
+        "vite": "6.3.2"
     }
 }
