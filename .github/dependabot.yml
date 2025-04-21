@@ -12,11 +12,11 @@ updates:
       interval: "weekly"
     groups:
       #name: "all-dependencies"
-      update-type: [ "version-update:semver-minor", "version-update:semver-patch" ]
+      update-types: [ "version-update:semver-minor", "version-update:semver-patch" ]
   - package-ecosystem: "npm"
     directory: "/website"
     schedule:
       interval: "weekly"
     groups:
      # name: "all-dependencies"
-      update-type: [ "version-update:semver-minor", "version-update:semver-patch" ]
+      update-types: [ "version-update:semver-minor", "version-update:semver-patch" ]
