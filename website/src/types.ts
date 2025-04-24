@@ -5,6 +5,7 @@ export type Concert = {
     genre: string[];
     location: string;
     supportBands: string;
+    price: string;
 };
 
 export const initialGenreFilters = { metal: false, rock: false, punk: false, unknown: false };

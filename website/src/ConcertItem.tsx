@@ -7,7 +7,7 @@ type ConcertItemProps = {
 };
 
 const ConcertItem: FC<ConcertItemProps> = ({ concert }) => {
-    const { title, link, genre, location, supportBands } = concert;
+    const { title, link, genre, location, supportBands, price } = concert;
 
     return (
         <div className='card-compact card bg-base-300 my-2 shadow-sm'>
@@ -23,6 +23,9 @@ const ConcertItem: FC<ConcertItemProps> = ({ concert }) => {
                         .map((it) => (
                             <span key={it} className={`iconify ${iconMap[it]} mr-1 text-xl`} />
                         ))}
+                </div>
+                <div>
+                    <p>{price ? `${price}` : '' }</p>
                 </div>
                 <div className='grid grid-cols-3 gap-4'>
                     <p>{genre.join(', ')}</p>
