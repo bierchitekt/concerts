@@ -23,7 +23,7 @@ public class Kult9Service {
 
     private static final String VENUE_NAME = "Kult9";
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLLL yyyy");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLLL yyyy");
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
