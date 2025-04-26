@@ -25,7 +25,7 @@ const ConcertItem: FC<ConcertItemProps> = ({ concert }) => {
                         ))}
                 </div>
                 <div>
-                    <p>{price ? `${price}` : '' }</p>
+                    <p>{price ? `${price}` : ''}</p>
                 </div>
                 <div className='grid grid-cols-3 gap-4'>
                     <p>{genre.join(', ')}</p>
