@@ -48,6 +48,8 @@ const ConcertListInner: FC<{ concerts: Concert[] }> = ({ concerts }) => {
         const filteredConcerts = concerts.filter((concert) => concertsFilter.filter(concert));
 
         const concertsByDate = new Map<string, Concert[]>();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
 
         for (const concert of filteredConcerts) {
             const [year, month, day] = concert.date;
@@ -60,8 +62,9 @@ const ConcertListInner: FC<{ concerts: Concert[] }> = ({ concerts }) => {
             if (!concertsByDate.has(dateString)) {
                 concertsByDate.set(dateString, []);
             }
-
-            concertsByDate.get(dateString)!.push(concert);
+            if (new Date(dateString).valueOf() > yesterday.valueOf()) {
+                concertsByDate.get(dateString)!.push(concert);
+            }
         }
 
         return concertsByDate;
