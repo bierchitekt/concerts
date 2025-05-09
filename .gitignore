@@ -19,3 +19,5 @@ buildNumber.properties
 
 /logs.txt
 /logs.txt.*
+
+src/main/resources/application.properties

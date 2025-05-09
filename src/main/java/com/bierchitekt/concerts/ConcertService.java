@@ -7,6 +7,7 @@ import com.bierchitekt.concerts.venues.BackstageService;
 import com.bierchitekt.concerts.venues.CircusKroneService;
 import com.bierchitekt.concerts.venues.EventFabrikService;
 import com.bierchitekt.concerts.venues.FeierwerkService;
+import com.bierchitekt.concerts.venues.ImportExportService;
 import com.bierchitekt.concerts.venues.KafeKultService;
 import com.bierchitekt.concerts.venues.Kult9Service;
 import com.bierchitekt.concerts.venues.MuffathalleService;
@@ -50,6 +51,7 @@ public class ConcertService {
     private final EventFabrikService eventFabrikService;
     private final CircusKroneService circusKroneService;
     private final KafeKultService kafeKultService;
+    private final ImportExportService importExportService;
 
     private final ConcertMapper concertMapper;
 
@@ -108,6 +110,7 @@ public class ConcertService {
         log.info("starting getting new concerts");
 
         List<ConcertDTO> allConcerts = new ArrayList<>();
+        allConcerts.addAll(getImportExportConcerts());
         allConcerts.addAll(getMuffathalleConcerts());
         allConcerts.addAll(getEventfabrikConcerts());
         allConcerts.addAll(getCircusKroneConcerts());
@@ -197,6 +200,10 @@ public class ConcertService {
 
     private Collection<ConcertDTO> getKafeKultConcerts() {
         return getNewConcerts(kafeKultService.getConcerts(), "Kafe Kult");
+    }
+
+    private Collection<ConcertDTO> getImportExportConcerts() {
+        return getNewConcerts(importExportService.getConcerts(), "Import Export");
     }
 
     private List<ConcertDTO> getNewConcerts(List<ConcertDTO> concerts, String venue) {
