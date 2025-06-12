@@ -25,7 +25,7 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
-        <postgresql.version>42.7.6</postgresql.version>
+        <postgresql.version>42.7.7</postgresql.version>
         <testcontainers.version>1.21.1</testcontainers.version>
         <junit-jupiter.version>5.13.0</junit-jupiter.version>
         <hibernate-validator.version>9.0.0.Final</hibernate-validator.version>
