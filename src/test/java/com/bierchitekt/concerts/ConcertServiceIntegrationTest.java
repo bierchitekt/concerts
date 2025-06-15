@@ -32,9 +32,9 @@ class ConcertServiceIntegrationTest {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy").localizedBy(ENGLISH);
 
 
-    private final LocalDate tomorrow = LocalDate.now().plusDays(1); //8:14 gleis 29 hbf bis mittenwald
-    private final LocalDate today = LocalDate.now(); //8:14 gleis 29 hbf bis mittenwald
-    private final LocalDate yesterday = LocalDate.now().minusDays(1); //8:14 gleis 29 hbf bis mittenwald
+    private final LocalDate tomorrow = LocalDate.now().plusDays(1);
+    private final LocalDate today = LocalDate.now();
+    private final LocalDate yesterday = LocalDate.now().minusDays(1);
 
     @Container
     @ServiceConnection
