@@ -14,8 +14,10 @@ import com.bierchitekt.concerts.venues.MuffathalleService;
 import com.bierchitekt.concerts.venues.OlympiaparkService;
 import com.bierchitekt.concerts.venues.StromService;
 import com.bierchitekt.concerts.venues.Theaterfabrik;
+import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +54,7 @@ public class ConcertService {
     private final CircusKroneService circusKroneService;
     private final KafeKultService kafeKultService;
     private final ImportExportService importExportService;
+    private final TollwoodService tollwoodService;
 
     private final ConcertMapper concertMapper;
 
@@ -106,10 +109,12 @@ public class ConcertService {
         notifyNewConcerts("Upcoming " + genreName + " concerts for next week: \n\n", concerts, channelName);
     }
 
+    @PostConstruct
     public void getNewConcerts() {
         log.info("starting getting new concerts");
 
         List<ConcertDTO> allConcerts = new ArrayList<>();
+
         allConcerts.addAll(getImportExportConcerts());
         allConcerts.addAll(getMuffathalleConcerts());
         allConcerts.addAll(getEventfabrikConcerts());
@@ -122,6 +127,7 @@ public class ConcertService {
         allConcerts.addAll(getTheaterfabrikConcerts());
         allConcerts.addAll(getStromConcerts());
         allConcerts.addAll(getKafeKultConcerts());
+        allConcerts.addAll(getTollwoodConcerts());
 
         log.info("found {} concerts, saving now", allConcerts.size());
 
@@ -172,6 +178,10 @@ public class ConcertService {
     }
 
 
+    private Collection<ConcertDTO> getTollwoodConcerts() {
+        return getNewConcerts(tollwoodService.getConcerts(), "Tollwood");
+    }
+
     private Collection<ConcertDTO> getOlympiaparkConcerts() {
         return getNewConcerts(olympiaparkService.getConcerts(), "Olympiapark");
     }
@@ -214,7 +224,12 @@ public class ConcertService {
         concerts.forEach(concert -> {
             if (concertRepository.similarTitleAtSameDate(concert.title(), concert.date()).isEmpty()) {
                 Set<String> genres = genreService.getGenres(concert.title());
-                newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), "", LocalDate.now(), concert.price()));
+                if (venue.equalsIgnoreCase("Tollwood")) {
+                    String price = tollwoodService.getPrice(concert.link());
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price));
+                } else {
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price()));
+                }
             }
         });
 
