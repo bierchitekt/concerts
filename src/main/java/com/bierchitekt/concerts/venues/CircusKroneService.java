@@ -48,8 +48,14 @@ public class CircusKroneService {
                     String link = Objects.requireNonNull(concert.select("a[href]").first()).attr("href");
 
                     String dateString = concert.select("div.fusion-post-content").text();
-                    Integer month = getMonth(dateString);
-                    if(month == null){
+                    Integer month;
+                    try {
+                        month = getMonth(dateString);
+                    } catch (UnknownDateException e) {
+                        continue;
+                    }
+
+                    if (month == null) {
                         continue;
                     }
                     int year = Integer.parseInt(StringUtils.substringAfterLast(dateString, " "));
@@ -82,11 +88,22 @@ public class CircusKroneService {
         return allConcerts;
     }
 
-    private Integer getMonth(String dateString) {
-        Integer i = calendarMap.get(StringUtils.substringBetween(dateString, " ", " "));
+    private Integer getMonth(String dateString) throws UnknownDateException {
+        String s = StringUtils.substringBetween(dateString, " ", " ");
+        if (s == null) {
+            log.warn("cannot parse date {}", dateString);
+            throw new UnknownDateException(dateString);
+        }
+        Integer i = calendarMap.get(s);
         if (i == null) {
             log.warn("Cannot get month for input {}", dateString);
         }
         return i;
+    }
+
+    private static class UnknownDateException extends Exception {
+        public UnknownDateException(String foo) {
+            super(foo);
+        }
     }
 }
