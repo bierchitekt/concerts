@@ -18,15 +18,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TollwoodService {
-
-    private static final Map<String, Integer> calendarMap = Map.ofEntries(Map.entry("Januar", 1), Map.entry("Februar", 2), Map.entry("März", 3), Map.entry("April", 4), Map.entry("Mai", 5), Map.entry("Juni", 6), Map.entry("Juli", 7), Map.entry("August", 8), Map.entry("September", 9), Map.entry("Oktober", 10), Map.entry("November", 11), Map.entry("Dezember", 12));
 
     private static final String URL = "https://www.tollwood.de/veranstaltungsort/musik-arena/";
 
@@ -35,30 +32,32 @@ public class TollwoodService {
 
 
     public String getHTML(String url) throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
-                .header("accept-language", "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7")
-                .header("cache-control", "max-age=0")
-                .header("cookie", "borlabs-cookie=%7B%22consents%22%3A%7B%22essential%22%3A%5B%22borlabs-cookie%22%5D%7D%2C%22domainPath%22%3A%22www.tollwood.de%2F%22%2C%22expires%22%3A%22Sun%2C%2021%20Dec%202025%2009%3A54%3A17%20GMT%22%2C%22uid%22%3A%22anonymous%22%2C%22version%22%3A%221%22%7D")
-                .header("if-modified-since", "Sun, 22 Jun 2025 06:08:59 GMT")
-                .header("priority", "u=0, i")
-                .header("sec-ch-ua", "\"Google Chrome\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"")
-                .header("sec-ch-ua-mobile", "?0")
-                .header("sec-ch-ua-platform", "\"Linux\"")
-                .header("sec-fetch-dest", "document")
-                .header("sec-fetch-mode", "navigate")
-                .header("sec-fetch-site", "none")
-                .header("sec-fetch-user", "?1")
-                .header("upgrade-insecure-requests", "1")
-                .header("user-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36")
-                .GET()
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        try (HttpClient client = HttpClient.newHttpClient()) {
 
-        return response.body();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
+                    .header("accept-language", "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7")
+                    .header("cache-control", "max-age=0")
+                    .header("cookie", "borlabs-cookie=%7B%22consents%22%3A%7B%22essential%22%3A%5B%22borlabs-cookie%22%5D%7D%2C%22domainPath%22%3A%22www.tollwood.de%2F%22%2C%22expires%22%3A%22Sun%2C%2021%20Dec%202025%2009%3A54%3A17%20GMT%22%2C%22uid%22%3A%22anonymous%22%2C%22version%22%3A%221%22%7D")
+                    .header("if-modified-since", "Sun, 22 Jun 2025 06:08:59 GMT")
+                    .header("priority", "u=0, i")
+                    .header("sec-ch-ua", "\"Google Chrome\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"")
+                    .header("sec-ch-ua-mobile", "?0")
+                    .header("sec-ch-ua-platform", "\"Linux\"")
+                    .header("sec-fetch-dest", "document")
+                    .header("sec-fetch-mode", "navigate")
+                    .header("sec-fetch-site", "none")
+                    .header("sec-fetch-user", "?1")
+                    .header("upgrade-insecure-requests", "1")
+                    .header("user-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36")
+                    .GET()
+                    .build();
+            return client.send(request, HttpResponse.BodyHandlers.ofString()).body();
+
+        }
+
     }
 
     public List<ConcertDTO> getConcerts() {

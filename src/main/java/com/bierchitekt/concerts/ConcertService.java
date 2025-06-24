@@ -17,7 +17,6 @@ import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -109,7 +108,6 @@ public class ConcertService {
         notifyNewConcerts("Upcoming " + genreName + " concerts for next week: \n\n", concerts, channelName);
     }
 
-    @PostConstruct
     public void getNewConcerts() {
         log.info("starting getting new concerts");
 
