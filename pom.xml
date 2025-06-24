@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.0</version>
+        <version>3.5.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.bierchitekt</groupId>
@@ -15,8 +15,8 @@
     <description>Getting concerts in munich</description>
     <properties>
         <java.version>24</java.version>
-        <jsoup.version>1.20.1</jsoup.version>
-        <hibernate-community-dialects.version>7.0.2.Final</hibernate-community-dialects.version>
+        <jsoup.version>1.21.1</jsoup.version>
+        <hibernate-community-dialects.version>7.0.3.Final</hibernate-community-dialects.version>
         <commons-text.version>1.13.1</commons-text.version>
         <gson.version>2.13.1</gson.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
@@ -26,7 +26,7 @@
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <postgresql.version>42.7.7</postgresql.version>
-        <testcontainers.version>1.21.1</testcontainers.version>
+        <testcontainers.version>1.21.2</testcontainers.version>
         <junit-jupiter.version>5.13.1</junit-jupiter.version>
         <hibernate-validator.version>9.0.1.Final</hibernate-validator.version>
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
