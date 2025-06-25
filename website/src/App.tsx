@@ -29,7 +29,7 @@ function App() {
             <p className='mb-16 text-center text-xs sm:mb-0'>
                 Emoji artwork is provided by <StyledLink href='https://emojitwo.github.io/'>Emojitwo</StyledLink>,
                 originally released as <StyledLink href='https://www.emojione.com/'>Emojione 2.2</StyledLink> by{' '}
-                <StyledLink href='http://www.ranks.com/'>Ranks.com</StyledLink> with contributions from the Emojitwo
+                <StyledLink href='https://www.ranks.com/'>Ranks.com</StyledLink> with contributions from the Emojitwo
                 community and is licensed under{' '}
                 <StyledLink href='https://creativecommons.org/licenses/by/4.0/legalcode'>CC-BY 4.0</StyledLink>. Game
                 icon artwork is provided by <StyledLink href='https://game-icons.net/'>Game Icons</StyledLink> and is
