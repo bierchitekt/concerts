@@ -118,11 +118,30 @@ public class BackstageService {
 
             title = StringUtil.capitalizeWords(title);
             String link = detail.select("a[href]").getFirst().attr("href");
-            String day = concert.select("span.day").first().text().replace(".", "");
-            String month = concert.select("span.month").first().text();
-            String year = concert.select("span.year").first().text();
+            
+            Element dayElement = concert.select("span.day").first();
+            Element monthElement = concert.select("span.month").first();
+            Element yearElement = concert.select("span.year").first();
+            
+            if (dayElement == null || monthElement == null || yearElement == null) {
+                continue; // Skip concerts with missing date elements
+            }
+            
+            String day = dayElement.text().replace(".", "");
+            String month = monthElement.text();
+            String year = yearElement.text();
 
-            LocalDate date = LocalDate.of(Integer.parseInt(year), calendarMap.get(month), Integer.parseInt(day));
+            Integer monthInt = calendarMap.get(month);
+            if (monthInt == null) {
+                continue; // Skip concerts with invalid month names
+            }
+
+            LocalDate date;
+            try {
+                date = LocalDate.of(Integer.parseInt(year), monthInt, Integer.parseInt(day));
+            } catch (NumberFormatException | java.time.DateTimeException e) {
+                continue; // Skip concerts with invalid date values
+            }
 
             String location = concert.select("strong.eventlocation").text();
             location = StringUtil.capitalizeWords(location);
@@ -145,9 +164,13 @@ public class BackstageService {
     private int getPages(String url) {
         try {
             Document document = Jsoup.connect(url).get();
-            String pages = document.select("span.toolbar-number").get(2).text();
-            return Integer.parseInt(pages);
-        } catch (IOException ex) {
+            Elements toolbarNumbers = document.select("span.toolbar-number");
+            if (toolbarNumbers.size() >= 3) {
+                String pages = toolbarNumbers.get(2).text();
+                return Integer.parseInt(pages);
+            }
+            return 0;
+        } catch (IOException | NumberFormatException ex) {
             return 0;
         }
     }
