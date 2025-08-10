@@ -16,7 +16,7 @@
     <properties>
         <java.version>24</java.version>
         <jsoup.version>1.21.1</jsoup.version>
-        <hibernate-community-dialects.version>7.0.9.Final</hibernate-community-dialects.version>
+        <hibernate-community-dialects.version>7.1.0.Final</hibernate-community-dialects.version>
         <commons-text.version>1.14.0</commons-text.version>
         <gson.version>2.13.1</gson.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
