@@ -18,7 +18,7 @@ import java.util.List;
 public class KafeKultService {
 
 
-    private static final String URL = "https://www.kafekult.de/wordpress/";
+    private static final String URL = "https://www.kafekult.de/wordpress/events/";
 
     private static final String VENUE_NAME = "kafekult";
 
@@ -30,21 +30,24 @@ public class KafeKultService {
 
             Document doc = Jsoup.connect(URL).get();
 
-            Elements allEvents = doc.select("div.ai1ec-event-title");
+            Elements allEvents = doc.select("article.type-tribe_events");
+
             for (Element concert : allEvents) {
                 String link = concert.select("a[href]").getFirst().attr("href");
 
                 Document concertDetail = Jsoup.connect(link).get();
 
-                String title = StringUtil.capitalizeWords(concertDetail.select("h1.entry-title").text());
+                String title = StringUtil.capitalizeWords(concertDetail.select("title").text());
                 if (title.contains("abgesagt") || title.contains("Workshops") || title.contains("jam")) {
                     continue;
                 }
+                title= title.replace(" - Kafe Kult", "").trim();
                 List<String> bands = Arrays.stream(title.split("\\+")).toList();
-                String mainAct = bands.getFirst();
+                String mainAct = bands.getFirst().trim();
                 String supportBands = String.join(", ", bands.subList(1, bands.size()));
 
-                String dateString = concertDetail.select("div.ai1ec-hidden.dt-start").text();
+                Element div = doc.select("time").first();
+                String dateString = div.attr("datetime");
 
                 LocalDate date = LocalDate.parse(dateString.substring(0, 10));
 
