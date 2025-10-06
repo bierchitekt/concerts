@@ -17,8 +17,8 @@ These venues are currently downloaded:
 # Installation
 
 You need 
-java >= 21
-postgresql >= 17 with pg_trgm extension
+java 25
+postgresql 18 with pg_trgm extension
 
 # Spotify and LastFM
 
@@ -38,7 +38,7 @@ You need a running postgres DB to run the project. To use docker, use
 
 # Build the project
 
-Docker must be started to run the tests. The test are using testcontainers so you don't have to start postgres before.
+Docker must be started to run the tests. The tests are using testcontainers.
 
 ```
 ./mvnw package
