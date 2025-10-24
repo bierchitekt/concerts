@@ -16,14 +16,11 @@ import com.bierchitekt.concerts.venues.StromService;
 import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -54,6 +51,7 @@ public class ConcertService {
     private final KafeKultService kafeKultService;
     private final ImportExportService importExportService;
     private final TollwoodService tollwoodService;
+    private final JsonWriter jsonWriter;
 
     private final ConcertMapper concertMapper;
 
@@ -145,7 +143,7 @@ public class ConcertService {
                 concertRepository.save(concertEntity);
             }
         }
-        generateJSON();
+        jsonWriter.writeJsonToDisk(getConcertDTOs());
     }
 
     public List<ConcertDTO> getNextWeekConcerts() {
@@ -301,16 +299,6 @@ public class ConcertService {
     private List<ConcertDTO> getConcertDTOs() {
         List<ConcertEntity> concerts = concertRepository.findByDateAfterOrderByDate(LocalDate.now().minusDays(1));
         return concertMapper.toConcertDto(concerts);
-    }
-
-    private void generateJSON() {
-        List<ConcertDTO> concertDTOs = getConcertDTOs();
-        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        try {
-            objectMapper.writeValue(new File("concerts.json"), concertDTOs);
-        } catch (IOException e) {
-            log.error("error while writing concerts to json", e);
-        }
     }
 
     private void notifyNoConcertsFoundForVenue(String venue) {
