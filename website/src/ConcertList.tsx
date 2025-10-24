@@ -52,8 +52,7 @@ const ConcertListInner: FC<{ concerts: Concert[] }> = ({ concerts }) => {
         yesterday.setDate(yesterday.getDate() - 1);
 
         for (const concert of filteredConcerts) {
-            const [year, month, day] = concert.date;
-            const dateString = new Date(year, month - 1, day).toLocaleDateString('en-us', {
+            const dateString = new Date(concert.date).toLocaleDateString('en-us', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',

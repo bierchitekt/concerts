@@ -1,6 +1,6 @@
 export type Concert = {
     title: string;
-    date: [number, number, number];
+    date: string;
     link: string;
     genre: string[];
     location: string;
