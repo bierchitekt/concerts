@@ -16,14 +16,13 @@ import com.bierchitekt.concerts.venues.StromService;
 import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -305,12 +304,8 @@ public class ConcertService {
 
     private void generateJSON() {
         List<ConcertDTO> concertDTOs = getConcertDTOs();
-        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        try {
-            objectMapper.writeValue(new File("concerts.json"), concertDTOs);
-        } catch (IOException e) {
-            log.error("error while writing concerts to json", e);
-        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.writeValue(new File("concerts.json"), concertDTOs);
     }
 
     private void notifyNoConcertsFoundForVenue(String venue) {
