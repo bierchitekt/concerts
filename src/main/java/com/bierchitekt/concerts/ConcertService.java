@@ -181,7 +181,7 @@ public class ConcertService {
     }
 
     private Collection<ConcertDTO> getWinterTollwoodConcerts() {
-        return getNewConcerts(winterTollwoodService.getConcerts(), "Tollwood");
+        return getNewConcerts(winterTollwoodService.getConcerts(), "Winter Tollwood");
     }
 
     private Collection<ConcertDTO> getOlympiaparkConcerts() {
@@ -225,7 +225,12 @@ public class ConcertService {
         List<ConcertDTO> newConcerts = new ArrayList<>();
         concerts.forEach(concert -> {
             if (concertRepository.similarTitleAtSameDate(concert.title(), concert.date()).isEmpty()) {
-                Set<String> genres = genreService.getGenres(concert.title());
+                Set<String> genres;
+                if (concert.genre() != null) {
+                    genres = concert.genre();
+                } else {
+                    genres = genreService.getGenres(concert.title());
+                }
                 if (venue.equalsIgnoreCase("Tollwood")) {
                     String price = tollwoodService.getPrice(concert.link());
                     newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price));
@@ -266,6 +271,7 @@ public class ConcertService {
         if (concertLinks.isEmpty()) {
             notifyNoConcertsFoundForVenue("Feierwerk");
         }
+        log.info("received {} concerts for Feierwerk", feierwerkConcerts.size());
         return feierwerkConcerts;
     }
 
