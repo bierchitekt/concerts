@@ -15,6 +15,7 @@ import com.bierchitekt.concerts.venues.OlympiaparkService;
 import com.bierchitekt.concerts.venues.StromService;
 import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.TollwoodService;
+import com.bierchitekt.concerts.venues.WinterTollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,7 @@ public class ConcertService {
     private final KafeKultService kafeKultService;
     private final ImportExportService importExportService;
     private final TollwoodService tollwoodService;
+    private final WinterTollwoodService winterTollwoodService;
     private final JsonWriter jsonWriter;
 
     private final ConcertMapper concertMapper;
@@ -124,6 +126,7 @@ public class ConcertService {
         allConcerts.addAll(getStromConcerts());
         allConcerts.addAll(getKafeKultConcerts());
         allConcerts.addAll(getTollwoodConcerts());
+        allConcerts.addAll(getWinterTollwoodConcerts());
 
         log.info("found {} concerts, saving now", allConcerts.size());
 
@@ -173,9 +176,12 @@ public class ConcertService {
         return getNewConcerts(theaterfabrikService.getConcerts(), "Theaterfabrik");
     }
 
-
     private Collection<ConcertDTO> getTollwoodConcerts() {
         return getNewConcerts(tollwoodService.getConcerts(), "Tollwood");
+    }
+
+    private Collection<ConcertDTO> getWinterTollwoodConcerts() {
+        return getNewConcerts(winterTollwoodService.getConcerts(), "Tollwood");
     }
 
     private Collection<ConcertDTO> getOlympiaparkConcerts() {

@@ -23,7 +23,7 @@ class JsonWriterUnitTest {
     @Test
     void getJson() {
         List<ConcertDTO> concertDTOs = new ArrayList<>();
-        concertDTOs.add(new ConcertDTO("Gutalax", LocalDate.of(2025, 10, 24), "http://example.com", null, "Circus Krone", "", LocalDate.now(), ""));
+        concertDTOs.add(new ConcertDTO("Gutalax", LocalDate.of(2025, 10, 24), "http://example.com", null, "Circus Krone", "", LocalDate.of(2025, 10, 24), ""));
 
         String jsonString = sut.getJsonString(concertDTOs);
 

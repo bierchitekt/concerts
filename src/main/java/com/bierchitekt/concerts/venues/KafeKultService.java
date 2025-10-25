@@ -58,6 +58,7 @@ public class KafeKultService {
         } catch (Exception ex) {
             log.warn("error getting kafekult concerts", ex);
         }
+        log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
         return allConcerts;
     }
 
