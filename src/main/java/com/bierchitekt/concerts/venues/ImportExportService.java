@@ -42,7 +42,7 @@ public class ImportExportService {
                 title = getTitle(title);
 
                 String[] result = title.split(" \\+ ");
-                String supportBands = ""    ;
+                String supportBands = "";
                 if (result.length > 1) {
                     title = result[0];
                     supportBands = String.join(", ", result[1].split(" \\+ "));
@@ -64,7 +64,7 @@ public class ImportExportService {
         } catch (Exception ex) {
             log.error(ex.toString());
         }
-
+        log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
         return allConcerts;
     }
 
