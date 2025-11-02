@@ -1,6 +1,7 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,6 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Locale.GERMAN;
+
 @Service
 @Slf4j
 public class Kult9Service {
@@ -23,8 +26,9 @@ public class Kult9Service {
 
     private static final String VENUE_NAME = "Kult9";
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLLL yyyy");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLLL yyyy").localizedBy(GERMAN);
 
+    @PostConstruct
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
 
