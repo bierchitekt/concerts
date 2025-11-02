@@ -5,7 +5,7 @@ on:
     branches: [ docker ]
 
 env:
-  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/bierchitekt/munich-concerts
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/munich-concerts
   TAG: ${{ github.sha }}
 
 jobs:
