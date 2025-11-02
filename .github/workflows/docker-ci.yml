@@ -1,0 +1,53 @@
+name: Docker CI/CD with Maven
+
+on:
+  push:
+    branches: [ docker ]
+
+env:
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/<IHR-REPOSITORY-NAME>
+  TAG: ${{ github.sha }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. Java-Laufzeitumgebung einrichten (Voraussetzung für Maven)
+      - name: Set up JDK 17 # Passen Sie die Java-Version an
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          # Caching für Maven-Abhängigkeiten hinzufügen (beschleunigt nach dem ersten Lauf)
+          cache: 'maven'
+
+      # 2. Maven Verify ausführen (Build & Tests)
+      - name: Run Maven Verify
+        run: mvn -B verify
+
+      # --- Ab hier folgen die Docker-Schritte ---
+
+      # 3. Login bei Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4. Docker Buildx einrichten
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 5. Image bauen und pushen
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Stellen Sie sicher, dass Ihr Dockerfile das von Maven erstellte Artefakt verwendet!
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:latest
+            ${{ env.DOCKER_IMAGE }}:${{ env.TAG }}
