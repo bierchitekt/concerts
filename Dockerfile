@@ -2,6 +2,7 @@
 # STAGE 1: Build-Umgebung (Nutzt das vollständige Maven/JDK-Image)
 # ------------------------------------
 FROM maven:3.9-amazoncorretto AS builder
+ENV TZ="Europe/Berlin"
 
 # Setzt das Arbeitsverzeichnis im Container
 WORKDIR /app
