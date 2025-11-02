@@ -1,7 +1,6 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,7 +27,6 @@ public class Kult9Service {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLLL yyyy").localizedBy(GERMAN);
 
-    @PostConstruct
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
 

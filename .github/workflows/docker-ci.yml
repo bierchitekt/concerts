@@ -2,7 +2,7 @@ name: Docker CI/CD with Maven
 
 on:
   push:
-    branches: [ docker ]
+    branches: [ main ]
 
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/munich-concerts
