@@ -17,7 +17,7 @@
         "react-dom": "19.2.0"
     },
     "devDependencies": {
-        "@eslint/js": "9.38.0",
+        "@eslint/js": "9.39.0",
         "@iconify-json/emojione-monotone": "1.2.1",
         "@iconify-json/fluent-emoji-high-contrast": "1.2.5",
         "@iconify-json/game-icons": "1.2.3",
@@ -27,11 +27,11 @@
         "@types/react": "19.2.2",
         "@types/react-dom": "19.2.2",
         "@vitejs/plugin-react-swc": "4.2.0",
-        "daisyui": "5.3.10",
-        "eslint": "9.38.0",
+        "daisyui": "5.4.2",
+        "eslint": "9.39.0",
         "eslint-plugin-react-hooks": "7.0.1",
         "eslint-plugin-react-refresh": "0.4.24",
-        "globals": "16.4.0",
+        "globals": "16.5.0",
         "postcss": "8.5.6",
         "prettier": "3.6.2",
         "prettier-plugin-tailwindcss": "0.7.1",
