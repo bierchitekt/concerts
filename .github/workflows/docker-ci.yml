@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       # 1. Java-Laufzeitumgebung einrichten (Voraussetzung für Maven)
-      - name: Set up JDK 17 # Passen Sie die Java-Version an
+      - name: Set up JDK 25 # Passen Sie die Java-Version an
         uses: actions/setup-java@v4
         with:
           java-version: '25'
