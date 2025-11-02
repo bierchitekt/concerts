@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Locale.GERMAN;
+
 @Service
 @Slf4j
 public class Kult9Service {
@@ -23,7 +25,7 @@ public class Kult9Service {
 
     private static final String VENUE_NAME = "Kult9";
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLLL yyyy");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLLL yyyy").localizedBy(GERMAN);
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);

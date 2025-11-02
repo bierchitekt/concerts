@@ -2,6 +2,7 @@ package com.bierchitekt.concerts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -15,11 +16,14 @@ import java.util.List;
 @Component
 public class JsonWriter {
 
+    @Value("${export-json.file-name}")
+    private String filename;
+
     public void writeJsonToDisk(List<ConcertDTO> concertDTOs) {
         String jsonString = getJsonString(concertDTOs);
         try {
             Files.writeString(
-                    Paths.get("concerts.json"),
+                    Paths.get(filename),
                     jsonString);
         } catch (IOException e) {
             log.error("error while writing concerts to disk", e);
