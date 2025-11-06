@@ -31,7 +31,108 @@ public class TollwoodService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 
-    public String getHTML(String url) throws IOException, InterruptedException {
+    @SuppressWarnings("java:S2142")
+    public List<ConcertDTO> getConcerts() {
+        log.info("getting {} concerts", VENUE_NAME);
+
+        List<ConcertDTO> allConcerts = new ArrayList<>();
+        try {
+            String html = getHTML(URL);
+            Document doc = Jsoup.parse(html);
+
+            Elements allEvents = doc.select("div.teaser-content");
+
+            for (Element event : allEvents) {
+                String eventText = event.text();
+                boolean isRealEvent = isRealEvent(eventText);
+
+                Optional<LocalDate> date = getDate(event);
+                if (date.isEmpty() || !isRealEvent) {
+                    continue;
+                }
+
+                Pair bands = getBands(event.select("h3.headline").text());
+
+                String title = bands.title();
+                String supportBands = bands.supportBands();
+
+                String link = event.select("a[href]").getFirst().attr("href");
+                ConcertDTO concertDTO = new ConcertDTO(title, date.get(), link, null, VENUE_NAME, supportBands, LocalDate.now(), "");
+
+                allConcerts.add(concertDTO);
+            }
+            log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
+
+            return allConcerts;
+        } catch (Exception ex) {
+            log.warn(ex.getMessage(), ex);
+            return List.of();
+        }
+    }
+
+    @SuppressWarnings("java:S2142")
+    public String getPrice(String link) {
+        try {
+            String html = getHTML(link);
+
+            Document doc = Jsoup.parse(html);
+            Elements select = doc.select("span.price");
+            String price = select.text();
+            price = price.replaceAll("[^0-9,]", "");
+
+            return price + " €";
+        } catch (IOException | InterruptedException ex) {
+            log.warn("cannot get price for {}", link, ex);
+            return "";
+        }
+    }
+
+    private Pair getBands(String allBands) {
+        String title = allBands;
+        List<String> supportBandsList = new ArrayList<>();
+
+        if (allBands.contains("&")) {
+            String[] split = allBands.split("&");
+            title = split[0].trim();
+            for (int i = 1; i < split.length; i++) {
+                supportBandsList.add(split[i].trim());
+            }
+        }
+        if (allBands.contains(",")) {
+            String[] split = allBands.split(",");
+            title = split[0].trim();
+            for (int i = 1; i < split.length; i++) {
+
+                supportBandsList.add(split[i].trim());
+            }
+        }
+        String supportBands = String.join(",", supportBandsList);
+        return new Pair(title, supportBands);
+    }
+
+    private record Pair(String title, String supportBands) {
+    }
+
+    private boolean isRealEvent(String eventText) {
+        return !eventText.startsWith("Musik-Arena") && !eventText.startsWith("Alle Konzerte auf") && !eventText.startsWith("Winter 2025")
+                && !eventText.startsWith("Tollwood Sommerfestival Olympiapark Süd Mehr erfahren")
+                && !eventText.startsWith("Ticketerwerb Alle Informationen rund um den Ticketkauf. Mehr erfahren")
+                && !eventText.startsWith("Blick zurück Tollwood von 1988 bis heute Mehr erfahren");
+    }
+
+    private Optional<LocalDate> getDate(Element event) {
+        String dateText = event.select("h4.subline").text();
+        try {
+            LocalDate date = LocalDate.parse(dateText.substring(0, 10), formatter);
+            return Optional.of(date);
+        } catch (Exception _) {
+            log.warn("cannot parse date {}", dateText);
+        }
+        return Optional.empty();
+
+    }
+
+    private String getHTML(String url) throws IOException, InterruptedException {
 
         try (HttpClient client = HttpClient.newHttpClient()) {
 
@@ -58,88 +159,5 @@ public class TollwoodService {
 
         }
 
-    }
-
-    public List<ConcertDTO> getConcerts() {
-        log.info("getting {} concerts", VENUE_NAME);
-
-        List<ConcertDTO> allConcerts = new ArrayList<>();
-        try {
-            String html = getHTML(URL);
-            Document doc = Jsoup.parse(html);
-
-            Elements allEvents = doc.select("div.teaser-content");
-
-
-            for (Element event : allEvents) {
-
-                if (event.text().startsWith("Musik-Arena") || event.text().startsWith("Alle Konzerte auf")) {
-                    continue;
-                }
-
-                String allBands = event.select("h3.headline").text();
-                String title = allBands;
-                String supportBands = "";
-                List<String> supportBandsList = new ArrayList<>();
-                if (allBands.contains("&")) {
-                    String[] split = allBands.split("&");
-                    title = split[0].trim();
-                    for (int i = 1; i < split.length; i++) {
-
-                        supportBandsList.add(split[i].trim());
-                    }
-                }
-                if (allBands.contains(",")) {
-                    String[] split = allBands.split(",");
-                    title = split[0].trim();
-                    for (int i = 1; i < split.length; i++) {
-
-                        supportBandsList.add(split[i].trim());
-                    }
-                }
-                supportBands = String.join(",", supportBandsList);
-
-                Optional<LocalDate> date = getDate(event);
-                if (date.isEmpty()) {
-                    continue;
-                }
-                String link = event.select("a[href]").getFirst().attr("href");
-                ConcertDTO concertDTO = new ConcertDTO(title, date.get(), link, null, VENUE_NAME, supportBands, LocalDate.now(), "");
-
-                allConcerts.add(concertDTO);
-            }
-            log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
-
-            return allConcerts;
-        } catch (Exception ex) {
-            log.warn(ex.getMessage(), ex);
-            return List.of();
-        }
-    }
-
-    private Optional<LocalDate> getDate(Element event) {
-        try {
-            LocalDate date = LocalDate.parse(event.select("h4.subline").text().substring(0, 10), formatter);
-            return Optional.of(date);
-        } catch (Exception ex) {
-            log.warn("cannot parse date {}", event.select("h4.subline").text());
-        }
-        return Optional.empty();
-
-    }
-
-    public String getPrice(String link) {
-        try {
-            String html = getHTML(link);
-
-            Document doc = Jsoup.parse(html);
-            Elements select = doc.select("span.price");
-            String price = select.text();
-            price = price.replaceAll("[^0-9,]", "");
-
-            return price + " €";
-        } catch (Exception e) {
-            return "";
-        }
     }
 }
