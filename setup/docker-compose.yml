@@ -1,11 +1,28 @@
 services:
-  postgres:
+  app:
+    image: bierchitekt/munich-concerts
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - /home/bierchitekt/concerts:/app/config
+
+    environment:
+      - SPRING_CONFIG_LOCATION=file:/app/config/application.properties
+      - TZ=Europe/Berlin
+    depends_on:
+      - db
+    restart: unless-stopped
+  db:
     image: postgres:latest
     ports:
-      - 5432:5432
-    volumes:
-      - ~/apps/postgres:/var/lib/postgresql/18/docker
+      - "5432:5432"
+
     environment:
       - POSTGRES_PASSWORD=bierchitekt
       - POSTGRES_USER=bierchitekt
       - POSTGRES_DB=concerts
+
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/18/docker
+    restart: unless-stopped
