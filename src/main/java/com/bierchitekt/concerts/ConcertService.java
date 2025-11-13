@@ -67,10 +67,12 @@ public class ConcertService {
         List<ConcertEntity> newMetalConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("metal");
         List<ConcertEntity> newRockConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("rock");
         List<ConcertEntity> newPunkConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("punk");
+        List<ConcertEntity> newHardcoreConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("hardcode");
 
         notifyNewConcerts("Good news everyone! I found some new metal concerts for you\n\n", newMetalConcerts, "@MunichMetalConcerts");
         notifyNewConcerts("Good news everyone! I found some new rock concerts for you\n\n", newRockConcerts, "@MunichRockConcerts");
         notifyNewConcerts("Good news everyone! I found some new punk concerts for you\n\n", newPunkConcerts, "@MunichPunkConcerts");
+        notifyNewConcerts("Good news everyone! I found some new hardcore concerts for you\n\n", newHardcoreConcerts, "@MunichHardcoreConcerts");
     }
 
     private void setNotified(List<ConcertEntity> concerts) {

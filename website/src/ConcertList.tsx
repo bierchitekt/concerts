@@ -104,6 +104,7 @@ const ConcertFilters: FC<ConcertFiltersProps> = ({ setConcertsFilter }: ConcertF
                     <GenreFilter genre='metal' filters={genreFilters} setFilters={setGenreFilters} />
                     <GenreFilter genre='rock' filters={genreFilters} setFilters={setGenreFilters} />
                     <GenreFilter genre='punk' filters={genreFilters} setFilters={setGenreFilters} />
+                    <GenreFilter genre='hardcore' filters={genreFilters} setFilters={setGenreFilters} />
                     <GenreFilter genre='unknown' filters={genreFilters} setFilters={setGenreFilters} />
                 </FilterGroupContainer>
                 <FilterGroupContainer>

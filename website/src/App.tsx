@@ -23,6 +23,7 @@ function App() {
                     <TelegramButton genre='metal' href='https://t.me/MunichMetalConcerts' />
                     <TelegramButton genre='rock' href='https://t.me/MunichRockConcerts' />
                     <TelegramButton genre='punk' href='https://t.me/MunichPunkConcerts' />
+                    <TelegramButton genre='hardcore' href='https://t.me/MunichHardcoreConcerts' />
                 </div>
             </div>
             <ConcertList />
