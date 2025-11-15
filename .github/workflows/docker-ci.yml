@@ -6,7 +6,8 @@ permissions:
 on:
   push:
     branches: [ main ]
-
+    paths:
+      - '!website/**'
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/munich-concerts
   TAG: ${{ github.sha }}
