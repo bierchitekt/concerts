@@ -1,5 +1,8 @@
 name: Docker CI/CD with Maven
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ main ]
