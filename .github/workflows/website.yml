@@ -16,11 +16,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version: "24"
       - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+      - run: npm --version
+      - run: node --version
       - run: npm ci
       - run: npm run check-lint
       - run: npm run check-types
