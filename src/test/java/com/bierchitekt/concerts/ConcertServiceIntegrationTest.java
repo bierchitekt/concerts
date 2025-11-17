@@ -2,14 +2,16 @@ package com.bierchitekt.concerts;
 
 import com.bierchitekt.concerts.persistence.ConcertEntity;
 import com.bierchitekt.concerts.persistence.ConcertRepository;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -38,7 +40,7 @@ class ConcertServiceIntegrationTest {
 
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+    static PostgreSQLContainer postgres = new PostgreSQLContainer(
             "postgres:latest"
     );
 
@@ -50,6 +52,7 @@ class ConcertServiceIntegrationTest {
                 .title("Iron Maiden")
                 .genre(Set.of("Heavy Metal"))
                 .supportBands("Metallica")
+                .price("")
                 .build();
 
         ConcertEntity blindGuardian = ConcertEntity.builder()
@@ -57,6 +60,7 @@ class ConcertServiceIntegrationTest {
                 .title("Blind Guardian")
                 .genre(Set.of("Power Metal"))
                 .supportBands("Gamma Ray")
+                .price("")
                 .build();
 
         ConcertEntity slayer = ConcertEntity.builder()
@@ -64,6 +68,7 @@ class ConcertServiceIntegrationTest {
                 .title("Slayerrrrrrr")
                 .genre(Set.of("Thrash Metal"))
                 .supportBands("Suicidal Angels")
+                .price("")
                 .build();
 
         concertRepository.saveAll(List.of(maiden, blindGuardian, slayer));
@@ -72,7 +77,7 @@ class ConcertServiceIntegrationTest {
     @Autowired
     private ConcertService concertService;
 
-   // @Test
+    @Test
     void notifyNextWeekMetalConcerts() {
         concertService.notifyNextWeekMetalConcerts();
 
