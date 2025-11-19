@@ -51,7 +51,7 @@ class ConcertServiceIntegrationTest {
                 .date(tomorrow)
                 .title("Iron Maiden")
                 .genre(Set.of("Heavy Metal"))
-                .supportBands("Metallica")
+                .supportBands("")
                 .price("")
                 .build();
 
@@ -60,7 +60,7 @@ class ConcertServiceIntegrationTest {
                 .title("Blind Guardian")
                 .genre(Set.of("Power Metal"))
                 .supportBands("Gamma Ray")
-                .price("")
+                .price("6.66€")
                 .build();
 
         ConcertEntity slayer = ConcertEntity.builder()
@@ -84,6 +84,7 @@ class ConcertServiceIntegrationTest {
         String expectedMessage =
                 "Upcoming metal concerts for next week: \n\n" +
                         "<b>Blind Guardian</b> \n" +
+                        "price is 6.66€ \n" +
                         "on " + formatter.format(today) + " \n" +
                         "genre is [Power Metal] \n" +
                         "support bands are Gamma Ray\n" +
@@ -91,7 +92,6 @@ class ConcertServiceIntegrationTest {
                         "<b>Iron Maiden</b> \n" +
                         "on " + formatter.format(tomorrow) + " \n" +
                         "genre is [Heavy Metal] \n" +
-                        "support bands are Metallica\n" +
                         "playing at <a href=\"null\">null</a>\n\n";
 
         verify(telegramService).sendMessage("@MunichMetalConcerts", expectedMessage);

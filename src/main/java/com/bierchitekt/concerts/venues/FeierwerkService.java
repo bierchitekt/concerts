@@ -63,7 +63,7 @@ public class FeierwerkService {
             }
 
             for (String genre : genres) {
-                if (genre.contains("Ausstellung") || genre.contains("Malerei") || genre.contains("Illustrationen") || genre.contains("Workshops")) {
+                if (genre.contains("Ausstellung") || genre.contains("Malerei") || genre.contains("Illustrationen") || genre.contains("Workshops") || genre.contains("Literatur")) {
                     return Optional.empty();
                 }
             }
@@ -110,11 +110,15 @@ public class FeierwerkService {
 
     private Set<String> getGenres(Document doc) {
         String genres = doc.select("p.artiststyle").text();
-        genres = StringUtils.substringBetween(genres, "Stil: ", "|");
+        genres = StringUtils.substringBetween(genres, "", "|");
         if (genres == null) {
             return Set.of();
         }
+        genres = genres.trim();
         String[] split = genres.split(",");
+        for(int i = 0; i < split.length; i++){
+            split[i] = split[i].trim();
+        }
         return Set.of(split);
     }
 
