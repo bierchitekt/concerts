@@ -69,6 +69,9 @@ public class EventFabrikService {
 
     private String getPrice(JsonElement concert) {
         BigDecimal price = new BigDecimal(concert.getAsJsonObject().get("offers").getAsJsonObject().get("price").getAsString());
+        if (price.compareTo(BigDecimal.ZERO) == 0) {
+            return "";
+        }
         if (price.scale() <= 0) {
             return price.toPlainString() + " €";
         } else {
