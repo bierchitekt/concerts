@@ -24,4 +24,4 @@ jobs:
           cache: 'maven'
 
       - name: Run Maven Verify
-        run: mvn -B verify
+        run: mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pcoverage verify
