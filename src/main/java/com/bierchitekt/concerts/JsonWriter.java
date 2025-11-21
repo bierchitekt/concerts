@@ -1,6 +1,7 @@
 package com.bierchitekt.concerts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ public class JsonWriter {
     public String getJsonString(List<ConcertDTO> concertDTOs) {
         try {
             ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+            objectMapper.registerModule(new JavaTimeModule());
             objectMapper.setDateFormat(dateFormat);
 
             return objectMapper.writeValueAsString(concertDTOs);
