@@ -32,7 +32,8 @@ public class MuffathalleService {
             Document doc = Jsoup.connect(URL).get();
             Elements allEvents = doc.select("div[id~=event[0-9]+]");
             for (Element event : allEvents) {
-                if (!"Konzert".equalsIgnoreCase(event.select("div.circle").first().text())) {
+                Element first = event.select("div.circle").first();
+                if (first != null && !"Konzert".equalsIgnoreCase(first.text())) {
                     continue;
                 }
                 Element firstElement = event.select("div.entry-data.center").first();
@@ -56,6 +57,7 @@ public class MuffathalleService {
 
             return allConcerts;
         } catch (Exception ex) {
+            log.warn("error while getting {} concerts", VENUE_NAME, ex);
             return List.of();
         }
     }
@@ -74,6 +76,7 @@ public class MuffathalleService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM yy");
             return LocalDate.parse(substring, formatter);
         } catch (Exception e) {
+            log.warn("could not parse date string {} for muffathalle", dateString, e);
             return null;
         }
     }
@@ -82,10 +85,15 @@ public class MuffathalleService {
 
         try {
             Document doc = Jsoup.connect(link).get();
-            String text = doc.select("p.entry-info").first().text();
+            Element element = doc.select("div.entry-data.center").first();
+            if (element == null) {
+                return "";
+            }
+            String text = element.text();
 
             return extractVVKPreis(text);
         } catch (IOException e) {
+            log.warn("could not get price for MuffatHalle for {}", link, e);
             return "";
         }
     }

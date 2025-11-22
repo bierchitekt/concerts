@@ -12,11 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -68,6 +64,7 @@ public class BackstageService {
             }
             return StringUtil.capitalizeWords(supportBands);
         } catch (IOException e) {
+            log.warn("error getting support bands for backstage ", e);
             return "";
         }
     }
@@ -112,17 +109,14 @@ public class BackstageService {
         for (Element concert : allEvents) {
             Elements detail = concert.select("a.product-item-link");
             String title = detail.text().trim();
-            if (title.isEmpty()) {
+            Optional<LocalDate> date = getDate(concert);
+
+            if (title.isEmpty() || date.isEmpty()) {
                 continue;
             }
 
             title = StringUtil.capitalizeWords(title);
             String link = detail.select("a[href]").getFirst().attr("href");
-            String day = concert.select("span.day").first().text().replace(".", "");
-            String month = concert.select("span.month").first().text();
-            String year = concert.select("span.year").first().text();
-
-            LocalDate date = LocalDate.of(Integer.parseInt(year), calendarMap.get(month), Integer.parseInt(day));
 
             String location = concert.select("strong.eventlocation").text();
             location = StringUtil.capitalizeWords(location);
@@ -134,11 +128,31 @@ public class BackstageService {
                 allGenres.add(genres.trim());
             }
 
-            ConcertDTO concertDto = new ConcertDTO(title, date, link, allGenres, location, "", LocalDate.now(), "");
+            ConcertDTO concertDto = new ConcertDTO(title, date.get(), link, allGenres, location, "", LocalDate.now(), "");
             concerts.add(concertDto);
         }
 
         return concerts;
+    }
+
+    private Optional<LocalDate> getDate(Element concert) {
+        Element dateElement = concert.select("span.day").first();
+        if (dateElement == null) {
+            return Optional.empty();
+        }
+        String day = dateElement.text().replace(".", "");
+        Element firstMonth = concert.select("span.month").first();
+        if (firstMonth == null) {
+            return Optional.empty();
+        }
+        String month = firstMonth.text();
+        Element firstYear = concert.select("span.year").first();
+        if (firstYear == null) {
+            return Optional.empty();
+        }
+        String year = firstYear.text();
+
+        return Optional.of(LocalDate.of(Integer.parseInt(year), calendarMap.get(month), Integer.parseInt(day)));
     }
 
 
@@ -148,6 +162,7 @@ public class BackstageService {
             String pages = document.select("span.toolbar-number").get(2).text();
             return Integer.parseInt(pages);
         } catch (IOException ex) {
+            log.warn("error getting pages for backstage url {} ", url, ex);
             return 0;
         }
     }
@@ -160,6 +175,7 @@ public class BackstageService {
 
             return select.text();
         } catch (IOException e) {
+            log.warn("error getting price for backstage url {} ", link, e);
             return "";
         }
     }

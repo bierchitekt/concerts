@@ -1,6 +1,7 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -31,6 +32,7 @@ public class TollwoodService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 
+    @PostConstruct
     @SuppressWarnings("java:S2142")
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
@@ -45,9 +47,11 @@ public class TollwoodService {
             for (Element event : allEvents) {
                 String eventText = event.text();
                 boolean isRealEvent = isRealEvent(eventText);
-
+                if (!isRealEvent) {
+                    continue;
+                }
                 Optional<LocalDate> date = getDate(event);
-                if (date.isEmpty() || !isRealEvent) {
+                if (date.isEmpty()) {
                     continue;
                 }
 
