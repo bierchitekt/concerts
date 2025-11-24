@@ -31,16 +31,7 @@ class JsonWriterUnitTest {
         String jsonString = sut.getJsonString(concertDTOs);
 
         String expectedString = """
-                [{
-                "title":"Gutalax",
-                "date":"2025-10-24",
-                "dateAndTime":"2025-10-24T20:00:00",
-                "link":"http://example.com",
-                "genre":null,
-                "location":"Circus Krone",
-                "supportBands":"",
-                "addedAt":"2025-10-24",
-                "price":""}]
+[{"title":"Gutalax","date":"2025-10-24","dateAndTime":"2025-10-24T20:00:00","link":"http://example.com","genre":null,"location":"Circus Krone","supportBands":"","addedAt":"2025-10-24","price":"","calendarUri":""}]
                 """;
         assertThat(jsonString).isEqualToIgnoringNewLines(expectedString);
     }
