@@ -66,9 +66,10 @@ public class ZenithService {
     }
 
     private String getTitle(Element concert) {
-        String title = concert.select("h1.elementor-heading-title.elementor-size-default").text();
+        String title = concert.select("h2.elementor-heading-title.elementor-size-default").text();
 
         title = title.replace("(ausverkauft)", "").trim();
+        title = title.replace("(AUSVERKAUFT)", "").trim();
         title = title.replace("(Doppelshow)", "").trim();
         title = title.replace("(Zusatzshow)", "").trim();
 
