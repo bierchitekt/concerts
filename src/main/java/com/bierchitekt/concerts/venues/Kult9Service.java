@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.bierchitekt.concerts.ConcertService.CALENDAR_URL;
 import static java.util.Locale.GERMAN;
 
 @Service
@@ -67,7 +68,8 @@ public class Kult9Service {
                 }
                 String price = "";
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(time));
-                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, allGenres, VENUE_NAME, "", LocalDate.now(), price, "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, allGenres, VENUE_NAME, "", LocalDate.now(), price,
+                        CALENDAR_URL + StringUtil.getICSFilename(title, date));
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {
