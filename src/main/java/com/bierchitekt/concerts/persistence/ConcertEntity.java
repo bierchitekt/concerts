@@ -15,6 +15,7 @@ import org.hibernate.type.SqlTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -32,6 +33,7 @@ public class ConcertEntity implements Comparable<ConcertEntity> {
     private String title;
     private String supportBands;
     private LocalDate date;
+    private LocalDateTime dateAndTime;
     private String link;
     @JdbcTypeCode(SqlTypes.JSON)
     private Set<String> genre;
@@ -40,6 +42,8 @@ public class ConcertEntity implements Comparable<ConcertEntity> {
     private LocalDate addedAt;
     @NotNull
     private String price;
+
+    private String calendarUri;
 
     @Override
     public int compareTo(@NotNull ConcertEntity other) {

@@ -3,6 +3,7 @@ package com.bierchitekt.concerts.venues;
 import com.bierchitekt.concerts.ConcertDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,6 +11,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +60,9 @@ public class ImportExportService {
 
 
                 LocalDate date = LocalDate.parse(select.first().text().substring(4, 12), formatter);
-
-                ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME, supportBands, LocalDate.now(), "");
+                String startTime = StringUtils.substringAfter(select.first().text(), "Beginn:").trim();
+                LocalDateTime localDateTime = LocalDateTime.of(date, LocalTime.parse(startTime));
+                ConcertDTO concertDTO = new ConcertDTO(title, date, localDateTime, link, null, VENUE_NAME, supportBands, LocalDate.now(), "", "");
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {

@@ -16,7 +16,7 @@
     <properties>
         <java.version>25</java.version>
         <jsoup.version>1.21.2</jsoup.version>
-        <hibernate-community-dialects.version>7.1.9.Final</hibernate-community-dialects.version>
+        <hibernate-community-dialects.version>7.1.10.Final</hibernate-community-dialects.version>
         <commons-text.version>1.14.0</commons-text.version>
         <gson.version>2.13.2</gson.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
@@ -33,6 +33,7 @@
         <lombok.version>1.18.42</lombok.version>
         <jna.version>5.18.1</jna.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+        <ical4j.version>4.2.1</ical4j.version>
     </properties>
     <dependencies>
         <dependency>
@@ -116,6 +117,11 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.mnode.ical4j</groupId>
+            <artifactId>ical4j</artifactId>
+            <version>${ical4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
             <version>${testcontainers.version}</version>
@@ -139,8 +145,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>

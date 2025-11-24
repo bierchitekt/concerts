@@ -10,6 +10,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +40,9 @@ public class Theaterfabrik {
                 String concertDetail = concert.select("div.elementor-post__excerpt").text();
 
                 String dateString = StringUtils.substringBetween(concertDetail, "Datum: ", "Einlass:");
+                String startTime = StringUtils.substringBetween(concertDetail, "Einlass: ", " Uhr");
                 String price = getPrice(concertDetail);
-                if(price == null){
+                if (price == null) {
                     log.warn("no price found concert {} at {}", title, VENUE_NAME);
                     price = "";
                 }
@@ -56,11 +59,13 @@ public class Theaterfabrik {
                         dateString = new StringBuilder(dateString).insert(dateString.length() - 3, "20").toString();
                     }
                     LocalDate date = LocalDate.parse(dateString.trim(), formatter);
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME, "", LocalDate.now(), price);
+                    LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, null, VENUE_NAME, "", LocalDate.now(), price, "");
                     allConcerts.add(concertDTO);
                 } else {
                     for (LocalDate singleDate : dates) {
-                        ConcertDTO concertDTO = new ConcertDTO(title, singleDate, link, null, VENUE_NAME, "", LocalDate.now(), price);
+                        LocalDateTime dateAndTime = LocalDateTime.of(singleDate, LocalTime.parse(startTime));
+                        ConcertDTO concertDTO = new ConcertDTO(title, singleDate, dateAndTime, link, null, VENUE_NAME, "", LocalDate.now(), price, "");
                         allConcerts.add(concertDTO);
 
                     }

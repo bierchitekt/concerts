@@ -3,6 +3,8 @@ package com.bierchitekt.concerts;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,20 +25,13 @@ class JsonWriterUnitTest {
     @Test
     void getJson() {
         List<ConcertDTO> concertDTOs = new ArrayList<>();
-        concertDTOs.add(new ConcertDTO("Gutalax", LocalDate.of(2025, 10, 24), "http://example.com", null, "Circus Krone", "", LocalDate.of(2025, 10, 24), ""));
+        concertDTOs.add(new ConcertDTO("Gutalax", LocalDate.of(2025, 10, 24),
+                LocalDateTime.of(LocalDate.of(2025, 10, 24), LocalTime.parse("20:00")), "http://example.com", null, "Circus Krone", "", LocalDate.of(2025, 10, 24), "", ""));
 
         String jsonString = sut.getJsonString(concertDTOs);
 
         String expectedString = """
-                [{
-                "title":"Gutalax",
-                "date":"2025-10-24",
-                "link":"http://example.com",
-                "genre":null,
-                "location":"Circus Krone",
-                "supportBands":"",
-                "addedAt":"2025-10-24",
-                "price":""}]
+[{"title":"Gutalax","date":"2025-10-24","dateAndTime":"2025-10-24T20:00:00","link":"http://example.com","genre":null,"location":"Circus Krone","supportBands":"","addedAt":"2025-10-24","price":"","calendarUri":""}]
                 """;
         assertThat(jsonString).isEqualToIgnoringNewLines(expectedString);
     }

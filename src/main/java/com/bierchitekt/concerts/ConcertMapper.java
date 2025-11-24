@@ -9,7 +9,10 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ConcertMapper {
 
+
         List<ConcertDTO> toConcertDto(List<ConcertEntity> concerts);
+
+        ConcertDTO toConcertDto(ConcertEntity concerts);
 
 
         @Mapping(target = "id", ignore = true)

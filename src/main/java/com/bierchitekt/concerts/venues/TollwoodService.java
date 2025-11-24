@@ -1,9 +1,9 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,6 +16,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +34,6 @@ public class TollwoodService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 
-    @PostConstruct
     @SuppressWarnings("java:S2142")
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
@@ -50,7 +51,7 @@ public class TollwoodService {
                 if (!isRealEvent) {
                     continue;
                 }
-                Optional<LocalDate> date = getDate(event);
+                Optional<LocalDateTime> date = getDate(event);
                 if (date.isEmpty()) {
                     continue;
                 }
@@ -61,7 +62,7 @@ public class TollwoodService {
                 String supportBands = bands.supportBands();
 
                 String link = event.select("a[href]").getFirst().attr("href");
-                ConcertDTO concertDTO = new ConcertDTO(title, date.get(), link, null, VENUE_NAME, supportBands, LocalDate.now(), "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date.get().toLocalDate(), date.get(), link, null, VENUE_NAME, supportBands, LocalDate.now(), "", "");
 
                 allConcerts.add(concertDTO);
             }
@@ -124,11 +125,12 @@ public class TollwoodService {
                 && !eventText.startsWith("Blick zurück Tollwood von 1988 bis heute Mehr erfahren");
     }
 
-    private Optional<LocalDate> getDate(Element event) {
+    private Optional<LocalDateTime> getDate(Element event) {
         String dateText = event.select("h4.subline").text();
         try {
+            String startTime = StringUtils.substringBetween(dateText, " | ", " Uhr");
             LocalDate date = LocalDate.parse(dateText.substring(0, 10), formatter);
-            return Optional.of(date);
+            return Optional.of(LocalDateTime.of(date, LocalTime.parse(startTime)));
         } catch (Exception _) {
             log.warn("cannot parse date {}", dateText);
         }

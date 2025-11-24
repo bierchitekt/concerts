@@ -4,10 +4,12 @@ import com.bierchitekt.concerts.ConcertDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -128,7 +130,7 @@ public class BackstageService {
                 allGenres.add(genres.trim());
             }
 
-            ConcertDTO concertDto = new ConcertDTO(title, date.get(), link, allGenres, location, "", LocalDate.now(), "");
+            ConcertDTO concertDto = new ConcertDTO(title, date.get(), null, link, allGenres, location, "", LocalDate.now(), "", "");
             concerts.add(concertDto);
         }
 
@@ -167,16 +169,24 @@ public class BackstageService {
         }
     }
 
-    public String getPrice(String link) {
-
+    public Pair<@NotNull String, @NotNull String> getPriceAndTime(String link) {
         try {
             Document doc = Jsoup.connect(link).get();
             Elements select = doc.select("span.price");
 
-            return select.text();
+            String price = select.text();
+
+            Element first = doc.select("div.ticketshop-icon-clock-svg-white").first();
+            if (first == null) {
+                return Pair.of(price, "20:00");
+            }
+            String time = first.text();
+
+            return Pair.of(price, time.substring(0, 5));
         } catch (IOException e) {
             log.warn("error getting price for backstage url {} ", link, e);
-            return "";
+            return Pair.of("", "");
         }
     }
+
 }

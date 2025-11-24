@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,14 +68,14 @@ public class CircusKroneService {
                             int day = Integer.parseInt(d.substring(0, 2));
 
                             LocalDate date = LocalDate.of(year, month, day);
-                            ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "", LocalDate.now(), "");
+                            ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, "Circus Krone", "", LocalDate.now(), "", "");
                             allConcerts.add(concertDTO);
                         }
                     } else {
                         int day = Integer.parseInt(dateString.substring(0, 2));
                         LocalDate date = LocalDate.of(year, month, day);
 
-                        ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "Circus Krone", "", LocalDate.now(), "");
+                        ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, "Circus Krone", "", LocalDate.now(), "", "");
                         allConcerts.add(concertDTO);
 
                     }
@@ -86,6 +87,23 @@ public class CircusKroneService {
             }
         }
         return allConcerts;
+    }
+
+    public LocalTime getBeginn(String link) {
+        try {
+            Document doc = Jsoup.connect(link).get();
+            String text = doc.select("div.fusion-text").first().text();
+
+            String beginn = StringUtils.substringBetween(text, "Beginn: ", " Uhr");
+            if (beginn == null) {
+                beginn = StringUtils.substringBetween(text, "Einlass: ", " Uhr");
+            }
+            return LocalTime.parse(beginn);
+        } catch (IOException e) {
+            log.warn("error getting price for circusKrone url {} ", "link", e);
+            return LocalTime.now();
+        }
+
     }
 
     private Integer getMonth(String dateString) throws UnknownDateException {
