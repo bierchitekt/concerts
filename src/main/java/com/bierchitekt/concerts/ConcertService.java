@@ -18,7 +18,6 @@ import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.WinterTollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -162,19 +161,6 @@ public class ConcertService {
         }
         jsonWriter.writeJsonToDisk(getConcertDTOs());
         icalService.createICalEntries(getConcertDTOs());
-    }
-
-    @PostConstruct
-    public void postConstruct() {
-
-
-        concertRepository.findAll().forEach(concert -> {
-            concert.setCalendarUri(CALENDAR_URL + StringUtil.getICSFilename(concertMapper.toConcertDto(concert)));
-            concertRepository.save(concert);
-        });
-
-
-        jsonWriter.writeJsonToDisk(getConcertDTOs());
     }
 
     public List<ConcertDTO> getNextWeekConcerts() {
