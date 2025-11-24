@@ -6,6 +6,7 @@ export type Concert = {
     location: string;
     supportBands: string;
     price: string;
+    calendarUri: string;
 };
 
 export const initialGenreFilters = { metal: false, rock: false, punk: false, hardcore: false, unknown: false };

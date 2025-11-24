@@ -49,10 +49,6 @@ public class MuffathalleService {
                     Elements select = event.select("div.entry-data.right");
                     String link = BASE_URL + select.select("a[href]").getFirst().attr("href");
                     LocalDate date = getDate(event.select("div.date").text());
-                    Elements select1 = event.select("div.entry-data.center");
-                    if (select1.size() < 2) {
-                        System.out.println(select1.text());
-                    }
                     String startTime = event.select("div.entry-data.center").get(1).text();
 
                     startTime = startTime.substring(startTime.length() - 5);

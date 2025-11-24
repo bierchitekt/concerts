@@ -7,7 +7,7 @@ type ConcertItemProps = {
 };
 
 const ConcertItem: FC<ConcertItemProps> = ({ concert }) => {
-    const { title, link, genre, location, supportBands, price } = concert;
+    const { title, link, genre, location, supportBands, price, calendarUri } = concert;
 
     return (
         <div className='card-compact card bg-base-300 my-2 shadow-sm'>
@@ -31,6 +31,9 @@ const ConcertItem: FC<ConcertItemProps> = ({ concert }) => {
                     <p>{genre.join(', ')}</p>
                     <p>{supportBands}</p>
                     <p className='text-end'>{location}</p>
+                    <a className='link' href={calendarUri} target='_blank' rel='noopener noreferrer'>
+                        add to calendar
+                    </a>
                 </div>
             </div>
         </div>

@@ -39,8 +39,6 @@ public class ICalService {
     @NotEmpty
     private String filepath;
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
-
     public void createICalEntry(ConcertDTO concertDTO) {
 
         TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
