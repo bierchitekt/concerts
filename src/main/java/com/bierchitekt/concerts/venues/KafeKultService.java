@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,10 +48,10 @@ public class KafeKultService {
                 List<String> bands = Arrays.stream(title.split("\\+")).toList();
                 String mainAct = bands.getFirst().trim();
                 String supportBands = String.join(", ", bands.subList(1, bands.size()));
-
+                LocalDateTime dateAndTime = getDateAndTime(concertDetail);
                 LocalDate date = getDate(concertDetail);
 
-                ConcertDTO concertDto = new ConcertDTO(mainAct, date, link, null, VENUE_NAME, supportBands.trim(), LocalDate.now(), "");
+                ConcertDTO concertDto = new ConcertDTO(mainAct, date, dateAndTime, link, null, VENUE_NAME, supportBands.trim(), LocalDate.now(), "");
                 allConcerts.add(concertDto);
             }
 
@@ -68,7 +69,7 @@ public class KafeKultService {
             String type = script.attr("type");
             if (type.contentEquals("application/ld+json")) {
                 String scriptData = script.data();
-                if(scriptData.contains("startDate") && scriptData.contains("endDate")) {
+                if (scriptData.contains("startDate") && scriptData.contains("endDate")) {
                     String date = scriptData.substring(scriptData.indexOf("startDate") + 12, scriptData.indexOf("endDate") - 18);
                     return LocalDate.parse(date);
                 }
@@ -77,4 +78,22 @@ public class KafeKultService {
         }
         return LocalDate.now().minusDays(1);
     }
+
+    private LocalDateTime getDateAndTime(Document doc) {
+        Elements scriptElements = doc.getElementsByTag("script");
+        for (Element script : scriptElements) {
+            String type = script.attr("type");
+            if (type.contentEquals("application/ld+json")) {
+                String scriptData = script.data();
+                if (scriptData.contains("startDate") && scriptData.contains("endDate")) {
+                    String date = scriptData.substring(scriptData.indexOf("startDate") + 12, scriptData.indexOf("endDate") - 9);
+                    return LocalDateTime.parse(date);
+                }
+
+            }
+        }
+        return LocalDateTime.now().minusDays(1);
+    }
+
+
 }

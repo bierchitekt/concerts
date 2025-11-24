@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class ZenithService {
                     continue;
                 }
 
-                ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME,  "", LocalDate.now(), "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, VENUE_NAME, "", LocalDate.now(), "");
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {
@@ -88,4 +89,41 @@ public class ZenithService {
         }
         return null;
     }
+
+    public String getTime(String link) {
+        try {
+            Document doc = Jsoup.connect(link).get();
+            String text = doc.select("div.elementor-widget-container").text();
+            return StringUtils.substringBetween(text, "Beginn: ", " Uhr").trim();
+        } catch (IOException e) {
+            log.warn("error getting time for zenith url {} ", "link", e);
+            return "";
+        }
+
+    }
+
+    public String getSupportBands(String link) {
+        try {
+            Document doc = Jsoup.connect(link).get();
+            Elements select = doc.select("div.elementor-widget-container");
+            for (Element element : select) {
+
+                String supportText = "Support: ";
+                if (element.text().contains(supportText)) {
+                    Elements select1 = element.select("p");
+                    for (Element support : select1) {
+                        if (support.text().contains(supportText)) {
+                            return StringUtils.substringAfter(support.text(), supportText).trim();
+                        }
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            log.warn("error getting price for backstage url {} ", "link", e);
+
+        }
+        return "";
+    }
+
 }

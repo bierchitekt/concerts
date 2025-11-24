@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,6 +59,7 @@ public class FeierwerkService {
             Document doc = Jsoup.connect(url).get();
             List<String> bands = getBands(doc);
             LocalDate date = getDate(doc);
+            String startTime = getTime(doc);
             Set<String> genres = getGenres(doc);
             if (bands.isEmpty()) {
                 return Optional.empty();
@@ -70,7 +73,9 @@ public class FeierwerkService {
             String supportBands = String.join(", ", bands);
             String price = getPrice(doc);
 
-            return Optional.of(new ConcertDTO(bands.getFirst(), date, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price));
+            LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
+
+            return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price));
         } catch (IOException e) {
             return Optional.empty();
         }
@@ -123,10 +128,13 @@ public class FeierwerkService {
     }
 
     private LocalDate getDate(Document doc) {
-
         String date = doc.select("div.event-date-location-detail").text();
-
         return LocalDate.parse(date.substring(3, 13), formatter);
+    }
+
+    private String getTime(Document doc) {
+        String date = doc.select("div.event-date-location-detail").text();
+        return StringUtils.substringBetween(date, "Beginn:", "Uhr").trim();
     }
 
 

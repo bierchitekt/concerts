@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +48,16 @@ public class MuffathalleService {
                     }
                     Elements select = event.select("div.entry-data.right");
                     String link = BASE_URL + select.select("a[href]").getFirst().attr("href");
-
                     LocalDate date = getDate(event.select("div.date").text());
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME, "", LocalDate.now(), "");
+                    Elements select1 = event.select("div.entry-data.center");
+                    if (select1.size() < 2) {
+                        System.out.println(select1.text());
+                    }
+                    String startTime = event.select("div.entry-data.center").get(1).text();
+
+                    startTime = startTime.substring(startTime.length() - 5);
+                    LocalDateTime localTime = LocalDateTime.of(date, LocalTime.parse(startTime));
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, localTime, link, null, VENUE_NAME, "", LocalDate.now(), "");
 
                     allConcerts.add(concertDTO);
                 }

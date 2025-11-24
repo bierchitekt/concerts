@@ -20,9 +20,13 @@ import com.bierchitekt.concerts.venues.ZenithService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -114,18 +118,20 @@ public class ConcertService {
         log.info("starting getting new concerts");
 
         List<ConcertDTO> allConcerts = new ArrayList<>();
+        allConcerts.addAll(getStromConcerts());
+
+        allConcerts.addAll(getZenithConcerts());
+
+        allConcerts.addAll(getBackstageConcerts());
 
         allConcerts.addAll(getImportExportConcerts());
         allConcerts.addAll(getMuffathalleConcerts());
         allConcerts.addAll(getEventfabrikConcerts());
         allConcerts.addAll(getCircusKroneConcerts());
         allConcerts.addAll(getFeierwerkConcerts());
-        allConcerts.addAll(getBackstageConcerts());
         allConcerts.addAll(getOlympiaparkConcerts());
         allConcerts.addAll(getKult9Concerts());
-        allConcerts.addAll(getZenithConcerts());
         allConcerts.addAll(getTheaterfabrikConcerts());
-        allConcerts.addAll(getStromConcerts());
         allConcerts.addAll(getKafeKultConcerts());
         allConcerts.addAll(getTollwoodConcerts());
         allConcerts.addAll(getWinterTollwoodConcerts());
@@ -135,6 +141,10 @@ public class ConcertService {
         for (ConcertDTO concertDTO : allConcerts) {
             if (concertDTO.date() == null) {
                 log.info(concertDTO.toString());
+                continue;
+            }
+            if(concertDTO.title().isBlank()) {
+                log.error("concert title is missing for link {}", concertDTO.link());
                 continue;
             }
             if (concertDTO.date().isBefore(LocalDate.now())) {
@@ -174,6 +184,10 @@ public class ConcertService {
         return getNewConcerts(eventFabrikService.getConcerts(), "Event Fabrik");
     }
 
+    private Collection<ConcertDTO> getMuffathalleConcerts() {
+        return getNewConcerts(muffathalleService.getConcerts(), "Muffathalle");
+    }
+
     private Collection<ConcertDTO> getTheaterfabrikConcerts() {
         return getNewConcerts(theaterfabrikService.getConcerts(), "Theaterfabrik");
     }
@@ -190,26 +204,12 @@ public class ConcertService {
         return getNewConcerts(olympiaparkService.getConcerts(), "Olympiapark");
     }
 
-
-    List<ConcertDTO> getZenithConcerts() {
+    private Collection<ConcertDTO> getZenithConcerts() {
         return getNewConcerts(zenithService.getConcerts(), "Zenith");
     }
 
-
-    List<ConcertDTO> getStromConcerts() {
+    private Collection<ConcertDTO> getStromConcerts() {
         return getNewConcerts(stromService.getConcerts(), "Strom");
-    }
-
-    List<ConcertDTO> getMuffathalleConcerts() {
-        List<ConcertDTO> muffatHalleConcerts = new ArrayList<>();
-        for (ConcertDTO muffathalleConcert : muffathalleService.getConcerts()) {
-            if (concertRepository.similarTitleAtSameDate(muffathalleConcert.title(), muffathalleConcert.date()).isEmpty()) { // new Concert found, need to get genre
-                Set<String> genres = genreService.getGenres(muffathalleConcert.title());
-                String price = muffathalleService.getPrice(muffathalleConcert.link());
-                muffatHalleConcerts.add(new ConcertDTO(muffathalleConcert.title(), muffathalleConcert.date(), muffathalleConcert.link(), genres, muffathalleConcert.location(), "", LocalDate.now(), price));
-            }
-        }
-        return muffatHalleConcerts;
     }
 
     private Collection<ConcertDTO> getKafeKultConcerts() {
@@ -233,11 +233,32 @@ public class ConcertService {
                 } else {
                     genres = genreService.getGenres(concert.title());
                 }
-                if (venue.equalsIgnoreCase("Tollwood")) {
+                if (venue.equalsIgnoreCase("Zenith")) {
+                    String beginn = zenithService.getTime(concert.link());
+                    String supportBands = zenithService.getSupportBands(concert.link());
+                    LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price()));
+
+                } else if (venue.equalsIgnoreCase("Strom")) {
+                    String beginn = stromService.getTime(concert.link());
+                    LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price()));
+
+                } else if (venue.equalsIgnoreCase("Circus Krone")) {
+                    LocalTime beginn = circusKroneService.getBeginn(concert.link());
+                    LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), beginn);
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price()));
+
+                } else if (venue.equalsIgnoreCase("Tollwood")) {
                     String price = tollwoodService.getPrice(concert.link());
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price));
+                } else if (venue.equalsIgnoreCase("Muffathalle")) {
+                    genres = genreService.getGenres(concert.title());
+                    String price = muffathalleService.getPrice(concert.link());
+
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), "", LocalDate.now(), price));
                 } else {
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price()));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price()));
                 }
             }
         });
@@ -260,7 +281,7 @@ public class ConcertService {
         return kult9Concerts;
     }
 
-    public Collection<ConcertDTO> getFeierwerkConcerts() {
+    private Collection<ConcertDTO> getFeierwerkConcerts() {
 
         List<ConcertDTO> feierwerkConcerts = new ArrayList<>();
         Set<String> concertLinks = feierwerkService.getConcertLinks();
@@ -284,15 +305,19 @@ public class ConcertService {
             if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
                 String supportBands = backstageService.getSupportBands(concert.link());
                 String price;
+                Pair<@NotNull String, @NotNull String> priceAndTime = backstageService.getPriceAndTime(concert.link());
                 if (concert.title().contains("Free&easy")) {
                     price = "0 €";
                 } else {
-                    price = backstageService.getPrice(concert.link());
-
+                    price = priceAndTime.getFirst();
                 }
+                String startTime = priceAndTime.getSecond() ;
+                LocalDateTime concertDateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(startTime));
+
                 ConcertDTO concertDTO = ConcertDTO.builder()
                         .title(concert.title())
                         .date(concert.date())
+                        .dateAndTime(concertDateAndTime)
                         .link(concert.link())
                         .genre(concert.genre())
                         .location(concert.location())

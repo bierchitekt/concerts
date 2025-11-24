@@ -4,6 +4,7 @@ import com.bierchitekt.concerts.ConcertDTO;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,6 +12,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -57,7 +59,8 @@ public class StromService {
                     title = capitalizeWords(title);
                     String link = JsonParser.parseString(answer).getAsJsonObject().get("permalink").getAsString();
 
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, VENUE_NAME, "", LocalDate.now(), "");
+
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, VENUE_NAME, "", LocalDate.now(), "");
                     allConcerts.add(concertDTO);
                 }
 
@@ -71,4 +74,26 @@ public class StromService {
         return allConcerts;
 
     }
+
+    public String getTime(String url) {
+        try {
+            Document doc = Jsoup.connect(url).get();
+            String text = doc.select("div.gdlr-info-time.gdlr-info").first().text();
+            String start = StringUtils.substringBetween(text, "Beginn: ", " Uhr");
+            if (start == null) {
+                start = StringUtils.substringBetween(text, " / ", " Uhr");
+            }
+            if (start == null) {
+                start = StringUtils.substringBetween(text, "Einlass: ", " Uhr");
+            }
+            if (start.length() == 2) {
+                return start + ":00";
+            }
+            return start.replace(".", ":").substring(0, 5);
+        } catch (IOException e) {
+            log.warn("error getting time for strom url {} ", "link", e);
+            return "";
+        }
+    }
+
 }

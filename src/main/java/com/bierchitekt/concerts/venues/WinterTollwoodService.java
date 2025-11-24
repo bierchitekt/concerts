@@ -3,6 +3,7 @@ package com.bierchitekt.concerts.venues;
 import com.bierchitekt.concerts.ConcertDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,13 +46,18 @@ public class WinterTollwoodService {
                 String title = concertDetails.select("h1").first().text();
                 String dateString = concertDetails.select("h2").text().substring(0, 10);
 
+                String startTime = concertDetails.select("h2").text();
+                startTime = StringUtils.substringBetween(startTime, " | ", " Uhr");
+                if(startTime.length() == 2) {
+                    startTime = startTime + ":00";
+                }
                 LocalDate date = LocalDate.parse(dateString, formatter);
 
                 Elements concertDetails1 = elements.select("div.column-main");
                 Elements select = concertDetails1.select("h1");
                 String genre = "";
                 for (Element element : select) {
-                    if (!StringUtils.containsIgnoreCase(element.text(), "Konzert")) {
+                    if (!Strings.CI.contains(element.text(), "Konzert")) {
                         genre = element.text();
                         break;
                     }
@@ -64,7 +72,8 @@ public class WinterTollwoodService {
                 for (String genres : split) {
                     allGenres.add(genres.trim());
                 }
-                ConcertDTO concertDTO = new ConcertDTO(title, date, concertLink, allGenres, VENUE_NAME, "", LocalDate.now(), price);
+                LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
+                ConcertDTO concertDTO = new ConcertDTO(title, date,dateAndTime, concertLink, allGenres, VENUE_NAME, "", LocalDate.now(), price);
                 allConcerts.add(concertDTO);
             }
         } catch (IOException e) {

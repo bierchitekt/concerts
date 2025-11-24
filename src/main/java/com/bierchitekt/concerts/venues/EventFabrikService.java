@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.List;
 public class EventFabrikService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
 
     public List<ConcertDTO> getConcerts() {
         List<ConcertDTO> allConcerts = new ArrayList<>();
@@ -49,9 +52,11 @@ public class EventFabrikService {
                         String price = getPrice(concert);
 
                         LocalDate date = LocalDate.parse(concert.getAsJsonObject().get("startDate").getAsString().substring(0, 10), formatter);
+                        String startTime = concert.getAsJsonObject().get("startDate").getAsString().substring(11, 16);
                         String link = concert.getAsJsonObject().get("url").getAsString();
 
-                        ConcertDTO concertDTO = new ConcertDTO(title, date, link, null, "EventFabrik", "", LocalDate.now(), price);
+                        LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
+                        ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, null, "EventFabrik", "", LocalDate.now(), price);
                         allConcerts.add(concertDTO);
                     }
                 }
