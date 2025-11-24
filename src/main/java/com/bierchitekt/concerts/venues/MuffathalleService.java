@@ -57,7 +57,7 @@ public class MuffathalleService {
 
                     startTime = startTime.substring(startTime.length() - 5);
                     LocalDateTime localTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, localTime, link, null, VENUE_NAME, "", LocalDate.now(), "");
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, localTime, link, null, VENUE_NAME, "", LocalDate.now(), "", "");
 
                     allConcerts.add(concertDTO);
                 }

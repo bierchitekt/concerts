@@ -12,11 +12,13 @@ import com.bierchitekt.concerts.venues.KafeKultService;
 import com.bierchitekt.concerts.venues.Kult9Service;
 import com.bierchitekt.concerts.venues.MuffathalleService;
 import com.bierchitekt.concerts.venues.OlympiaparkService;
+import com.bierchitekt.concerts.venues.StringUtil;
 import com.bierchitekt.concerts.venues.StromService;
 import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.WinterTollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,9 +61,12 @@ public class ConcertService {
     private final WinterTollwoodService winterTollwoodService;
     private final JsonWriter jsonWriter;
 
+    private final ICalService icalService;
     private final ConcertMapper concertMapper;
 
     private final GenreService genreService;
+
+    private static final String CALENDAR_URL = "https://bierchitekt.github.io/MunichConcertsCalendar/";
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy").localizedBy(ENGLISH);
 
@@ -93,7 +98,6 @@ public class ConcertService {
         notifyNextWeekPunkConcerts();
     }
 
-
     public void notifyNextWeekMetalConcerts() {
         notifyNextWeekConcerts("metal", "@MunichMetalConcerts");
     }
@@ -118,12 +122,10 @@ public class ConcertService {
         log.info("starting getting new concerts");
 
         List<ConcertDTO> allConcerts = new ArrayList<>();
+
         allConcerts.addAll(getStromConcerts());
-
         allConcerts.addAll(getZenithConcerts());
-
         allConcerts.addAll(getBackstageConcerts());
-
         allConcerts.addAll(getImportExportConcerts());
         allConcerts.addAll(getMuffathalleConcerts());
         allConcerts.addAll(getEventfabrikConcerts());
@@ -143,7 +145,7 @@ public class ConcertService {
                 log.info(concertDTO.toString());
                 continue;
             }
-            if(concertDTO.title().isBlank()) {
+            if (concertDTO.title().isBlank()) {
                 log.error("concert title is missing for link {}", concertDTO.link());
                 continue;
             }
@@ -158,6 +160,20 @@ public class ConcertService {
                 concertRepository.save(concertEntity);
             }
         }
+        jsonWriter.writeJsonToDisk(getConcertDTOs());
+        icalService.createICalEntries(getConcertDTOs());
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+
+
+        concertRepository.findAll().forEach(concert -> {
+            concert.setCalendarUri(CALENDAR_URL + StringUtil.getICSFilename(concertMapper.toConcertDto(concert)));
+            concertRepository.save(concert);
+        });
+
+
         jsonWriter.writeJsonToDisk(getConcertDTOs());
     }
 
@@ -237,28 +253,28 @@ public class ConcertService {
                     String beginn = zenithService.getTime(concert.link());
                     String supportBands = zenithService.getSupportBands(concert.link());
                     LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price()));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
 
                 } else if (venue.equalsIgnoreCase("Strom")) {
                     String beginn = stromService.getTime(concert.link());
                     LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price()));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
 
                 } else if (venue.equalsIgnoreCase("Circus Krone")) {
                     LocalTime beginn = circusKroneService.getBeginn(concert.link());
                     LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), beginn);
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price()));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
 
                 } else if (venue.equalsIgnoreCase("Tollwood")) {
                     String price = tollwoodService.getPrice(concert.link());
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
                 } else if (venue.equalsIgnoreCase("Muffathalle")) {
                     genres = genreService.getGenres(concert.title());
                     String price = muffathalleService.getPrice(concert.link());
 
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), "", LocalDate.now(), price));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), "", LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
                 } else {
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price()));
+                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                 }
             }
         });
@@ -311,7 +327,7 @@ public class ConcertService {
                 } else {
                     price = priceAndTime.getFirst();
                 }
-                String startTime = priceAndTime.getSecond() ;
+                String startTime = priceAndTime.getSecond();
                 LocalDateTime concertDateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(startTime));
 
                 ConcertDTO concertDTO = ConcertDTO.builder()
@@ -360,6 +376,14 @@ public class ConcertService {
                 if (!concert.getSupportBands().isEmpty()) {
                     stringBuilder.append("support bands are ").append(concert.getSupportBands()).append("\n");
                 }
+                stringBuilder
+                        .append("<a href=\"")
+                        .append(CALENDAR_URL)
+                        .append(StringUtil.getICSFilename(concertMapper.toConcertDto(concert)))
+                        .append("\">")
+                        .append("add to calendar")
+                        .append("</a>\n\n");
+
                 stringBuilder.append("playing at <a href=\"").append(concert.getLink()).append("\">").append(concert.getLocation()).append("</a>\n\n");
             }
             telegramService.sendMessage(channelName, stringBuilder.toString());

@@ -75,7 +75,7 @@ public class FeierwerkService {
 
             LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
 
-            return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price));
+            return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price, ""));
         } catch (IOException e) {
             return Optional.empty();
         }

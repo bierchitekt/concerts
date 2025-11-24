@@ -56,7 +56,7 @@ public class OlympiaparkService {
             }
             for (LocalDate date : concertDates) {
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                allConcerts.add(new ConcertDTO(title, date, dateAndTime, "https://www.olympiapark.de" + link, null, location, "", LocalDate.now(), ""));
+                allConcerts.add(new ConcertDTO(title, date, dateAndTime, "https://www.olympiapark.de" + link, null, location, "", LocalDate.now(), "", ""));
             }
 
         }

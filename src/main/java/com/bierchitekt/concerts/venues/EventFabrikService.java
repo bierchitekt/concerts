@@ -56,7 +56,7 @@ public class EventFabrikService {
                         String link = concert.getAsJsonObject().get("url").getAsString();
 
                         LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                        ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, null, "EventFabrik", "", LocalDate.now(), price);
+                        ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, null, "EventFabrik", "", LocalDate.now(), price, "");
                         allConcerts.add(concertDTO);
                     }
                 }

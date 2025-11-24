@@ -1,13 +1,19 @@
 package com.bierchitekt.concerts.venues;
 
+import com.bierchitekt.concerts.ConcertDTO;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.text.StringEscapeUtils;
+
+import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StringUtil {
 
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+
     public static String capitalizeWords(String input) {
-        if(input.equalsIgnoreCase("")){
+        if (input.equalsIgnoreCase("")) {
             return "";
         }
         // split the input string into an array of words
@@ -27,5 +33,11 @@ public class StringUtil {
 
         // convert StringBuilder to String and trim leading/trailing spaces
         return result.toString().trim();
+    }
+
+    public static String getICSFilename(ConcertDTO concertDTO) {
+        return StringEscapeUtils.escapeHtml4(concertDTO.title()).replaceAll(" ", "_")
+                .replaceAll("/", "") + "-" +
+                concertDTO.date().format(formatter) + ".ics";
     }
 }

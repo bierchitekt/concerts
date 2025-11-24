@@ -73,7 +73,7 @@ public class WinterTollwoodService {
                     allGenres.add(genres.trim());
                 }
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                ConcertDTO concertDTO = new ConcertDTO(title, date,dateAndTime, concertLink, allGenres, VENUE_NAME, "", LocalDate.now(), price);
+                ConcertDTO concertDTO = new ConcertDTO(title, date,dateAndTime, concertLink, allGenres, VENUE_NAME, "", LocalDate.now(), price, "");
                 allConcerts.add(concertDTO);
             }
         } catch (IOException e) {

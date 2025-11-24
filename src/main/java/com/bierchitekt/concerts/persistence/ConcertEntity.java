@@ -43,6 +43,8 @@ public class ConcertEntity implements Comparable<ConcertEntity> {
     @NotNull
     private String price;
 
+    private String calendarUri;
+
     @Override
     public int compareTo(@NotNull ConcertEntity other) {
         return date.compareTo(other.date);

@@ -67,7 +67,7 @@ public class Kult9Service {
                 }
                 String price = "";
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(time));
-                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, allGenres, VENUE_NAME, "", LocalDate.now(), price);
+                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, allGenres, VENUE_NAME, "", LocalDate.now(), price, "");
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {

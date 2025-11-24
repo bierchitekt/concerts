@@ -62,7 +62,7 @@ public class ImportExportService {
                 LocalDate date = LocalDate.parse(select.first().text().substring(4, 12), formatter);
                 String startTime = StringUtils.substringAfter(select.first().text(), "Beginn:").trim();
                 LocalDateTime localDateTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                ConcertDTO concertDTO = new ConcertDTO(title, date, localDateTime, link, null, VENUE_NAME, supportBands, LocalDate.now(), "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date, localDateTime, link, null, VENUE_NAME, supportBands, LocalDate.now(), "", "");
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {

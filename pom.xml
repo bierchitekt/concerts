@@ -33,6 +33,7 @@
         <lombok.version>1.18.42</lombok.version>
         <jna.version>5.18.1</jna.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+        <ical4j.version>4.2.1</ical4j.version>
     </properties>
     <dependencies>
         <dependency>
@@ -114,6 +115,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mnode.ical4j</groupId>
+            <artifactId>ical4j</artifactId>
+            <version>${ical4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>

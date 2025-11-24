@@ -62,7 +62,7 @@ public class TollwoodService {
                 String supportBands = bands.supportBands();
 
                 String link = event.select("a[href]").getFirst().attr("href");
-                ConcertDTO concertDTO = new ConcertDTO(title, date.get().toLocalDate(), date.get(), link, null, VENUE_NAME, supportBands, LocalDate.now(), "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date.get().toLocalDate(), date.get(), link, null, VENUE_NAME, supportBands, LocalDate.now(), "", "");
 
                 allConcerts.add(concertDTO);
             }
