@@ -37,9 +37,7 @@ public class StringUtil {
     }
 
     public static String getICSFilename(ConcertDTO concertDTO) {
-        return StringEscapeUtils.escapeHtml4(concertDTO.title()).replaceAll(" ", "_")
-                .replaceAll("/", "") + "-" +
-                concertDTO.date().format(formatter) + ".ics";
+        return getICSFilename(concertDTO.title(), concertDTO.date());
     }
 
     public static String getICSFilename(String title, LocalDate date) {
