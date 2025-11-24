@@ -368,7 +368,7 @@ public class ConcertService {
                         .append(StringUtil.getICSFilename(concertMapper.toConcertDto(concert)))
                         .append("\">")
                         .append("add to calendar")
-                        .append("</a>\n\n");
+                        .append("</a>\n");
 
                 stringBuilder.append("playing at <a href=\"").append(concert.getLink()).append("\">").append(concert.getLocation()).append("</a>\n\n");
             }

@@ -2,7 +2,6 @@ package com.bierchitekt.concerts;
 
 import com.bierchitekt.concerts.persistence.ConcertEntity;
 import com.bierchitekt.concerts.persistence.ConcertRepository;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,10 +87,12 @@ class ConcertServiceIntegrationTest {
                         "on " + formatter.format(today) + " \n" +
                         "genre is [Power Metal] \n" +
                         "support bands are Gamma Ray\n" +
+                        "<a href=\"https://bierchitekt.github.io/MunichConcertsCalendar/Blind_Guardian-24112025.ics\">add to calendar</a>\n" +
                         "playing at <a href=\"null\">null</a>\n\n" +
                         "<b>Iron Maiden</b> \n" +
                         "on " + formatter.format(tomorrow) + " \n" +
                         "genre is [Heavy Metal] \n" +
+                        "<a href=\"https://bierchitekt.github.io/MunichConcertsCalendar/Iron_Maiden-25112025.ics\">add to calendar</a>\n" +
                         "playing at <a href=\"null\">null</a>\n\n";
 
         verify(telegramService).sendMessage("@MunichMetalConcerts", expectedMessage);
