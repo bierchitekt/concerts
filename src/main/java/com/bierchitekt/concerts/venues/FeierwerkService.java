@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.bierchitekt.concerts.ConcertService.CALENDAR_URL;
+
 @Service
 @Slf4j
 public class FeierwerkService {
@@ -75,7 +77,9 @@ public class FeierwerkService {
 
             LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
 
-            return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price, ""));
+
+            return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price,
+                    CALENDAR_URL + StringUtil.getICSFilename(bands.getFirst(), date)));
         } catch (IOException e) {
             return Optional.empty();
         }
@@ -121,7 +125,7 @@ public class FeierwerkService {
         }
         genres = genres.trim();
         String[] split = genres.split(",");
-        for(int i = 0; i < split.length; i++){
+        for (int i = 0; i < split.length; i++) {
             split[i] = split[i].trim();
         }
         return Set.of(split);

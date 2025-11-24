@@ -65,7 +65,7 @@ public class ConcertService {
 
     private final GenreService genreService;
 
-    private static final String CALENDAR_URL = "https://bierchitekt.github.io/MunichConcertsCalendar/";
+    public static final String CALENDAR_URL = "https://bierchitekt.github.io/MunichConcertsCalendar/";
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy").localizedBy(ENGLISH);
 
@@ -276,7 +276,7 @@ public class ConcertService {
         }
         concerts.forEach(concert -> {
             if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                kult9Concerts.add(concert);
+                kult9Concerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), concert.genre(), concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
             }
         });
 
@@ -326,6 +326,7 @@ public class ConcertService {
                         .supportBands(supportBands)
                         .addedAt(LocalDate.now())
                         .price(price)
+                        .calendarUri(CALENDAR_URL + StringUtil.getICSFilename(concert))
                         .build();
 
                 backstageConcerts.add(concertDTO);

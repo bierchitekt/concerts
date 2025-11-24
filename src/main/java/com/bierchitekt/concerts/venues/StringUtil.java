@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.text.StringEscapeUtils;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -39,5 +40,11 @@ public class StringUtil {
         return StringEscapeUtils.escapeHtml4(concertDTO.title()).replaceAll(" ", "_")
                 .replaceAll("/", "") + "-" +
                 concertDTO.date().format(formatter) + ".ics";
+    }
+
+    public static String getICSFilename(String title, LocalDate date) {
+        return StringEscapeUtils.escapeHtml4(title).replaceAll(" ", "_")
+                .replaceAll("/", "") + "-" +
+                date.format(formatter) + ".ics";
     }
 }
