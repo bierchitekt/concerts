@@ -34,6 +34,7 @@
         <jna.version>5.18.1</jna.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
         <ical4j.version>4.2.1</ical4j.version>
+        <sonar.organization>bierchitekt</sonar.organization>
     </properties>
     <dependencies>
         <dependency>

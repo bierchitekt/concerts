@@ -8,6 +8,8 @@ on:
     paths:
       - '**'
       - '!website/**'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   build-and-push:
@@ -23,5 +25,19 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Run Maven Verify
-        run: mvn -B verify
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=bierchitekt_concerts
