@@ -26,8 +26,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -81,22 +83,26 @@ public class ICalService {
         icsCalendar.add(meeting);
 
         try {
-            saveCalendar(icsCalendar, filepath
-                    + StringUtil.getICSFilename(concertDTO));
+            saveCalendar(icsCalendar, filepath + StringUtil.getICSFilename(concertDTO));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void saveCalendar(Calendar calendar, String filePath) throws IOException, ValidationException {
-        try (FileOutputStream fout = new FileOutputStream(filePath)) {
-            CalendarOutputter outputter = new CalendarOutputter();
-            outputter.output(calendar, fout);
+        Path path = Paths.get(filePath);
+
+        if (!Files.exists(path)) {
+            try (FileOutputStream fout = new FileOutputStream(filePath)) {
+                CalendarOutputter outputter = new CalendarOutputter();
+                outputter.output(calendar, fout);
+
+            }
         }
     }
 
     public void createICalEntries(List<ConcertDTO> concertDTOs) {
-        for(ConcertDTO concertDTO : concertDTOs) {
+        for (ConcertDTO concertDTO : concertDTOs) {
             createICalEntry(concertDTO);
         }
     }

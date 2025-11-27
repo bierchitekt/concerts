@@ -2,6 +2,7 @@ package com.bierchitekt.concerts;
 
 import com.bierchitekt.concerts.persistence.ConcertEntity;
 import com.bierchitekt.concerts.persistence.ConcertRepository;
+import com.bierchitekt.concerts.venues.StringUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ class ConcertServiceIntegrationTest {
     private final LocalDate today = LocalDate.now();
     private final LocalDate yesterday = LocalDate.now().minusDays(1);
 
+    private ConcertEntity maiden;
+    private ConcertEntity blindGuardian;
+    private ConcertEntity slayer;
     @Container
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer(
@@ -46,7 +50,7 @@ class ConcertServiceIntegrationTest {
     @BeforeEach
     void beforeAll() {
 
-        ConcertEntity maiden = ConcertEntity.builder()
+        maiden = ConcertEntity.builder()
                 .date(tomorrow)
                 .title("Iron Maiden")
                 .genre(Set.of("Heavy Metal"))
@@ -54,7 +58,7 @@ class ConcertServiceIntegrationTest {
                 .price("")
                 .build();
 
-        ConcertEntity blindGuardian = ConcertEntity.builder()
+        blindGuardian = ConcertEntity.builder()
                 .date(today)
                 .title("Blind Guardian")
                 .genre(Set.of("Power Metal"))
@@ -62,7 +66,7 @@ class ConcertServiceIntegrationTest {
                 .price("6.66€")
                 .build();
 
-        ConcertEntity slayer = ConcertEntity.builder()
+         slayer = ConcertEntity.builder()
                 .date(yesterday)
                 .title("Slayerrrrrrr")
                 .genre(Set.of("Thrash Metal"))
@@ -87,12 +91,14 @@ class ConcertServiceIntegrationTest {
                         "on " + formatter.format(today) + " \n" +
                         "genre is [Power Metal] \n" +
                         "support bands are Gamma Ray\n" +
-                        "<a href=\"https://bierchitekt.github.io/MunichConcertsCalendar/Blind_Guardian-24112025.ics\">add to calendar</a>\n" +
+                        "<a href=\"https://bierchitekt.github.io/MunichConcertsCalendar/" +
+                        StringUtil.getICSFilename(blindGuardian.getTitle(), blindGuardian.getDate()) + "\">add to calendar</a>\n" +
                         "playing at <a href=\"null\">null</a>\n\n" +
                         "<b>Iron Maiden</b> \n" +
                         "on " + formatter.format(tomorrow) + " \n" +
                         "genre is [Heavy Metal] \n" +
-                        "<a href=\"https://bierchitekt.github.io/MunichConcertsCalendar/Iron_Maiden-25112025.ics\">add to calendar</a>\n" +
+                        "<a href=\"https://bierchitekt.github.io/MunichConcertsCalendar/" +
+                        StringUtil.getICSFilename(maiden.getTitle(), maiden.getDate()) + "\">add to calendar</a>\n" +
                         "playing at <a href=\"null\">null</a>\n\n";
 
         verify(telegramService).sendMessage("@MunichMetalConcerts", expectedMessage);
