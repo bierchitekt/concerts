@@ -10,12 +10,14 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -55,8 +57,12 @@ public class ImportExportService {
                 if (linkExists(allConcerts, link)) {
                     continue;
                 }
-                Document details = Jsoup.connect(link).get();
-                Elements select = details.select("div.event-info");
+
+                Optional<Document> details = getDetails(link);
+                if(details.isEmpty()) {
+                    continue;
+                }
+                Elements select = details.get().select("div.event-info");
 
 
                 LocalDate date = LocalDate.parse(select.first().text().substring(4, 12), formatter);
@@ -70,6 +76,23 @@ public class ImportExportService {
         }
         log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
         return allConcerts;
+    }
+
+    private Optional<Document> getDetails(String link) {
+
+        for (int i = 0; i < 5; i++) {
+            try {
+                return Optional.of(Jsoup.connect(link).get());
+            } catch (IOException e) {
+                log.warn("error getting concert details for strom for url {}", link, e);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     private String getTitle(String title) {
