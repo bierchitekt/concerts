@@ -161,6 +161,7 @@ public class ConcertService {
         }
         jsonWriter.writeJsonToDisk(getConcertDTOs());
         icalService.createICalEntries(getConcertDTOs());
+        sendErrorsToTelegram();
     }
 
     public List<ConcertDTO> getNextWeekConcerts() {
@@ -376,6 +377,18 @@ public class ConcertService {
             telegramService.sendMessage(channelName, stringBuilder.toString());
         }
         setNotified(newConcerts);
+    }
+
+    private void sendErrorsToTelegram() {
+        List<String> errors = FunctionTriggerAppender.getErrors();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for(String error : errors) {
+            stringBuilder.append(error).append("\n");
+        }
+        telegramService.sendMessage("@concerterrors", stringBuilder.toString());
+        FunctionTriggerAppender.resetErrors();
+
     }
 
 }

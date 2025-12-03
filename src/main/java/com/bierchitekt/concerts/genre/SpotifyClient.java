@@ -69,6 +69,7 @@ public class SpotifyClient {
             }
             return genres;
         } catch (Exception ex) {
+            log.info("error getting artist {} from spotify", artist);
             return Set.of();
         }
 

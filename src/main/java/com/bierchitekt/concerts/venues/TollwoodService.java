@@ -119,7 +119,10 @@ public class TollwoodService {
     }
 
     private boolean isRealEvent(String eventText) {
-        return !eventText.startsWith("Musik-Arena") && !eventText.startsWith("Alle Konzerte auf") && !eventText.startsWith("Winter 2025")
+        return !eventText.startsWith("Musik-Arena")
+                && !eventText.startsWith("Alle Konzerte auf")
+                && !eventText.startsWith("Winter 2025")
+                && !eventText.contains("Konzertverschiebung")
                 && !eventText.startsWith("Tollwood Sommerfestival Olympiapark Süd Mehr erfahren")
                 && !eventText.startsWith("Ticketerwerb Alle Informationen rund um den Ticketkauf. Mehr erfahren")
                 && !eventText.startsWith("Blick zurück Tollwood von 1988 bis heute Mehr erfahren");
