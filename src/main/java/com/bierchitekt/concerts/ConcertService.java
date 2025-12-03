@@ -31,6 +31,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -161,6 +162,7 @@ public class ConcertService {
         }
         jsonWriter.writeJsonToDisk(getConcertDTOs());
         icalService.createICalEntries(getConcertDTOs());
+        sendErrorsToTelegram();
     }
 
     public List<ConcertDTO> getNextWeekConcerts() {
@@ -376,6 +378,18 @@ public class ConcertService {
             telegramService.sendMessage(channelName, stringBuilder.toString());
         }
         setNotified(newConcerts);
+    }
+
+    private void sendErrorsToTelegram() {
+        List<String> errors = FunctionTriggerAppender.getErrors();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for(String error : errors) {
+            stringBuilder.append(error).append("\n");
+        }
+        telegramService.sendMessage("@concerterrors", stringBuilder.toString());
+        FunctionTriggerAppender.resetErrors();
+
     }
 
 }

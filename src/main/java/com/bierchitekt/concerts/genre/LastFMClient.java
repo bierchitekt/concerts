@@ -50,7 +50,7 @@ public class LastFMClient {
 
             return genres;
         } catch (Exception ex) {
-            log.warn("error getting artist {} from lastFM", artist);
+            log.info("error getting artist {} from lastFM", artist);
             return Set.of();
         }
     }

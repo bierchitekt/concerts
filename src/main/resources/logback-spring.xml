@@ -1,0 +1,18 @@
+<configuration>
+    <appender name="FUNCTION_TRIGGER" class="com.bierchitekt.concerts.FunctionTriggerAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FUNCTION_TRIGGER" />
+    </root>
+</configuration>
