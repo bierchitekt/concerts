@@ -1,16 +1,13 @@
 package com.bierchitekt.concerts;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
@@ -24,24 +21,16 @@ public class JsonWriter {
         String jsonString = getJsonString(concertDTOs);
         try {
             Files.writeString(
-                    Paths.get(filename),
+                    Path.of(filename),
                     jsonString);
         } catch (IOException e) {
             log.error("error while writing concerts to disk", e);
         }
     }
-    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public String getJsonString(List<ConcertDTO> concertDTOs) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-            objectMapper.registerModule(new JavaTimeModule());
-            objectMapper.setDateFormat(dateFormat);
+        ObjectMapper objectMapper = new ObjectMapper();
 
-            return objectMapper.writeValueAsString(concertDTOs);
-        } catch (IOException e) {
-            log.error("error while writing concerts to json", e);
-            return "";
-        }
+        return objectMapper.writeValueAsString(concertDTOs);
     }
 }

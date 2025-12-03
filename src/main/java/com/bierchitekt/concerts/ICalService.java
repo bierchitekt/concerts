@@ -28,7 +28,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -90,7 +89,7 @@ public class ICalService {
     }
 
     public static void saveCalendar(Calendar calendar, String filePath) throws IOException, ValidationException {
-        Path path = Paths.get(filePath);
+        Path path = Path.of(filePath);
 
         if (!Files.exists(path)) {
             try (FileOutputStream fout = new FileOutputStream(filePath)) {
