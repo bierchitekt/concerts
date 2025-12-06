@@ -83,8 +83,7 @@ public class ImportExportService {
         for (int i = 0; i < 5; i++) {
             try {
                 return Optional.of(Jsoup.connect(link).get());
-            } catch (IOException e) {
-                log.warn("error getting concert details for strom for url {}", link, e);
+            } catch (IOException _) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {
@@ -92,6 +91,7 @@ public class ImportExportService {
                 }
             }
         }
+        log.warn("error getting concert details for {} for url {}", VENUE_NAME, link);
         return Optional.empty();
     }
 
