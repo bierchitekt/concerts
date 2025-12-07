@@ -1,7 +1,6 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -11,7 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -31,7 +29,6 @@ public class WinterTollwoodService {
     private static final String VENUE_NAME = "Winter Tollwood";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    @PostConstruct
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
         List<ConcertDTO> allConcerts = new ArrayList<>();
@@ -90,7 +87,7 @@ public class WinterTollwoodService {
                 ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, concertLink, allGenres, VENUE_NAME, "", LocalDate.now(), price, "");
                 allConcerts.add(concertDTO);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warn("error getting {} concerts", VENUE_NAME, e);
             return allConcerts;
         }
