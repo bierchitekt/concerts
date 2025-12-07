@@ -52,7 +52,7 @@ public class CircusKroneService {
                     Integer month;
                     try {
                         month = getMonth(dateString);
-                    } catch (UnknownDateException e) {
+                    } catch (UnknownDateException _) {
                         continue;
                     }
 
@@ -81,7 +81,7 @@ public class CircusKroneService {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             if (!(e instanceof HttpStatusException)) {
                 log.warn("error getting concerts from Circus Krone", e);
             }

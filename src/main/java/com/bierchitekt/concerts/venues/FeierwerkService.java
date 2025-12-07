@@ -80,7 +80,7 @@ public class FeierwerkService {
 
             return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price,
                     CALENDAR_URL + StringUtil.getICSFilename(bands.getFirst(), date)));
-        } catch (IOException e) {
+        } catch (Exception _) {
             return Optional.empty();
         }
     }

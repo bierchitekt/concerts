@@ -74,7 +74,7 @@ public class Kult9Service {
             }
         } catch (Exception ex) {
             log.warn("error getting {} concerts", VENUE_NAME, ex);
-            return List.of();
+            return allConcerts;
         }
         log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
 
