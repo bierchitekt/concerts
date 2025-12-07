@@ -1,6 +1,7 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -30,6 +31,7 @@ public class WinterTollwoodService {
     private static final String VENUE_NAME = "Winter Tollwood";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
+    @PostConstruct
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
         List<ConcertDTO> allConcerts = new ArrayList<>();
@@ -43,12 +45,17 @@ public class WinterTollwoodService {
 
                 Elements concertDetails = elements.select("div.inside-infoblock");
 
-                String title = concertDetails.select("h1").first().text();
+                Element titleElement = concertDetails.select("h1").first();
+                if (titleElement == null) {
+                    continue;
+                }
+                String title = titleElement.text();
+
                 String dateString = concertDetails.select("h2").text().substring(0, 10);
 
                 String startTime = concertDetails.select("h2").text();
                 startTime = StringUtils.substringBetween(startTime, " | ", " Uhr");
-                if(startTime.length() == 2) {
+                if (startTime.length() == 2) {
                     startTime = startTime + ":00";
                 }
                 LocalDate date = LocalDate.parse(dateString, formatter);
@@ -62,18 +69,25 @@ public class WinterTollwoodService {
                         break;
                     }
                     if (genre.equalsIgnoreCase("")) {
-                        genre = elements.select("h3").first().text();
+                        Element firstGenre = elements.select("h3").first();
+                        if (firstGenre != null) {
+                            genre = firstGenre.text();
+                        }
                     }
                 }
 
-                String price = elements.select("span.icon-star").parents().first().text();
+                Element priceElement = elements.select("span.icon-star").parents().first();
+                String price = "";
+                if (priceElement != null) {
+                    price = priceElement.text();
+                }
                 String[] split = genre.split("[,&]");
                 Set<String> allGenres = new HashSet<>();
                 for (String genres : split) {
                     allGenres.add(genres.trim());
                 }
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                ConcertDTO concertDTO = new ConcertDTO(title, date,dateAndTime, concertLink, allGenres, VENUE_NAME, "", LocalDate.now(), price, "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, concertLink, allGenres, VENUE_NAME, "", LocalDate.now(), price, "");
                 allConcerts.add(concertDTO);
             }
         } catch (IOException e) {
