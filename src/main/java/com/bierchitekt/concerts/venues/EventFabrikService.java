@@ -62,7 +62,7 @@ public class EventFabrikService {
                 }
 
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
 
             log.error("error getting eventfabrik concerts", e);
             return allConcerts;

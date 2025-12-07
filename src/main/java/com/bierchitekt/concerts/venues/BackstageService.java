@@ -14,7 +14,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -65,7 +70,7 @@ public class BackstageService {
 
             }
             return StringUtil.capitalizeWords(supportBands);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warn("error getting support bands for backstage ", e);
             return "";
         }
@@ -163,7 +168,7 @@ public class BackstageService {
             Document document = Jsoup.connect(url).get();
             String pages = document.select("span.toolbar-number").get(2).text();
             return Integer.parseInt(pages);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.warn("error getting pages for backstage url {} ", url, ex);
             return 0;
         }
@@ -183,7 +188,7 @@ public class BackstageService {
             String time = first.text();
 
             return Pair.of(price, time.substring(0, 5));
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warn("error getting price for backstage url {} ", link, e);
             return Pair.of("", "");
         }
