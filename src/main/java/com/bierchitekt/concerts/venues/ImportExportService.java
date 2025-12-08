@@ -53,22 +53,24 @@ public class ImportExportService {
                     supportBands = String.join(", ", result[1].split(" \\+ "));
                 }
 
-                String link = concert.parent().select("a[href]").getFirst().attr("href");
-                if (linkExists(allConcerts, link)) {
+                Optional<String> link = getLink(concert);
+                if (link.isEmpty() || linkExists(allConcerts, link.get())) {
                     continue;
                 }
 
-                Optional<Document> details = getDetails(link);
-                if(details.isEmpty()) {
+                Optional<Document> details = getDetails(link.get());
+                if (details.isEmpty()) {
                     continue;
                 }
-                Elements select = details.get().select("div.event-info");
+                Element elementDate = details.get().select("div.event-info").first();
 
-
-                LocalDate date = LocalDate.parse(select.first().text().substring(4, 12), formatter);
-                String startTime = StringUtils.substringAfter(select.first().text(), "Beginn:").trim();
+                if (elementDate == null) {
+                    continue;
+                }
+                LocalDate date = LocalDate.parse(elementDate.text().substring(4, 12), formatter);
+                String startTime = StringUtils.substringAfter(elementDate.text(), "Beginn:").trim();
                 LocalDateTime localDateTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                ConcertDTO concertDTO = new ConcertDTO(title, date, localDateTime, link, null, VENUE_NAME, supportBands, LocalDate.now(), "", "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date, localDateTime, link.get(), null, VENUE_NAME, supportBands, LocalDate.now(), "", "");
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {
@@ -76,6 +78,14 @@ public class ImportExportService {
         }
         log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
         return allConcerts;
+    }
+
+    private Optional<String> getLink(Element concert) {
+        Element parent = concert.parent();
+        if (parent == null) {
+            return Optional.empty();
+        }
+        return Optional.of(parent.select("a[href]").getFirst().attr("href"));
     }
 
     private Optional<Document> getDetails(String link) {
@@ -86,8 +96,8 @@ public class ImportExportService {
             } catch (IOException _) {
                 try {
                     Thread.sleep(100);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
+                } catch (InterruptedException _) {
+                    Thread.currentThread().interrupt();
                 }
             }
         }

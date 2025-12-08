@@ -3,6 +3,7 @@ package com.bierchitekt.concerts;
 
 import com.bierchitekt.concerts.venues.StringUtil;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.extern.slf4j.Slf4j;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.TimeZone;
@@ -32,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
+@Slf4j
 @Service
 public class ICalService {
 
@@ -55,11 +57,12 @@ public class ICalService {
         meeting.add(tz.getTimeZoneId());
 
         String eventUrlString = concertDTO.link();
-        Url eventUrl = null;
+        Url eventUrl;
         try {
             eventUrl = new Url(new URI(eventUrlString));
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (URISyntaxException _) {
+            log.warn("error on parsing url {}", eventUrlString);
+            return;
         }
 
         Location l = new Location();
@@ -83,8 +86,8 @@ public class ICalService {
 
         try {
             saveCalendar(icsCalendar, filepath + StringUtil.getICSFilename(concertDTO));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException _) {
+            log.warn("error on saving calendar {}", filepath);
         }
     }
 

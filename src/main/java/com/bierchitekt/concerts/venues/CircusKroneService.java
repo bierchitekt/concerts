@@ -14,10 +14,10 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,6 +37,8 @@ public class CircusKroneService {
             Map.entry("Nov.", 11),
             Map.entry("Dezember", 12));
 
+    private static final String VENUE_NAME = "Circus Krone";
+
     public List<ConcertDTO> getConcerts() {
         List<ConcertDTO> allConcerts = new ArrayList<>();
         try {
@@ -49,50 +51,57 @@ public class CircusKroneService {
                     String link = Objects.requireNonNull(concert.select("a[href]").first()).attr("href");
 
                     String dateString = concert.select("div.fusion-post-content").text();
-                    Integer month;
-                    try {
-                        month = getMonth(dateString);
-                    } catch (UnknownDateException _) {
-                        continue;
-                    }
+                    Optional<Integer> monthOptional = getMonth(dateString);
 
-                    if (month == null) {
+                    if (monthOptional.isEmpty()) {
                         continue;
                     }
+                    int month = monthOptional.get();
                     int year = Integer.parseInt(StringUtils.substringAfterLast(dateString, " "));
 
-                    if (dateString.contains("/")) {
-                        List<String> dates = Arrays.stream(dateString.split("/")).toList();
 
-                        for (String d : dates) {
-                            int day = Integer.parseInt(d.substring(0, 2));
+                    List<Integer> days = getDays(dateString);
 
-                            LocalDate date = LocalDate.of(year, month, day);
-                            ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, "Circus Krone", "", LocalDate.now(), "", "");
-                            allConcerts.add(concertDTO);
-                        }
-                    } else {
-                        int day = Integer.parseInt(dateString.substring(0, 2));
+
+                    for (Integer day : days) {
                         LocalDate date = LocalDate.of(year, month, day);
-
-                        ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, "Circus Krone", "", LocalDate.now(), "", "");
+                        ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, VENUE_NAME, "", LocalDate.now(), "", "");
                         allConcerts.add(concertDTO);
-
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             if (!(e instanceof HttpStatusException)) {
-                log.warn("error getting concerts from Circus Krone", e);
+                log.warn("error getting concerts from {}}", VENUE_NAME, e);
             }
         }
         return allConcerts;
     }
 
+    private List<Integer> getDays(String dateString) {
+        List<Integer> days = new ArrayList<>();
+        if (dateString.contains("/")) {
+            String[] split = dateString.split("/");
+            for (String s : split) {
+                days.add(Integer.parseInt(s.substring(0, 2)));
+            }
+        } else {
+            days.add(Integer.parseInt(dateString.substring(0, 2)));
+        }
+
+        return days;
+    }
+
     public LocalTime getBeginn(String link) {
         try {
             Document doc = Jsoup.connect(link).get();
-            String text = doc.select("div.fusion-text").first().text();
+            Element textElement = doc.select("div.fusion-text").first();
+            if (textElement == null) {
+                log.warn("error getting price for circusKrone url {} ", link);
+                return LocalTime.of(19, 0);
+            }
+            String text = textElement.text();
 
             String beginn = StringUtils.substringBetween(text, "Beginn: ", " Uhr");
             if (beginn == null) {
@@ -100,28 +109,23 @@ public class CircusKroneService {
             }
             return LocalTime.parse(beginn);
         } catch (IOException e) {
-            log.warn("error getting price for circusKrone url {} ", "link", e);
-            return LocalTime.now();
+            log.warn("error getting price for circusKrone url {} ", link, e);
+            return LocalTime.of(19, 0);
         }
 
     }
 
-    private Integer getMonth(String dateString) throws UnknownDateException {
+    private Optional<Integer> getMonth(String dateString) {
         String s = StringUtils.substringBetween(dateString, " ", " ");
         if (s == null) {
             log.warn("cannot parse date {}", dateString);
-            throw new UnknownDateException(dateString);
+            return Optional.empty();
         }
         Integer i = calendarMap.get(s);
         if (i == null) {
             log.warn("Cannot get month for input {}", dateString);
+            return Optional.empty();
         }
-        return i;
-    }
-
-    private static class UnknownDateException extends Exception {
-        public UnknownDateException(String foo) {
-            super(foo);
-        }
+        return Optional.of(i);
     }
 }
