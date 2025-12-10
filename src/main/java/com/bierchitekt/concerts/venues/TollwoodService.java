@@ -135,7 +135,7 @@ public class TollwoodService {
             LocalDate date = LocalDate.parse(dateText.substring(0, 10), formatter);
             return Optional.of(LocalDateTime.of(date, LocalTime.parse(startTime)));
         } catch (Exception _) {
-            log.warn("cannot parse date {}", dateText);
+            log.info("cannot parse date {}", dateText);
         }
         return Optional.empty();
 
