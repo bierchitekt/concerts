@@ -17,7 +17,7 @@
         <java.version>25</java.version>
         <jsoup.version>1.21.2</jsoup.version>
         <hibernate-community-dialects.version>7.1.11.Final</hibernate-community-dialects.version>
-        <commons-text.version>1.14.0</commons-text.version>
+        <commons-text.version>1.15.0</commons-text.version>
         <gson.version>2.13.2</gson.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
         <versions-maven-plugin.version>2.20.1</versions-maven-plugin.version>
