@@ -18,6 +18,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.bierchitekt.concerts.venues.StringUtil.capitalizeWords;
 
@@ -80,11 +82,23 @@ public class StromService {
             Document doc = Jsoup.connect(url).get();
             String text = doc.select("div.gdlr-info-time.gdlr-info").first().text();
             String start = StringUtils.substringBetween(text, "Beginn: ", " Uhr");
+
+            String regex = "\\b([01]?[0-9]|2[0-3][:.][0-5][0-9])\\b";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(text);
+            if(matcher.find()){
+                start = matcher.group(1);
+            }
+
             if (start == null) {
                 start = StringUtils.substringBetween(text, " / ", " Uhr");
             }
             if (start == null) {
                 start = StringUtils.substringBetween(text, "Einlass: ", " Uhr");
+            }
+            if (start == null) {
+                log.warn("could not find time for {} url {}", VENUE_NAME, url);
+                return "20:00";
             }
             if (start.length() == 2) {
                 return start + ":00";
