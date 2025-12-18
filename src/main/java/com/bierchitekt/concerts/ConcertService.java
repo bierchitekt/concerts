@@ -379,7 +379,7 @@ public class ConcertService {
         setNotified(newConcerts);
     }
 
-    private void sendErrorsToTelegram() {
+    public void sendErrorsToTelegram() {
         List<String> errors = FunctionTriggerAppender.getErrors();
         StringBuilder stringBuilder = new StringBuilder();
 
