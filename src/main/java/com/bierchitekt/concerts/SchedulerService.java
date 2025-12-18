@@ -30,4 +30,9 @@ public class SchedulerService {
     public void notifyNextWeekConcerts() {
         concertService.notifyNextWeekConcerts();
     }
+
+    @Scheduled(cron = "${send-error-messages.cron}")
+    public void sendErrorsToTelegram() {
+        concertService.sendErrorsToTelegram();
+    }
 }
