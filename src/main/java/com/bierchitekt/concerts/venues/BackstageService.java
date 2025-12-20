@@ -45,7 +45,7 @@ public class BackstageService {
             for (int i = 1; i < totalPages; ++i) {
                 log.debug("Backstage getting page {} of {}", i, totalPages);
                 url = OVERVIEW_URL + ITEMS_PER_PAGE + "&p=" + i;
-                List<ConcertDTO> concerts = getConcerts(url);
+                List<ConcertDTO> concerts = getConcertsForUrl(url);
                 allConcerts.addAll(concerts);
 
             }
@@ -107,12 +107,15 @@ public class BackstageService {
     }
 
     @SuppressWarnings("java:S1192")
-    private List<ConcertDTO> getConcerts(String url) throws IOException {
-        List<ConcertDTO> concerts = new ArrayList<>();
-
+    private List<ConcertDTO> getConcertsForUrl(String url) throws IOException {
         Document doc = Jsoup.connect(url).get();
+        return getConcertsFromDocument(doc);
+    }
+
+    protected List<ConcertDTO> getConcertsFromDocument(Document doc) {
         Elements allEvents = doc.select("div.product.details.product-item-details");
 
+        List<ConcertDTO> concerts = new ArrayList<>();
         for (Element concert : allEvents) {
             Elements detail = concert.select("a.product-item-link");
             String title = detail.text().trim();
@@ -174,24 +177,28 @@ public class BackstageService {
         }
     }
 
-    public Pair<@NotNull String, @NotNull String> getPriceAndTime(String link) {
+    public Pair<@NotNull String, @NotNull String> getPriceAndTime(String url) {
         try {
-            Document doc = Jsoup.connect(link).get();
-            Elements select = doc.select("span.price");
-
-            String price = select.text();
-
-            Element first = doc.select("div.ticketshop-icon-clock-svg-white").first();
-            if (first == null) {
-                return Pair.of(price, "20:00");
-            }
-            String time = first.text();
-
-            return Pair.of(price, time.substring(0, 5));
+            Document doc = Jsoup.connect(url).get();
+            return getPriceAndTimeFromDocument(doc);
         } catch (Exception e) {
-            log.warn("error getting price for backstage url {} ", link, e);
+            log.warn("error getting price for backstage url {} ", url, e);
             return Pair.of("", "");
         }
+    }
+
+    public Pair<@NotNull String, @NotNull String> getPriceAndTimeFromDocument(Document doc) {
+        Elements select = doc.select("span.price");
+
+        String price = select.text();
+
+        Element first = doc.select("div.ticketshop-icon-clock-svg-white").first();
+        if (first == null) {
+            return Pair.of(price, "20:00");
+        }
+        String time = first.text();
+
+        return Pair.of(price, time.substring(0, 5));
     }
 
 }
