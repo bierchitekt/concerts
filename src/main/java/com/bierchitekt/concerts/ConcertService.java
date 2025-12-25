@@ -135,7 +135,8 @@ public class ConcertService {
         allConcerts.addAll(getTheaterfabrikConcerts());
         allConcerts.addAll(getKafeKultConcerts());
         allConcerts.addAll(getTollwoodConcerts());
-        allConcerts.addAll(getWinterTollwoodConcerts());
+
+        // allConcerts.addAll(getWinterTollwoodConcerts()); // deactivated for now, no new concerts available
 
         log.info("found {} concerts, saving now", allConcerts.size());
 

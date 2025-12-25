@@ -17,5 +17,7 @@ buildNumber.properties
 .classpath
 .idea/
 
+.DS_Store
+
 /logs.txt
 /logs.txt.*
