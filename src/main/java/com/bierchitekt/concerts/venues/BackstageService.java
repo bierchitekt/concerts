@@ -30,7 +30,8 @@ public class BackstageService {
     private static final int ITEMS_PER_PAGE = 25;
     private static final String OVERVIEW_URL = "https://backstage.eu/veranstaltungen/live.html?product_list_limit=";
 
-    private static final String VENUE_NAME = "Backstage";
+    public static final String VENUE_NAME = "Backstage";
+
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);

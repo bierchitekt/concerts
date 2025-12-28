@@ -26,6 +26,7 @@ public class EventFabrikService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    public static final String VENUE_NAME = "EventFabrik";
 
     public List<ConcertDTO> getConcerts() {
         List<ConcertDTO> allConcerts = new ArrayList<>();
@@ -56,7 +57,7 @@ public class EventFabrikService {
                         String link = concert.getAsJsonObject().get("url").getAsString();
 
                         LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                        ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, null, "EventFabrik", "", LocalDate.now(), price, "");
+                        ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, null, VENUE_NAME, "", LocalDate.now(), price, "");
                         allConcerts.add(concertDTO);
                     }
                 }
@@ -64,7 +65,7 @@ public class EventFabrikService {
             }
         } catch (Exception e) {
 
-            log.error("error getting eventfabrik concerts", e);
+            log.error("error getting {} concerts", VENUE_NAME, e);
             return allConcerts;
         }
 

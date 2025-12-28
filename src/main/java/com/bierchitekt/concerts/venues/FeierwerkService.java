@@ -28,7 +28,7 @@ import static com.bierchitekt.concerts.ConcertService.CALENDAR_URL;
 @Slf4j
 public class FeierwerkService {
 
-    private static final String VENUE_NAME = "Feierwerk";
+    public static final String VENUE_NAME = "Feierwerk";
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final String BASE_URL = "https://www.feierwerk.de";

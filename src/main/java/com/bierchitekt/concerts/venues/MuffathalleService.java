@@ -24,7 +24,7 @@ public class MuffathalleService {
 
     private static final String BASE_URL = "https://www.muffatwerk.de";
 
-    private static final String VENUE_NAME = "Muffathalle";
+    public static final String VENUE_NAME = "Muffathalle";
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
