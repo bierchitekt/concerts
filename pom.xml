@@ -15,7 +15,7 @@
     <description>Getting concerts in munich</description>
     <properties>
         <java.version>25</java.version>
-        <jsoup.version>1.21.2</jsoup.version>
+        <jsoup.version>1.22.1</jsoup.version>
         <hibernate-community-dialects.version>7.2.0.Final</hibernate-community-dialects.version>
         <commons-text.version>1.15.0</commons-text.version>
         <gson.version>2.13.2</gson.version>
@@ -33,7 +33,7 @@
         <lombok.version>1.18.42</lombok.version>
         <jna.version>5.18.1</jna.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
-        <ical4j.version>4.2.2</ical4j.version>
+        <ical4j.version>4.2.3</ical4j.version>
         <sonar.organization>bierchitekt</sonar.organization>
     </properties>
     <dependencies>
