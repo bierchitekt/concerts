@@ -22,7 +22,7 @@ public class Theaterfabrik {
 
     private static final String URL = "https://theaterfabrik-muc.de/line-up/";
 
-    private static final String VENUE_NAME = "Theaterfabrik";
+    public static final String VENUE_NAME = "Theaterfabrik";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public List<ConcertDTO> getConcerts() {

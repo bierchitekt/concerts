@@ -20,7 +20,7 @@ public class KafeKultService {
 
     private static final String URL = "https://www.kafekult.de/wordpress/events/";
 
-    private static final String VENUE_NAME = "kafekult";
+    public static final String VENUE_NAME = "kafekult";
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);

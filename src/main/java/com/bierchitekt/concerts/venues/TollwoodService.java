@@ -30,7 +30,7 @@ public class TollwoodService {
 
     private static final String URL = "https://www.tollwood.de/veranstaltungsort/musik-arena/";
 
-    private static final String VENUE_NAME = "Tollwood";
+    public static final String VENUE_NAME = "Tollwood";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 

@@ -29,7 +29,7 @@ import static com.bierchitekt.concerts.venues.StringUtil.capitalizeWords;
 public class StromService {
 
     private static final String URL = "https://strom-muc.de/";
-    private static final String VENUE_NAME = "Strom";
+    public static final String VENUE_NAME = "Strom";
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);

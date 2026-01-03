@@ -27,7 +27,7 @@ public class ZenithService {
 
     List<String> ignoredEvents = List.of("Midnightbazar", "Kinky Galore");
 
-    private static final String VENUE_NAME = "Zenith";
+    public static final String VENUE_NAME = "Zenith";
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
