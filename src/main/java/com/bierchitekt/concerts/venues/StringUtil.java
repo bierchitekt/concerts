@@ -41,8 +41,9 @@ public class StringUtil {
     }
 
     public static String getICSFilename(String title, LocalDate date) {
-        return StringEscapeUtils.escapeHtml4(title).replaceAll(" ", "_")
-                .replaceAll("/", "") + "-" +
+        return StringEscapeUtils.escapeHtml4(title)
+                .replace(" ", "_")
+                .replace("/", "") + "-" +
                 date.format(formatter) + ".ics";
     }
 }
