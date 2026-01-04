@@ -16,8 +16,10 @@ import com.bierchitekt.concerts.venues.StringUtil;
 import com.bierchitekt.concerts.venues.StromService;
 import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.TollwoodService;
+import com.bierchitekt.concerts.venues.Venue;
 import com.bierchitekt.concerts.venues.WinterTollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.bierchitekt.concerts.venues.Venue.BACKSTAGE;
+import static com.bierchitekt.concerts.venues.Venue.CIRCUSKRONE;
+import static com.bierchitekt.concerts.venues.Venue.EVENTFABRIK;
+import static com.bierchitekt.concerts.venues.Venue.FEIERWERK;
+import static com.bierchitekt.concerts.venues.Venue.IMPORT_EXPORT;
+import static com.bierchitekt.concerts.venues.Venue.KAFE_KULT;
+import static com.bierchitekt.concerts.venues.Venue.KULT9;
+import static com.bierchitekt.concerts.venues.Venue.MUFFATHALLE;
+import static com.bierchitekt.concerts.venues.Venue.OLYMPIAPARK;
+import static com.bierchitekt.concerts.venues.Venue.STROM;
+import static com.bierchitekt.concerts.venues.Venue.THEATERFABRIK;
+import static com.bierchitekt.concerts.venues.Venue.TOLLWOOD;
+import static com.bierchitekt.concerts.venues.Venue.WINTER_TOLLWOOD;
+import static com.bierchitekt.concerts.venues.Venue.ZENITH;
 import static java.util.Locale.ENGLISH;
 
 @Slf4j
@@ -46,7 +62,7 @@ public class ConcertService {
     private final TelegramService telegramService;
 
     @Value("${disabled.venues}")
-    private final Set<String> disabledVenues;
+    private final Set<Venue> disabledVenues;
 
     private final BackstageService backstageService;
     private final ZenithService zenithService;
@@ -73,6 +89,7 @@ public class ConcertService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy").localizedBy(ENGLISH);
 
+    @PostConstruct
     @Transactional
     public void notifyNewConcerts() {
         log.info("notifying for new concerts");
@@ -145,7 +162,7 @@ public class ConcertService {
                 continue;
             }
             if (concertDTO.date().isBefore(LocalDate.now())) {
-                log.info("Not adding concert {} because it's on {} and older than today", concertDTO.title(), concertDTO.date());
+                log.debug("Not adding concert {} because it's on {} and older than today", concertDTO.title(), concertDTO.date());
                 continue;
             }
             if (concertRepository.similarTitleAtSameDate(concertDTO.title(), concertDTO.date()).isEmpty()) {
@@ -176,51 +193,51 @@ public class ConcertService {
     }
 
     private Collection<ConcertDTO> getCircusKroneConcerts() {
-        return getNewConcerts(circusKroneService.getConcerts(), CircusKroneService.VENUE_NAME);
+        return getNewConcerts(circusKroneService.getConcerts(), CIRCUSKRONE);
     }
 
     private Collection<ConcertDTO> getEventfabrikConcerts() {
-        return getNewConcerts(eventFabrikService.getConcerts(), EventFabrikService.VENUE_NAME);
+        return getNewConcerts(eventFabrikService.getConcerts(), EVENTFABRIK);
     }
 
     private Collection<ConcertDTO> getMuffathalleConcerts() {
-        return getNewConcerts(muffathalleService.getConcerts(), MuffathalleService.VENUE_NAME);
+        return getNewConcerts(muffathalleService.getConcerts(), MUFFATHALLE);
     }
 
     private Collection<ConcertDTO> getTheaterfabrikConcerts() {
-        return getNewConcerts(theaterfabrikService.getConcerts(), Theaterfabrik.VENUE_NAME);
+        return getNewConcerts(theaterfabrikService.getConcerts(), THEATERFABRIK);
     }
 
     private Collection<ConcertDTO> getTollwoodConcerts() {
-        return getNewConcerts(tollwoodService.getConcerts(), TollwoodService.VENUE_NAME);
+        return getNewConcerts(tollwoodService.getConcerts(), TOLLWOOD);
     }
 
     private Collection<ConcertDTO> getWinterTollwoodConcerts() {
-        return getNewConcerts(winterTollwoodService.getConcerts(), WinterTollwoodService.VENUE_NAME);
+        return getNewConcerts(winterTollwoodService.getConcerts(), WINTER_TOLLWOOD);
     }
 
     private Collection<ConcertDTO> getOlympiaparkConcerts() {
-        return getNewConcerts(olympiaparkService.getConcerts(), OlympiaparkService.VENUE_NAME);
+        return getNewConcerts(olympiaparkService.getConcerts(), OLYMPIAPARK);
     }
 
     private Collection<ConcertDTO> getZenithConcerts() {
-        return getNewConcerts(zenithService.getConcerts(), ZenithService.VENUE_NAME);
+        return getNewConcerts(zenithService.getConcerts(), ZENITH);
     }
 
     private Collection<ConcertDTO> getStromConcerts() {
-        return getNewConcerts(stromService.getConcerts(), StromService.VENUE_NAME);
+        return getNewConcerts(stromService.getConcerts(), STROM);
     }
 
     private Collection<ConcertDTO> getKafeKultConcerts() {
-        return getNewConcerts(kafeKultService.getConcerts(), KafeKultService.VENUE_NAME);
+        return getNewConcerts(kafeKultService.getConcerts(), KAFE_KULT);
     }
 
     private Collection<ConcertDTO> getImportExportConcerts() {
-        return getNewConcerts(importExportService.getConcerts(), ImportExportService.VENUE_NAME);
+        return getNewConcerts(importExportService.getConcerts(), IMPORT_EXPORT);
     }
 
-    private List<ConcertDTO> getNewConcerts(List<ConcertDTO> concerts, String venue) {
-        if(disabledVenues.contains(venue)) {
+    private List<ConcertDTO> getNewConcerts(List<ConcertDTO> concerts, Venue venue) {
+        if (disabledVenues.contains(venue)) {
             log.info("not getting concerts because venue {} is disabled", venue);
             return new ArrayList<>();
         }
@@ -236,26 +253,26 @@ public class ConcertService {
                 } else {
                     genres = genreService.getGenres(concert.title());
                 }
-                if (venue.equalsIgnoreCase(ZenithService.VENUE_NAME)) {
+                if (venue == ZENITH) {
                     String beginn = zenithService.getTime(concert.link());
                     String supportBands = zenithService.getSupportBands(concert.link());
                     LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
                     newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
 
-                } else if (venue.equalsIgnoreCase(StromService.VENUE_NAME)) {
+                } else if (venue == STROM) {
                     String beginn = stromService.getTime(concert.link());
                     LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
                     newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
 
-                } else if (venue.equalsIgnoreCase(CircusKroneService.VENUE_NAME)) {
+                } else if (venue == CIRCUSKRONE) {
                     LocalTime beginn = circusKroneService.getBeginn(concert.link());
                     LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), beginn);
                     newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
 
-                } else if (venue.equalsIgnoreCase(TollwoodService.VENUE_NAME)) {
+                } else if (venue == TOLLWOOD) {
                     String price = tollwoodService.getPrice(concert.link());
                     newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
-                } else if (venue.equalsIgnoreCase(MuffathalleService.VENUE_NAME)) {
+                } else if (venue == MUFFATHALLE) {
                     genres = genreService.getGenres(concert.title());
                     String price = muffathalleService.getPrice(concert.link());
 
@@ -270,13 +287,13 @@ public class ConcertService {
     }
 
     private Collection<ConcertDTO> getKult9Concerts() {
-        if(disabledVenues.contains(Kult9Service.VENUE_NAME)) {
+        if (disabledVenues.contains(KULT9)) {
             return new ArrayList<>();
         }
         List<ConcertDTO> kult9Concerts = new ArrayList<>();
         List<ConcertDTO> concerts = kult9Service.getConcerts();
         if (concerts.isEmpty()) {
-            notifyNoConcertsFoundForVenue(Kult9Service.VENUE_NAME);
+            notifyNoConcertsFoundForVenue(KULT9);
         }
         concerts.forEach(concert -> {
             if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
@@ -288,7 +305,7 @@ public class ConcertService {
     }
 
     private Collection<ConcertDTO> getFeierwerkConcerts() {
-        if(disabledVenues.contains(FeierwerkService.VENUE_NAME)) {
+        if (disabledVenues.contains(FEIERWERK)) {
             return new ArrayList<>();
         }
         List<ConcertDTO> feierwerkConcerts = new ArrayList<>();
@@ -300,14 +317,14 @@ public class ConcertService {
             }
         }
         if (concertLinks.isEmpty()) {
-            notifyNoConcertsFoundForVenue("Feierwerk");
+            notifyNoConcertsFoundForVenue(FEIERWERK);
         }
-        log.info("received {} concerts for Feierwerk", feierwerkConcerts.size());
+        log.info("received {} concerts for {}}", feierwerkConcerts.size(), FEIERWERK.name());
         return feierwerkConcerts;
     }
 
     public List<ConcertDTO> getBackstageConcerts() {
-        if(disabledVenues.contains(BackstageService.VENUE_NAME)) {
+        if (disabledVenues.contains(BACKSTAGE)) {
             return new ArrayList<>();
         }
         List<ConcertDTO> backstageConcerts = new ArrayList<>();
@@ -342,7 +359,7 @@ public class ConcertService {
             }
         });
         if (concerts.isEmpty()) {
-            notifyNoConcertsFoundForVenue("Backstage");
+            notifyNoConcertsFoundForVenue(BACKSTAGE);
         }
         return backstageConcerts;
     }
@@ -352,8 +369,8 @@ public class ConcertService {
         return concertMapper.toConcertDto(concerts);
     }
 
-    private void notifyNoConcertsFoundForVenue(String venue) {
-        log.error("did not get any concerts for venue: {}", venue);
+    private void notifyNoConcertsFoundForVenue(Venue venue) {
+        log.error("did not get any concerts for venue: {}", venue.name());
     }
 
     private void notifyNewConcerts(String message, List<ConcertEntity> newConcerts, String channelName) {

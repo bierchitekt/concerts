@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 public class OlympiaparkService {
 
-    public static final String VENUE_NAME = "Olympiapark";
+    public static final String VENUE_NAME = Venue.OLYMPIAPARK.name();
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 

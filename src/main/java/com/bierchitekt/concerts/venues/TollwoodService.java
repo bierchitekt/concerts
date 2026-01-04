@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.bierchitekt.concerts.venues.Venue.TOLLWOOD;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class TollwoodService {
 
     private static final String URL = "https://www.tollwood.de/veranstaltungsort/musik-arena/";
 
-    public static final String VENUE_NAME = "Tollwood";
+    public static final String VENUE_NAME = TOLLWOOD.name();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 

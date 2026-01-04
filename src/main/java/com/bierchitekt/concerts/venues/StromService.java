@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.bierchitekt.concerts.venues.StringUtil.capitalizeWords;
+import static com.bierchitekt.concerts.venues.Venue.STROM;
 
 @Slf4j
 @Service
@@ -29,7 +30,7 @@ import static com.bierchitekt.concerts.venues.StringUtil.capitalizeWords;
 public class StromService {
 
     private static final String URL = "https://strom-muc.de/";
-    public static final String VENUE_NAME = "Strom";
+    public static final String VENUE_NAME = STROM.name();
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);

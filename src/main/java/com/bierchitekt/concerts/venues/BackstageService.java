@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.bierchitekt.concerts.venues.Venue.BACKSTAGE;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class BackstageService {
     private static final int ITEMS_PER_PAGE = 25;
     private static final String OVERVIEW_URL = "https://backstage.eu/veranstaltungen/live.html?product_list_limit=";
 
-    public static final String VENUE_NAME = "Backstage";
+    public static final String VENUE_NAME = BACKSTAGE.name();
 
 
     public List<ConcertDTO> getConcerts() {
@@ -127,6 +129,9 @@ public class BackstageService {
             String link = detail.select("a[href]").getFirst().attr("href");
 
             String location = concert.select("strong.eventlocation").text();
+            if(!location.startsWith("Backstage")){
+                continue;
+            }
             location = StringUtil.capitalizeWords(location);
             String genre = concert.select("div.product-item-description").text().trim().replace("Learn More", "");
             String[] split = genre.split(",");
