@@ -16,7 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.bierchitekt.concerts.venues.Venue.*;
+import static com.bierchitekt.concerts.venues.Venue.MUFFATHALLE;
+
 
 @Slf4j
 @Service
