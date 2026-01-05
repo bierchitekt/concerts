@@ -20,13 +20,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.bierchitekt.concerts.venues.Venue.EVENTFABRIK;
+
 @Service
 @Slf4j
 public class EventFabrikService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public static final String VENUE_NAME = "EventFabrik";
+    public static final String VENUE_NAME = EVENTFABRIK.name();
 
     public List<ConcertDTO> getConcerts() {
         List<ConcertDTO> allConcerts = new ArrayList<>();

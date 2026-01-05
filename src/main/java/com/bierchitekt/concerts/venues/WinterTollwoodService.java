@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.bierchitekt.concerts.venues.Venue.WINTER_TOLLWOOD;
+
 
 @Slf4j
 @Service
@@ -26,7 +28,7 @@ public class WinterTollwoodService {
 
     private static final String URL = "https://www.tollwood.de/kalender-winter-2025/#category=tax-79&list=show/";
 
-    public  static final String VENUE_NAME = "Winter Tollwood";
+    public  static final String VENUE_NAME = WINTER_TOLLWOOD.name();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public List<ConcertDTO> getConcerts() {

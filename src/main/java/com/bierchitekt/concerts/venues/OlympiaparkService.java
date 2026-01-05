@@ -15,11 +15,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.bierchitekt.concerts.venues.Venue.OLYMPIAPARK;
+
 @Service
 @Slf4j
 public class OlympiaparkService {
 
-    public static final String VENUE_NAME = "Olympiapark";
+    public static final String VENUE_NAME = OLYMPIAPARK.name();
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 

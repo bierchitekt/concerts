@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.bierchitekt.concerts.venues.Venue.IMPORT_EXPORT;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class ImportExportService {
 
     private static final String URL = "https://import-export.cc/programm/";
 
-    public static final String VENUE_NAME = "Import Export";
+    public static final String VENUE_NAME = IMPORT_EXPORT.name();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy");
 
     public List<ConcertDTO> getConcerts() {

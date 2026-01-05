@@ -16,13 +16,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.bierchitekt.concerts.venues.Venue.THEATERFABRIK;
+
 @Service
 @Slf4j
 public class Theaterfabrik {
 
     private static final String URL = "https://theaterfabrik-muc.de/line-up/";
 
-    public static final String VENUE_NAME = "Theaterfabrik";
+    public static final String VENUE_NAME = THEATERFABRIK.name();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public List<ConcertDTO> getConcerts() {
