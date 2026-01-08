@@ -23,13 +23,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.bierchitekt.concerts.ConcertService.CALENDAR_URL;
-import static com.bierchitekt.concerts.venues.Venue.EVENTFABRIK;
+import static com.bierchitekt.concerts.venues.Venue.FEIERWERK;
 
 @Service
 @Slf4j
 public class FeierwerkService {
 
-    public static final String VENUE_NAME = EVENTFABRIK.name();
+    public static final String VENUE_NAME = FEIERWERK.name();
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final String BASE_URL = "https://www.feierwerk.de";
