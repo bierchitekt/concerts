@@ -24,7 +24,7 @@ public class Theaterfabrik {
 
     private static final String URL = "https://theaterfabrik-muc.de/line-up/";
 
-    public static final String VENUE_NAME = THEATERFABRIK.name();
+    public static final String VENUE_NAME = THEATERFABRIK.getName();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public List<ConcertDTO> getConcerts() {

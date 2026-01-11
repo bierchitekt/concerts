@@ -1,6 +1,7 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -29,11 +30,11 @@ import static com.bierchitekt.concerts.venues.Venue.FEIERWERK;
 @Slf4j
 public class FeierwerkService {
 
-    public static final String VENUE_NAME = FEIERWERK.name();
+    public static final String VENUE_NAME = FEIERWERK.getName();
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final String BASE_URL = "https://www.feierwerk.de";
-
+@PostConstruct
     public Set<String> getConcertLinks() {
         Set<String> concertLinks = new HashSet<>();
 

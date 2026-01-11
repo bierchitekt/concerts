@@ -21,7 +21,7 @@ import static com.bierchitekt.concerts.venues.Venue.OLYMPIAPARK;
 @Slf4j
 public class OlympiaparkService {
 
-    public static final String VENUE_NAME = OLYMPIAPARK.name();
+    public static final String VENUE_NAME = OLYMPIAPARK.getName();
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 

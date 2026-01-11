@@ -27,7 +27,7 @@ public class Kult9Service {
 
     private static final String URL = "https://www.kult9.de/";
 
-    public static final String VENUE_NAME = Venue.KULT9.name();
+    public static final String VENUE_NAME = Venue.KULT9.getName();
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLLL yyyy").localizedBy(GERMAN);
 

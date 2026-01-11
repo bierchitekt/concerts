@@ -28,7 +28,7 @@ public class ImportExportService {
 
     private static final String URL = "https://import-export.cc/programm/";
 
-    public static final String VENUE_NAME = IMPORT_EXPORT.name();
+    public static final String VENUE_NAME = IMPORT_EXPORT.getName();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy");
 
     public List<ConcertDTO> getConcerts() {

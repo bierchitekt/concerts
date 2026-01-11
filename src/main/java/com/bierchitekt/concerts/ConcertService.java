@@ -317,7 +317,7 @@ public class ConcertService {
         if (concertLinks.isEmpty()) {
             notifyNoConcertsFoundForVenue(FEIERWERK);
         }
-        log.info("received {} concerts for {}}", feierwerkConcerts.size(), FEIERWERK.name());
+        log.info("received {} concerts for {}}", feierwerkConcerts.size(), FEIERWERK.getName());
         return feierwerkConcerts;
     }
 
@@ -368,7 +368,7 @@ public class ConcertService {
     }
 
     private void notifyNoConcertsFoundForVenue(Venue venue) {
-        log.error("did not get any concerts for venue: {}", venue.name());
+        log.error("did not get any concerts for venue: {}", venue.getName());
     }
 
     private void notifyNewConcerts(String message, List<ConcertEntity> newConcerts, String channelName) {
