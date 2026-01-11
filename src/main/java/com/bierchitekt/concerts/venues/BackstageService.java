@@ -129,7 +129,7 @@ public class BackstageService {
             String link = detail.select("a[href]").getFirst().attr("href");
 
             String location = concert.select("strong.eventlocation").text();
-            if(!location.startsWith("Backstage")){
+            if (!location.toLowerCase().startsWith("backstage")) {
                 continue;
             }
             location = StringUtil.capitalizeWords(location);
