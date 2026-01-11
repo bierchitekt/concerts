@@ -30,7 +30,7 @@ public class OlympiaparkService {
 
         RestClient restClient = RestClient.create();
         String result = restClient.get()
-                .uri("https://www.olympiapark.de/api/event-list?locale=de&phrase&eventType=konzerte&genre&startDate&endDate&sort=asc&location&limit=120&page=1")
+                .uri("https://www.olympiapark.de/api/event-list?locale=de&phrase&eventType=konzerte&genre&startDate&endDate&sort=asc&location&limit=30&page=1")
                 .retrieve()
                 .body(String.class);
         List<ConcertDTO> allConcerts = new ArrayList<>();
