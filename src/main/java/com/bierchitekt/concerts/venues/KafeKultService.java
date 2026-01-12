@@ -14,13 +14,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.bierchitekt.concerts.venues.Venue.KAFE_KULT;
+
 @Slf4j
 @Service
 public class KafeKultService {
 
     private static final String URL = "https://www.kafekult.de/wordpress/events/";
 
-    private static final String VENUE_NAME = "kafekult";
+    public static final String VENUE_NAME = KAFE_KULT.getName();
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);

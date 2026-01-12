@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.bierchitekt.concerts.venues.Venue.ZENITH;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,7 +29,7 @@ public class ZenithService {
 
     List<String> ignoredEvents = List.of("Midnightbazar", "Kinky Galore");
 
-    private static final String VENUE_NAME = "Zenith";
+    public static final String VENUE_NAME = ZENITH.getName();
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
