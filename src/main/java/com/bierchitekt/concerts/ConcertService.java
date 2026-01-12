@@ -19,7 +19,6 @@ import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.Venue;
 import com.bierchitekt.concerts.venues.WinterTollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +88,6 @@ public class ConcertService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy").localizedBy(ENGLISH);
 
-    @PostConstruct
     @Transactional
     public void notifyNewConcerts() {
         log.info("notifying for new concerts");
@@ -319,7 +317,7 @@ public class ConcertService {
         if (concertLinks.isEmpty()) {
             notifyNoConcertsFoundForVenue(FEIERWERK);
         }
-        log.info("received {} concerts for {}}", feierwerkConcerts.size(), FEIERWERK.name());
+        log.info("received {} concerts for {}}", feierwerkConcerts.size(), FEIERWERK.getName());
         return feierwerkConcerts;
     }
 
@@ -370,7 +368,7 @@ public class ConcertService {
     }
 
     private void notifyNoConcertsFoundForVenue(Venue venue) {
-        log.error("did not get any concerts for venue: {}", venue.name());
+        log.error("did not get any concerts for venue: {}", venue.getName());
     }
 
     private void notifyNewConcerts(String message, List<ConcertEntity> newConcerts, String channelName) {

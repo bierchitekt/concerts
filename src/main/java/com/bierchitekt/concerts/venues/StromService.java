@@ -30,7 +30,7 @@ import static com.bierchitekt.concerts.venues.Venue.STROM;
 public class StromService {
 
     private static final String URL = "https://strom-muc.de/";
-    public static final String VENUE_NAME = STROM.name();
+    public static final String VENUE_NAME = STROM.getName();
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);

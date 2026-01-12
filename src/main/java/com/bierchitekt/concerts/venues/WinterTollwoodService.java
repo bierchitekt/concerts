@@ -28,7 +28,7 @@ public class WinterTollwoodService {
 
     private static final String URL = "https://www.tollwood.de/kalender-winter-2025/#category=tax-79&list=show/";
 
-    public  static final String VENUE_NAME = WINTER_TOLLWOOD.name();
+    public  static final String VENUE_NAME = WINTER_TOLLWOOD.getName();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public List<ConcertDTO> getConcerts() {

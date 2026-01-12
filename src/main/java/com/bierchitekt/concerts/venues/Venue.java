@@ -1,8 +1,10 @@
 package com.bierchitekt.concerts.venues;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public enum Venue {
     BACKSTAGE("Backstage"),
     CIRCUSKRONE("Circus Krone"),

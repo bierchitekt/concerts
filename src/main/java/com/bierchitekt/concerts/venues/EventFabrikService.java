@@ -28,7 +28,7 @@ public class EventFabrikService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public static final String VENUE_NAME = EVENTFABRIK.name();
+    public static final String VENUE_NAME = EVENTFABRIK.getName();
 
     public List<ConcertDTO> getConcerts() {
         List<ConcertDTO> allConcerts = new ArrayList<>();

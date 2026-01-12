@@ -15,20 +15,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.bierchitekt.concerts.venues.Venue.OLYMPIAPARK;
+
 @Service
 @Slf4j
 public class OlympiaparkService {
 
-    public static final String VENUE_NAME = Venue.OLYMPIAPARK.name();
+    public static final String VENUE_NAME = OLYMPIAPARK.getName();
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final RestClient restClient = RestClient.create();
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
 
-        RestClient restClient = RestClient.create();
         String result = restClient.get()
-                .uri("https://www.olympiapark.de/api/event-list?locale=de&phrase&eventType=konzerte&genre&startDate&endDate&sort=asc&location&limit=120&page=1")
+                .uri("https://www.olympiapark.de/api/event-list?locale=de&phrase&eventType=konzerte&genre&premium&startDate&endDate&sort=asc&location&limit=20&page=1")
                 .retrieve()
                 .body(String.class);
         List<ConcertDTO> allConcerts = new ArrayList<>();
@@ -36,8 +38,17 @@ public class OlympiaparkService {
         if (result == null) {
             return allConcerts;
         }
-        JsonArray hits = JsonParser.parseString(result).getAsJsonObject()
-                .get("hits").getAsJsonArray();
+
+
+        int totalCount = JsonParser.parseString(result).getAsJsonObject().get("totalCount").getAsInt();
+
+        int pages = (totalCount / 20) + 1;
+        JsonArray hits = new JsonArray();
+        for (int i = 1; i <= pages; i++) {
+            hits.addAll(getConcertsForPage(i));
+        }
+
+
         for (JsonElement concert : hits) {
             JsonElement source = concert.getAsJsonObject().get("_source");
             String title = source.getAsJsonObject().get("title").getAsString().trim();
@@ -63,6 +74,14 @@ public class OlympiaparkService {
         log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
 
         return allConcerts;
+    }
+
+    private JsonArray getConcertsForPage(int i) {
+        String result = restClient.get()
+                .uri("https://www.olympiapark.de/api/event-list?locale=de&phrase&eventType=konzerte&genre&premium&startDate&endDate&sort=asc&location&limit=20&page=" + i)
+                .retrieve()
+                .body(String.class);
+        return JsonParser.parseString(result).getAsJsonObject().get("hits").getAsJsonArray();
     }
 
 }

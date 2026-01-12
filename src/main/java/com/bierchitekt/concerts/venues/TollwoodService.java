@@ -32,7 +32,7 @@ public class TollwoodService {
 
     private static final String URL = "https://www.tollwood.de/veranstaltungsort/musik-arena/";
 
-    public static final String VENUE_NAME = TOLLWOOD.name();
+    public static final String VENUE_NAME = TOLLWOOD.getName();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 

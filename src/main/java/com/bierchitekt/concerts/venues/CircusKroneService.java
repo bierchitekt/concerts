@@ -37,7 +37,7 @@ public class CircusKroneService {
             Map.entry("Nov.", 11),
             Map.entry("Dezember", 12));
 
-    public static final String VENUE_NAME = Venue.CIRCUSKRONE.name();
+    public static final String VENUE_NAME = Venue.CIRCUSKRONE.getName();
 
     public List<ConcertDTO> getConcerts() {
         List<ConcertDTO> allConcerts = new ArrayList<>();
