@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,5 +42,10 @@ public class ConcertController {
     @GetMapping("/next-week-metal-concerts")
     public List<ConcertDTO> getNextWeekConcerts() {
         return concertService.getNextWeekConcerts();
+    }
+
+    @GetMapping("/new-not-yet-notified-concerts")
+    public Set<ConcertDTO> getNewNotYetNotifiedConcerts() {
+        return concertService.getNotYetNotifiedConcerts();
     }
 }

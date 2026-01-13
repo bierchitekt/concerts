@@ -33,6 +33,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -84,6 +85,11 @@ public class ConcertService {
 
     private final GenreService genreService;
 
+    private static final String METAL = "metal";
+    private static final String PUNK = "punk";
+    private static final String ROCK = "rock";
+    private static final String HARDCORE = "hardcore";
+
     public static final String CALENDAR_URL = "https://bierchitekt.github.io/MunichConcertsCalendar/";
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy").localizedBy(ENGLISH);
@@ -91,10 +97,10 @@ public class ConcertService {
     @Transactional
     public void notifyNewConcerts() {
         log.info("notifying for new concerts");
-        List<ConcertEntity> newMetalConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("metal");
-        List<ConcertEntity> newRockConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("rock");
-        List<ConcertEntity> newPunkConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("punk");
-        List<ConcertEntity> newHardcoreConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate("hardcore");
+        List<ConcertEntity> newMetalConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(METAL);
+        List<ConcertEntity> newRockConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(ROCK);
+        List<ConcertEntity> newPunkConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(PUNK);
+        List<ConcertEntity> newHardcoreConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(HARDCORE);
 
         notifyNewConcerts("Good news everyone! I found some new metal concerts for you\n\n", newMetalConcerts, "@MunichMetalConcerts");
         notifyNewConcerts("Good news everyone! I found some new rock concerts for you\n\n", newRockConcerts, "@MunichRockConcerts");
@@ -108,16 +114,25 @@ public class ConcertService {
         notifyNextWeekPunkConcerts();
     }
 
+    public Set<ConcertDTO> getNotYetNotifiedConcerts() {
+        Set<ConcertDTO> notYetNotifiedConcerts = new HashSet<>();
+        notYetNotifiedConcerts.addAll(concertMapper.toConcertDto(concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(METAL)));
+        notYetNotifiedConcerts.addAll(concertMapper.toConcertDto(concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(ROCK)));
+        notYetNotifiedConcerts.addAll(concertMapper.toConcertDto(concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(PUNK)));
+        notYetNotifiedConcerts.addAll(concertMapper.toConcertDto(concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(HARDCORE)));
+        return notYetNotifiedConcerts;
+    }
+
     public void notifyNextWeekMetalConcerts() {
-        notifyNextWeekConcerts("metal", "@MunichMetalConcerts");
+        notifyNextWeekConcerts(METAL, "@MunichMetalConcerts");
     }
 
     public void notifyNextWeekRockConcerts() {
-        notifyNextWeekConcerts("rock", "@MunichRockConcerts");
+        notifyNextWeekConcerts(ROCK, "@MunichRockConcerts");
     }
 
     public void notifyNextWeekPunkConcerts() {
-        notifyNextWeekConcerts("punk", "@MunichPunkConcerts");
+        notifyNextWeekConcerts(PUNK, "@MunichPunkConcerts");
     }
 
     private void notifyNextWeekConcerts(String genreName, String channelName) {
@@ -251,32 +266,35 @@ public class ConcertService {
                 } else {
                     genres = genreService.getGenres(concert.title());
                 }
-                if (venue == ZENITH) {
-                    String beginn = zenithService.getTime(concert.link());
-                    String supportBands = zenithService.getSupportBands(concert.link());
-                    LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                switch (venue) {
+                    case ZENITH -> {
+                        String beginn = zenithService.getTime(concert.link());
+                        String supportBands = zenithService.getSupportBands(concert.link());
+                        LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                    }
+                    case STROM -> {
+                        String beginn = stromService.getTime(concert.link());
+                        LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                    }
+                    case CIRCUSKRONE -> {
+                        LocalTime beginn = circusKroneService.getBeginn(concert.link());
+                        LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), beginn);
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                    }
+                    case TOLLWOOD -> {
+                        String price = tollwoodService.getPrice(concert.link());
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                    }
+                    case MUFFATHALLE -> {
+                        genres = genreService.getGenres(concert.title());
+                        String price = muffathalleService.getPrice(concert.link());
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), "", LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                    }
+                    default ->
+                            newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
 
-                } else if (venue == STROM) {
-                    String beginn = stromService.getTime(concert.link());
-                    LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
-
-                } else if (venue == CIRCUSKRONE) {
-                    LocalTime beginn = circusKroneService.getBeginn(concert.link());
-                    LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), beginn);
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
-
-                } else if (venue == TOLLWOOD) {
-                    String price = tollwoodService.getPrice(concert.link());
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
-                } else if (venue == MUFFATHALLE) {
-                    genres = genreService.getGenres(concert.title());
-                    String price = muffathalleService.getPrice(concert.link());
-
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), "", LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
-                } else {
-                    newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                 }
             }
         });
