@@ -164,7 +164,7 @@ public class ConcertService {
                 continue;
             }
             if (concertRepository.similarTitleAtSameDate(concertDTO.title(), concertDTO.date()).isEmpty()) {
-                log.info("new concert found. Title: {}", concertDTO.title());
+                log.info("new concert found. Title: {}, date: {}, venue: {}", concertDTO.title(), concertDTO.date(), concertDTO.location());
                 ConcertEntity concertEntity = concertMapper.toConcertEntity(concertDTO);
                 concertEntity.setAddedAt(LocalDate.now());
                 concertRepository.save(concertEntity);
