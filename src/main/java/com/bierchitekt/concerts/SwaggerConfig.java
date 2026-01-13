@@ -14,8 +14,6 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI defineOpenApi() {
         Server server = new Server();
-        server.setUrl("http://localhost:8080");
-
 
         Info information = new Info()
                 .title("Munich Concerts API")
