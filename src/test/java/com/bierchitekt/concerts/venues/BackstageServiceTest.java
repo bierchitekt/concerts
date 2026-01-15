@@ -30,7 +30,7 @@ class BackstageServiceIntegrationTest {
 
         Document doc = Jsoup.parse(file, "UTF-8");
         List<ConcertDTO> concertsFromDocument = backstageService.getConcertsFromDocument(doc);
-        assertThat(concertsFromDocument.size()).isEqualTo(25);
+        assertThat(concertsFromDocument).hasSize(25);
         ConcertDTO firstConcert = concertsFromDocument.getFirst();
         assertThat(firstConcert.title()).isEqualTo("Monosphere + Despite Exile - Co-headliners Germany 2025 | Leider Abgesagt");
         assertThat(firstConcert.date()).isEqualTo(LocalDate.of(2025, 12, 16));
