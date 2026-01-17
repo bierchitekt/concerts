@@ -1,3 +1,4 @@
+Website is deployed to https://bierchitekt.github.io/concerts/
 # concerts
 
 Getting upcoming concerts in munich. Getting the artist genre using spotify api and lastfm api 
