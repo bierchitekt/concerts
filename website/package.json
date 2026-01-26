@@ -13,8 +13,8 @@
         "check-format": "prettier --ignore-path \"../.gitignore\" --check \"./**/*.{ts,tsx,json,md,mdx,mjs,cjs,js,jsx,html}\""
     },
     "dependencies": {
-        "react": "19.2.3",
-        "react-dom": "19.2.3"
+        "react": "19.2.4",
+        "react-dom": "19.2.4"
     },
     "devDependencies": {
         "@eslint/js": "9.39.2",
@@ -37,7 +37,7 @@
         "prettier-plugin-tailwindcss": "0.7.2",
         "tailwindcss": "4.1.18",
         "typescript": "5.9.3",
-        "typescript-eslint": "8.53.1",
+        "typescript-eslint": "8.54.0",
         "vite": "7.3.1"
     }
 }
