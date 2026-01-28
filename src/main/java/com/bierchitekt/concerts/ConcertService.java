@@ -429,14 +429,15 @@ public class ConcertService {
 
     public void sendErrorsToTelegram() {
         List<String> errors = FunctionTriggerAppender.getErrors();
-        StringBuilder stringBuilder = new StringBuilder();
+        if (!errors.isEmpty()) {
+            StringBuilder stringBuilder = new StringBuilder();
 
-        for (String error : errors) {
-            stringBuilder.append(error).append("\n");
+            for (String error : errors) {
+                stringBuilder.append(error).append("\n");
+            }
+            telegramService.sendMessage("@concerterrors", stringBuilder.toString());
+            FunctionTriggerAppender.resetErrors();
         }
-        telegramService.sendMessage("@concerterrors", stringBuilder.toString());
-        FunctionTriggerAppender.resetErrors();
-
     }
 
 }
