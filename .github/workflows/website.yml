@@ -26,7 +26,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
       - run: npm --version
       - run: node --version
-      - run: npm ci
+      - run: npm ci --ignore-scripts
       - run: npm run check-lint
       - run: npm run check-types
       - run: npm run check-format
