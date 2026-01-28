@@ -16,7 +16,6 @@
     <properties>
         <java.version>25</java.version>
         <jsoup.version>1.22.1</jsoup.version>
-        <hibernate-community-dialects.version>7.2.1.Final</hibernate-community-dialects.version>
         <commons-text.version>1.15.0</commons-text.version>
         <gson.version>2.13.2</gson.version>
         <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
@@ -84,7 +83,6 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-community-dialects</artifactId>
-            <version>${hibernate-community-dialects.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
