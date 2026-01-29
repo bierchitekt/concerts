@@ -9,7 +9,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,8 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.bierchitekt.concerts.ConcertService.CALENDAR_URL;
 import static com.bierchitekt.concerts.venues.Venue.FEIERWERK;
@@ -38,15 +35,15 @@ public class FeierwerkService {
         Set<String> concertLinks = new HashSet<>();
 
         try {
-            for (String url : getLinks()) {
-                Document doc = Jsoup.connect(url).get();
+            String url = "https://www.feierwerk.de/konzert-kulturprogramm/kkp?tx_search_copilotsearch%5Baction%5D=loadMoreEvents&tx_search_copilotsearch%5Bcontroller%5D=Data&tx_search_copilotsearch%5Boffset%5D=0&tx_search_copilotsearch%5Blimit%5D=200";
 
-                Elements concerts = doc.select("a[href]");
-                for (Element concert : concerts) {
-                    String href = concert.attr("href");
-                    if (href.startsWith("/konzert-kulturprogramm/detail/")) {
-                        concertLinks.add(BASE_URL + href);
-                    }
+            Document doc = Jsoup.connect(url).get();
+
+            Elements concerts = doc.select("a[href]");
+            for (Element concert : concerts) {
+                String href = concert.attr("href");
+                if (href.startsWith("/konzert-kulturprogramm/detail/")) {
+                    concertLinks.add(BASE_URL + href);
                 }
             }
         } catch (Exception ex) {
@@ -78,7 +75,6 @@ public class FeierwerkService {
 
             LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
 
-
             return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price,
                     CALENDAR_URL + StringUtil.getICSFilename(bands.getFirst(), date)));
         } catch (Exception _) {
@@ -87,42 +83,14 @@ public class FeierwerkService {
     }
 
     private String getPrice(Document doc) {
-        Elements select = doc.select("#top > div > div.event-date-location-detail > div > span");
-
-        return extractPrice(select.text());
-    }
-
-    public String extractPrice(String input) {
-
-        Pattern pattern = Pattern.compile("\\d+");
-        Matcher matcher = pattern.matcher(input);
-        if (matcher.find()) {
-            return matcher.group() + " €";
-        }
-        return "";
-    }
-
-    private Set<String> getLinks() throws IOException {
-        String url = "https://www.feierwerk.de/konzert-kulturprogramm/kkp";
-
-        Document doc = Jsoup.connect(url).get();
-
-        Elements select = doc.select("ul.f3-widget-paginator").select("a[href]");
-
-        Set<String> urls = new HashSet<>();
-        for (Element element : select) {
-            String href = element.attr("href");
-            urls.add(BASE_URL + href);
-        }
-        urls.add(url);
-        return urls;
+        Elements select = doc.select("div.additional-info");
+        return StringUtils.substringBetween(select.text(), "VVK: ", " EURO") + " €";
     }
 
     private Set<String> getGenres(Document doc) {
-        String genres = doc.select("p.artiststyle").text();
-        genres = StringUtils.substringBetween(genres, "", "|");
-        if (genres == null) {
-            return Set.of();
+        String genres = doc.select("span.artist-genre").text();
+        if (genres.startsWith("|")) {
+            genres = genres.substring(1);
         }
         genres = genres.trim();
         String[] split = genres.split(",");
@@ -133,13 +101,13 @@ public class FeierwerkService {
     }
 
     private LocalDate getDate(Document doc) {
-        String date = doc.select("div.event-date-location-detail").text();
-        return LocalDate.parse(date.substring(3, 13), formatter);
+        String date = doc.select("span.date-bold").text();
+        return LocalDate.parse(date, formatter);
     }
 
     private String getTime(Document doc) {
-        String date = doc.select("div.event-date-location-detail").text();
-        return StringUtils.substringBetween(date, "Beginn:", "Uhr").trim();
+        String date = doc.select("div.additional-info").text();
+        return StringUtils.substringBetween(date.toLowerCase(), "beginn:", "uhr").trim();
     }
 
 
@@ -147,7 +115,7 @@ public class FeierwerkService {
         List<String> bands = new ArrayList<>();
         try {
 
-            Elements select = doc.select("h3.artistname");
+            Elements select = doc.select("span.artist-name");
             for (Element band : select) {
                 bands.add(band.text());
             }
