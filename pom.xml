@@ -22,7 +22,7 @@
         <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
         <java-telegram-bot-api.version>9.3.0</java-telegram-bot-api.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <postgresql.version>42.7.9</postgresql.version>
         <testcontainers.version>2.0.3</testcontainers.version>
