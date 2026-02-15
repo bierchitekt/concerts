@@ -178,6 +178,18 @@ public class ConcertService {
                 log.debug("Not adding concert {} because it's on {} and older than today", concertDTO.title(), concertDTO.date());
                 continue;
             }
+            Optional<ConcertEntity> byLinkAndDate = concertRepository.findByLinkAndDate(concertDTO.link(), concertDTO.date());
+            if (byLinkAndDate.isPresent()) {
+                ConcertEntity concert = byLinkAndDate.get();
+                if(!concert.getLocation().equalsIgnoreCase(concertDTO.location()) ||
+                        !concert.getTitle().equalsIgnoreCase(concertDTO.title())) {
+                    log.info("Concert already exists, changing location {} or title {}", concertDTO.location(), concertDTO.title());
+                    concert.setLocation(concertDTO.location());
+                    concert.setTitle(concertDTO.title());
+                    concertRepository.saveAndFlush(concert);
+                }
+            }
+
             if (concertRepository.similarTitleAtSameDate(concertDTO.title(), concertDTO.date()).isEmpty()) {
                 log.info("new concert found. Title: {}, date: {}, venue: {}", concertDTO.title(), concertDTO.date(), concertDTO.location());
                 ConcertEntity concertEntity = concertMapper.toConcertEntity(concertDTO);

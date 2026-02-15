@@ -30,4 +30,5 @@ public interface ConcertRepository extends JpaRepository<ConcertEntity, String> 
     @NativeQuery("SELECT distinct * FROM concert_entity ce where genre::text ilike CONCAT('%', :genre, '%') and date >= :from and date < :to order by date;")
     List<ConcertEntity> findByGenreAndDateAfterAndDateBeforeOrderByDate(String genre, LocalDate from, LocalDate to);
 
+    Optional<ConcertEntity> findByLinkAndDate(String title, LocalDate date);
 }
