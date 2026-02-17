@@ -58,16 +58,20 @@ public class Kult9Service {
                 }
                 String day = event.select("div.day").text();
                 String time = event.select("div.time").text();
-                time = StringUtils.substringBetween(time, "Von ", " Uhr");
+                if (time.contains("Von")) {
+                    time = StringUtils.substringBetween(time, "Von ", " Uhr");
+                } else {
+                    time = StringUtils.substringBetween(time, "ab ", " Uhr");
+                }
                 day = day.substring(4);
                 LocalDate date = LocalDate.parse(day, formatter);
+                LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(time));
                 Elements linkElement = event.select("div.btnarea").select("a[href]");
                 String link = "";
                 if (!linkElement.isEmpty()) {
                     link = event.select("div.btnarea").select("a[href]").getFirst().attr("href");
                 }
                 String price = "";
-                LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(time));
                 ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, allGenres, VENUE_NAME, "", LocalDate.now(), price,
                         CALENDAR_URL + StringUtil.getICSFilename(title, date));
                 allConcerts.add(concertDTO);
