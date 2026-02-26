@@ -18,15 +18,13 @@
         <jsoup.version>1.22.1</jsoup.version>
         <commons-text.version>1.15.0</commons-text.version>
         <gson.version>2.13.2</gson.version>
-        <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
         <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
-        <java-telegram-bot-api.version>9.4.0</java-telegram-bot-api.version>
+        <java-telegram-bot-api.version>9.4.1</java-telegram-bot-api.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <testcontainers.version>2.0.3</testcontainers.version>
         <junit-jupiter.version>6.0.3</junit-jupiter.version>
-        <hibernate-validator.version>9.1.0.Final</hibernate-validator.version>
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <lombok.version>1.18.42</lombok.version>
         <jna.version>5.18.1</jna.version>
@@ -52,7 +50,6 @@
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>${jakarta.validation-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -86,7 +83,6 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate-validator.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
