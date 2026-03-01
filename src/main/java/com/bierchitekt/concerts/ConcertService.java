@@ -347,7 +347,7 @@ public class ConcertService {
         if (feierwerkConcerts.isEmpty()) {
             notifyNoConcertsFoundForVenue(FEIERWERK);
         }
-        log.info("received {} concerts for {}}", feierwerkConcerts.size(), FEIERWERK.getName());
+        log.info("received {} new concerts for {}", feierwerkConcerts.size(), FEIERWERK.getName());
         return feierwerkConcerts;
     }
 
