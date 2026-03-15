@@ -80,7 +80,12 @@ public class OlympiaparkService {
         }
 
         int totalCount = JsonParser.parseString(result).getAsJsonObject().get("totalCount").getAsInt();
-        return (totalCount / 20) + 1;
+        int restCount = totalCount % 20;
+        totalCount = totalCount /20;
+        if(restCount == 0) {
+            return totalCount;
+        }
+        return totalCount + 1;
     }
 
     private JsonArray getConcertsForPage(int i) throws CannotGetResultException {
