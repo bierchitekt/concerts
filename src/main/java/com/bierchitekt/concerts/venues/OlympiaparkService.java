@@ -14,7 +14,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.bierchitekt.concerts.venues.Venue.OLYMPIAPARK;
 
@@ -55,6 +58,8 @@ public class OlympiaparkService {
             String link = source.get("path").getAsString();
             JsonArray dateJson = source.get("occursOn").getAsJsonArray();
             String startTime = source.get("start").getAsString();
+            String genre = source.get("genre").getAsString();
+            Set<String> genres = getGenres(genre);
             startTime = startTime.substring(11, 16);
             List<LocalDate> concertDates = new ArrayList<>();
             for (JsonElement dates : dateJson) {
@@ -62,13 +67,19 @@ public class OlympiaparkService {
             }
             for (LocalDate date : concertDates) {
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                allConcerts.add(new ConcertDTO(title, date, dateAndTime, BASE_URL + link, null, location, "", LocalDate.now(), "", ""));
+                allConcerts.add(new ConcertDTO(title, date, dateAndTime, BASE_URL + link, genres, location, "", LocalDate.now(), "", ""));
             }
-
         }
         log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
 
         return allConcerts;
+    }
+
+    public Set<String> getGenres(String genre) {
+        return Arrays.stream(genre.split("[,&]"))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
     }
 
     private int getNumberOfPages() throws CannotGetResultException {
@@ -81,8 +92,8 @@ public class OlympiaparkService {
 
         int totalCount = JsonParser.parseString(result).getAsJsonObject().get("totalCount").getAsInt();
         int restCount = totalCount % 20;
-        totalCount = totalCount /20;
-        if(restCount == 0) {
+        totalCount = totalCount / 20;
+        if (restCount == 0) {
             return totalCount;
         }
         return totalCount + 1;
