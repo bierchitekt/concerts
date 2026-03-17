@@ -97,7 +97,17 @@ public class ZenithService {
         try {
             Document doc = Jsoup.connect(link).get();
             String text = doc.select("div.elementor-widget-container").text();
-            return StringUtils.substringBetween(text, "Beginn: ", " Uhr").trim();
+            String time = StringUtils.substringBetween(text, "Beginn: ", " Uhr");
+            if (time != null) {
+                return time.trim();
+            } else {
+                time = StringUtils.substringBetween(text, "Einlass: ", " Uhr");
+            }
+            if(time != null) {
+                return time.trim();
+            }
+            log.warn("Could not get time from {}, time is {}", link, text);
+            return null;
         } catch (IOException e) {
             log.warn("error getting time for zenith url {} ", "link", e);
             return "";
