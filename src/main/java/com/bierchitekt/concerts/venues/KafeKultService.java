@@ -23,6 +23,9 @@ public class KafeKultService {
     private static final String URL = "https://www.kafekult.de/wordpress/events/";
 
     public static final String VENUE_NAME = KAFE_KULT.getName();
+    private static final String START_DATE_STRING = "startDate";
+    private static final String END_DATE_STRING = "endDate";
+
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
@@ -71,8 +74,8 @@ public class KafeKultService {
             String type = script.attr("type");
             if (type.contentEquals("application/ld+json")) {
                 String scriptData = script.data();
-                if (scriptData.contains("startDate") && scriptData.contains("endDate")) {
-                    String date = scriptData.substring(scriptData.indexOf("startDate") + 12, scriptData.indexOf("endDate") - 18);
+                if (scriptData.contains(START_DATE_STRING) && scriptData.contains(END_DATE_STRING)) {
+                    String date = scriptData.substring(scriptData.indexOf(START_DATE_STRING) + 12, scriptData.indexOf(END_DATE_STRING) - 18);
                     return LocalDate.parse(date);
                 }
 
@@ -87,8 +90,8 @@ public class KafeKultService {
             String type = script.attr("type");
             if (type.contentEquals("application/ld+json")) {
                 String scriptData = script.data();
-                if (scriptData.contains("startDate") && scriptData.contains("endDate")) {
-                    String date = scriptData.substring(scriptData.indexOf("startDate") + 12, scriptData.indexOf("endDate") - 9);
+                if (scriptData.contains(START_DATE_STRING) && scriptData.contains(END_DATE_STRING)) {
+                    String date = scriptData.substring(scriptData.indexOf(START_DATE_STRING) + 12, scriptData.indexOf(END_DATE_STRING) - 9);
                     return LocalDateTime.parse(date);
                 }
 

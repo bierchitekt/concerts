@@ -49,7 +49,7 @@ public class LastFMClient {
             }
 
             return genres;
-        } catch (Exception ex) {
+        } catch (Exception _) {
             log.info("error getting artist {} from lastFM", artist);
             return Set.of();
         }

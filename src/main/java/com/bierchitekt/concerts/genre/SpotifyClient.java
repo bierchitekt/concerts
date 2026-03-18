@@ -68,7 +68,7 @@ public class SpotifyClient {
                 genres.add(StringUtil.capitalizeWords(asJsonArray.get(i).getAsString()));
             }
             return genres;
-        } catch (Exception ex) {
+        } catch (Exception _) {
             log.info("error getting artist {} from spotify", artist);
             return Set.of();
         }
