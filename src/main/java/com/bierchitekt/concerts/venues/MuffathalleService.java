@@ -55,7 +55,13 @@ public class MuffathalleService {
                     String startTime = event.select("div.entry-data.center").get(1).text();
 
                     startTime = startTime.substring(startTime.length() - 5);
-                    LocalDateTime localTime = LocalDateTime.of(date, LocalTime.parse(startTime));
+                    LocalTime parse = LocalTime.of(20, 0);
+                    try {
+                        parse = LocalTime.parse(startTime);
+                    } catch (Exception e) {
+                        log.warn("cannot parse {} as a start time", startTime, e);
+                    }
+                    LocalDateTime localTime = LocalDateTime.of(date, parse);
                     ConcertDTO concertDTO = new ConcertDTO(title, date, localTime, link, null, VENUE_NAME, "", LocalDate.now(), "", "");
 
                     allConcerts.add(concertDTO);
@@ -81,11 +87,13 @@ public class MuffathalleService {
 
             String substring = dateString.substring(3);
 
+            substring = substring.replace(". ", " ");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM yy");
             return LocalDate.parse(substring, formatter);
         } catch (Exception e) {
             log.warn("could not parse date string {} for muffathalle", dateString, e);
-            return null;
+            // return yesterday so the concert wont be saved
+            return LocalDate.now().minusDays(1);
         }
     }
 
