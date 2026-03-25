@@ -18,7 +18,6 @@ import java.util.List;
 
 import static com.bierchitekt.concerts.venues.Venue.MUFFATHALLE;
 
-
 @Slf4j
 @Service
 public class MuffathalleService {
@@ -46,7 +45,7 @@ public class MuffathalleService {
                 if (firstElement != null) {
                     String title = firstElement.text().replace("ausverkauft", "").trim();
                     title = title.replaceAll("verlegt auf \\d\\d\\.\\d\\d.\\d\\d ", "").trim();
-                    if (title.contains("abgesagt")) {
+                    if (title.contains("abgesagt") || title.startsWith("Münchener Biennale")) {
                         continue;
                     }
                     Elements select = event.select("div.entry-data.right");
