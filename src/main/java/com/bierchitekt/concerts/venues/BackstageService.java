@@ -94,7 +94,7 @@ public class BackstageService {
         }
         LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
 
-        ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, genres, location, null, LocalDate.now(), price, "");
+        ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, genres, location, "", LocalDate.now(), price, "");
         return Optional.of(concertDTO);
     }
 }

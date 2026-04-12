@@ -31,6 +31,7 @@ public class ConcertEntity implements Comparable<ConcertEntity> {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String title;
+    @NotNull
     private String supportBands;
     private LocalDate date;
     private LocalDateTime dateAndTime;
