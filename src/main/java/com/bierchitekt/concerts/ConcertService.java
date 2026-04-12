@@ -22,9 +22,7 @@ import com.bierchitekt.concerts.venues.ZenithService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -181,7 +179,7 @@ public class ConcertService {
             Optional<ConcertEntity> byLinkAndDate = concertRepository.findByLinkAndDate(concertDTO.link(), concertDTO.date());
             if (byLinkAndDate.isPresent()) {
                 ConcertEntity concert = byLinkAndDate.get();
-                if(!concert.getLocation().equalsIgnoreCase(concertDTO.location()) ||
+                if (!concert.getLocation().equalsIgnoreCase(concertDTO.location()) ||
                         !concert.getTitle().equalsIgnoreCase(concertDTO.title())) {
                     log.info("Concert already exists, changing location {} or title {}", concertDTO.location(), concertDTO.title());
                     concert.setLocation(concertDTO.location());
@@ -358,32 +356,29 @@ public class ConcertService {
         List<ConcertDTO> backstageConcerts = new ArrayList<>();
         List<ConcertDTO> concerts = backstageService.getConcerts();
         concerts.forEach(concert -> {
-            if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                String supportBands = backstageService.getSupportBands(concert.link());
-                String price;
-                Pair<@NotNull String, @NotNull String> priceAndTime = backstageService.getPriceAndTime(concert.link());
-                if (concert.title().contains("Free&easy")) {
-                    price = "0 €";
-                } else {
-                    price = priceAndTime.getFirst();
-                }
-                String startTime = priceAndTime.getSecond();
-                LocalDateTime concertDateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(startTime));
+            List<ConcertEntity> byTitleAndDate = concertRepository.findByTitleAndDate(concert.title(), concert.date());
+            if (byTitleAndDate.isEmpty()) {
+
 
                 ConcertDTO concertDTO = ConcertDTO.builder()
                         .title(concert.title())
                         .date(concert.date())
-                        .dateAndTime(concertDateAndTime)
+                        .dateAndTime(concert.dateAndTime())
                         .link(concert.link())
                         .genre(concert.genre())
                         .location(concert.location())
-                        .supportBands(supportBands)
+                        .supportBands(concert.supportBands())
                         .addedAt(LocalDate.now())
-                        .price(price)
+                        .price(concert.price())
                         .calendarUri(CALENDAR_URL + StringUtil.getICSFilename(concert))
                         .build();
-
                 backstageConcerts.add(concertDTO);
+            } else {
+                // new URI is needed
+                // save for now in repo because its only needed for new backstage website
+                ConcertEntity concertEntity = byTitleAndDate.getFirst();
+                concertEntity.setLink(concert.link());
+                concertRepository.saveAndFlush(concertEntity);
             }
         });
         if (concerts.isEmpty()) {

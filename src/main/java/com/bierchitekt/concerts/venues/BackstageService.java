@@ -3,21 +3,19 @@ package com.bierchitekt.concerts.venues;
 import com.bierchitekt.concerts.ConcertDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,28 +26,26 @@ import static com.bierchitekt.concerts.venues.Venue.BACKSTAGE;
 @RequiredArgsConstructor
 public class BackstageService {
 
-    private static final Map<String, Integer> calendarMap = Map.ofEntries(Map.entry("Januar", 1), Map.entry("Februar", 2), Map.entry("März", 3), Map.entry("April", 4), Map.entry("Mai", 5), Map.entry("Juni", 6), Map.entry("Juli", 7), Map.entry("August", 8), Map.entry("September", 9), Map.entry("Oktober", 10), Map.entry("November", 11), Map.entry("Dezember", 12));
-    private static final int ITEMS_PER_PAGE = 25;
-    private static final String OVERVIEW_URL = "https://backstage.eu/veranstaltungen/live.html?product_list_limit=";
+    private static final String URL = "https://www.backstage.eu";
+    private static final String OVERVIEW_URL = URL + "/events";
 
     public static final String VENUE_NAME = BACKSTAGE.getName();
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
         List<ConcertDTO> allConcerts = new ArrayList<>();
         try {
-            String url = OVERVIEW_URL + ITEMS_PER_PAGE;
-            int totalElements = getPages(url);
-            log.debug("Backstage total elements: {}", totalElements);
-            int totalPages = totalElements / ITEMS_PER_PAGE + 2;
-            log.debug("Backstage total pages: {}", totalPages);
 
-            for (int i = 1; i < totalPages; ++i) {
-                log.debug("Backstage getting page {} of {}", i, totalPages);
-                url = OVERVIEW_URL + ITEMS_PER_PAGE + "&p=" + i;
-                List<ConcertDTO> concerts = getConcerts(url);
-                allConcerts.addAll(concerts);
+            Document document = Jsoup.connect(OVERVIEW_URL).get();
+
+
+            Elements allEvents = document.select("a.my-5");
+
+            for (Element event : allEvents) {
+                Optional<ConcertDTO> concert = getConcert(event);
+                concert.ifPresent(allConcerts::add);
 
             }
 
@@ -61,143 +57,44 @@ public class BackstageService {
         }
     }
 
-    public String getSupportBands(String url) {
-        String supportBands = "";
-        try {
-            Document doc = Jsoup.connect(url).get();
-
-            Elements select = doc.select("h5");
-            if (!select.isEmpty()) {
-                String text = doc.select("h5").getFirst().text();
-                supportBands = removeUnwantedFillerText(text);
-
+    private Optional<ConcertDTO> getConcert(Element event) {
+        Set<String> genres = new HashSet<>();
+        String link = URL + event.select("a[href]").getFirst().attr("href");
+        Elements select = event.select("p.Text_headline4__NpUZq");
+        Elements genreElements = event.select("p.Text_text5__NsFNS.break-words.w-fit.h-fit");
+        for (Element genre : genreElements) {
+            String genreText = genre.text();
+            String genreTextLowerCase = genreText.toLowerCase();
+            if (genreTextLowerCase.isEmpty() || genreTextLowerCase.contains("fussball") || genreTextLowerCase.contains("party")
+                    || genreTextLowerCase.contains("biergarten") || genreTextLowerCase.contains("lesung") ||
+                    genreTextLowerCase.contains("pop! reloaded") || genreTextLowerCase.contains("rollschuh") ||
+                    genreTextLowerCase.contains("caribbean vibes")
+            ) {
+                return Optional.empty();
             }
-            return StringUtil.capitalizeWords(supportBands);
-        } catch (Exception e) {
-            log.warn("error getting support bands for backstage ", e);
-            return "";
-        }
-    }
-
-    private String removeUnwantedFillerText(String text) {
-        String supportBands = StringUtils.substringAfter(text, "+ Support: ");
-        if (supportBands.equalsIgnoreCase("")) {
-            supportBands = StringUtils.substringAfter(text, "Supports: ");
-        }
-        if (supportBands.equalsIgnoreCase("")) {
-            supportBands = StringUtils.substringAfter(text, "Special Guest: ");
-        }
-        if (supportBands.equalsIgnoreCase("")) {
-            supportBands = StringUtils.substringAfter(text, "special guest: ");
-        }
-        if (supportBands.equalsIgnoreCase("")) {
-            supportBands = StringUtils.substringAfter(text, "special guests ");
-        }
-        if (supportBands.equalsIgnoreCase("")) {
-            supportBands = StringUtils.substringAfter(text, "& Special Guest: ");
-        }
-        if (supportBands.equalsIgnoreCase("")) {
-            supportBands = StringUtils.substringAfter(text, "Special Guests: ");
+            genres.add(genreText);
         }
 
-        if (supportBands.equalsIgnoreCase("")) {
-            supportBands = text;
-        }
-        if (supportBands.contains("presented by") || supportBands.contains("Veranstalter") || supportBands.contains("Eintritt Frei!")) {
-            return "";
-        }
-        return supportBands;
-    }
-
-    @SuppressWarnings("java:S1192")
-    private List<ConcertDTO> getConcerts(String url) throws IOException {
-        List<ConcertDTO> concerts = new ArrayList<>();
-
-        Document doc = Jsoup.connect(url).get();
-        Elements allEvents = doc.select("div.product.details.product-item-details");
-
-        for (Element concert : allEvents) {
-            Elements detail = concert.select("a.product-item-link");
-            String title = detail.text().trim();
-            Optional<LocalDate> date = getDate(concert);
-
-            if (title.isEmpty() || date.isEmpty()) {
-                continue;
-            }
-
-            title = StringUtil.capitalizeWords(title);
-            String link = detail.select("a[href]").getFirst().attr("href");
-
-            String location = concert.select("strong.eventlocation").text();
-            if (!location.toLowerCase().startsWith("backstage")) {
-                continue;
-            }
-            location = StringUtil.capitalizeWords(location);
-            String genre = concert.select("div.product-item-description").text().trim().replace("Learn More", "");
-            String[] split = genre.split(",");
-            Set<String> allGenres = new HashSet<>();
-
-            for (String genres : split) {
-                allGenres.add(genres.trim());
-            }
-
-            ConcertDTO concertDto = new ConcertDTO(title, date.get(), null, link, allGenres, location, "", LocalDate.now(), "", "");
-            concerts.add(concertDto);
-        }
-
-        return concerts;
-    }
-
-    private Optional<LocalDate> getDate(Element concert) {
-        Element dateElement = concert.select("span.day").first();
-        if (dateElement == null) {
+        String title = StringUtil.capitalizeWords(select.text());
+        if (title.toLowerCase().contains("rollschuh") || title.toLowerCase().contains("caribbean vibes")) {
             return Optional.empty();
         }
-        String day = dateElement.text().replace(".", "");
-        Element firstMonth = concert.select("span.month").first();
-        if (firstMonth == null) {
+        Elements select1 = event.select("p.Text_text5__NsFNS.w-fit.h-fit");
+        String eventDate = select1.getLast().text();
+        LocalDate date = LocalDate.parse(eventDate.substring(3, 13), formatter);
+        if (date.isBefore(LocalDate.now())) {
             return Optional.empty();
         }
-        String month = firstMonth.text();
-        Element firstYear = concert.select("span.year").first();
-        if (firstYear == null) {
-            return Optional.empty();
+        String[] timeAndLocationAndPrice = event.select("p.Text_text7__vd_Lx.w-fit.h-fit").text().split("\\|");
+        String startTime = timeAndLocationAndPrice[0].trim();
+        String location = StringUtil.capitalizeWords(timeAndLocationAndPrice[1].trim());
+        String price = "";
+        if (timeAndLocationAndPrice.length > 2) {
+            price = timeAndLocationAndPrice[2].trim();
         }
-        String year = firstYear.text();
+        LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
 
-        return Optional.of(LocalDate.of(Integer.parseInt(year), calendarMap.get(month), Integer.parseInt(day)));
+        ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, genres, location, null, LocalDate.now(), price, "");
+        return Optional.of(concertDTO);
     }
-
-
-    private int getPages(String url) {
-        try {
-            Document document = Jsoup.connect(url).get();
-            String pages = document.select("span.toolbar-number").get(2).text();
-            return Integer.parseInt(pages);
-        } catch (Exception ex) {
-            log.warn("error getting pages for backstage url {} ", url, ex);
-            return 0;
-        }
-    }
-
-    public Pair<@NotNull String, @NotNull String> getPriceAndTime(String link) {
-        try {
-            Document doc = Jsoup.connect(link).get();
-            Elements select = doc.select("span.price");
-
-            String price = select.text();
-
-            Element first = doc.select("div.ticketshop-icon-clock-svg-white").first();
-            if (first == null) {
-                return Pair.of(price, "20:00");
-            }
-            String time = first.text();
-
-            return Pair.of(price, time.substring(0, 5));
-        } catch (Exception e) {
-            log.warn("error getting price for backstage url {} ", link, e);
-            return Pair.of("", "");
-        }
-    }
-
 }
