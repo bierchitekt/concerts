@@ -41,7 +41,10 @@ export class TextConcertFilter extends BaseConcertFilter {
             if (Array.isArray(value)) {
                 return value.some((it) => it.toString().toLowerCase().includes(this.searchString));
             }
-            return value.toLowerCase().includes(this.searchString);
+            if (value != null) {
+                return value.toLowerCase().includes(this.searchString);
+            }
+            return '';
         });
     }
 }
