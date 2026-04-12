@@ -48,4 +48,9 @@ public class ConcertController {
     public Set<ConcertDTO> getNewNotYetNotifiedConcerts() {
         return concertService.getNotYetNotifiedConcerts();
     }
+
+    @GetMapping("/regenerate-calendar")
+    public void generateCalendar(){
+        concertService.regenerateAllICalData();
+    }
 }

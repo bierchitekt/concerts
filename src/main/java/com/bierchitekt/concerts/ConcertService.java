@@ -447,5 +447,9 @@ public class ConcertService {
         }
     }
 
+    public void regenerateAllICalData() {
+        List<ConcertEntity> all = concertRepository.findAll();
+        icalService.createICalEntries(concertMapper.toConcertDto(all));
+    }
 }
 
