@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -94,6 +95,34 @@ public class EventFabrikService {
         Elements select = doc.select("a.page-numbers");
 
         return Integer.parseInt(select.get(1).text());
+    }
+
+    public String getSupportBands(String url) {
+        try {
+            Document doc = Jsoup.connect(url).get();
+            Elements e = doc.select("h2.event-secondary-title");
+            if (e.isEmpty()) {
+                return "";
+            }
+            String bands = e.getLast().childNodes().getLast().toString();
+            if (bands.contains("Support") || bands.contains("Opener")) {
+                bands = StringEscapeUtils.unescapeHtml4(bands);
+                bands = bands.replace("Support: ", "");
+                bands = bands.replace("Support ", "");
+                bands = bands.replace("Supports: ", "");
+                bands = bands.replace("Opener: ", "");
+                bands = bands.replace("Special Guest: ", "");
+                bands = bands.replace("+", ",");
+                bands = bands.replace("/", ",");
+                bands = bands.trim();
+                return StringUtil.capitalizeWords(bands);
+            }
+            return "";
+        } catch (IOException e) {
+            log.error("could not get support bands for {}", VENUE_NAME, e);
+            return "";
+        }
+
     }
 }
 

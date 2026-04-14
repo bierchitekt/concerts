@@ -156,10 +156,10 @@ public class ConcertService {
         allConcerts.addAll(getFeierwerkConcerts());
         allConcerts.addAll(getOlympiaparkConcerts());
         allConcerts.addAll(getKult9Concerts());
-        allConcerts.addAll(getTheaterfabrikConcerts());
+       // allConcerts.addAll(getTheaterfabrikConcerts());
         allConcerts.addAll(getKafeKultConcerts());
         allConcerts.addAll(getTollwoodConcerts());
-        allConcerts.addAll(getWinterTollwoodConcerts());
+       // allConcerts.addAll(getWinterTollwoodConcerts());
 
         log.info("found {} concerts, saving now", allConcerts.size());
 
@@ -301,6 +301,10 @@ public class ConcertService {
                         genres = genreService.getGenres(concert.title());
                         String price = muffathalleService.getPrice(concert.link());
                         newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), "", LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                    }
+                    case EVENTFABRIK -> {
+                        String supportBands = eventFabrikService.getSupportBands(concert.link());
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                     }
                     default ->
                             newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
