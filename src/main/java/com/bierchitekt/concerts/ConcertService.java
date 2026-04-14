@@ -358,7 +358,10 @@ public class ConcertService {
         concerts.forEach(concert -> {
             List<ConcertEntity> byTitleAndDate = concertRepository.findByTitleAndDate(concert.title(), concert.date());
             if (byTitleAndDate.isEmpty()) {
-
+                List<BackstageService.Event> events = backstageService.getEvents();
+                int lastSlash = concert.link().lastIndexOf("/")+1;
+                String eventId = concert.link().substring(lastSlash);
+                String supportBands = backstageService.getSupportBands(events, eventId);
 
                 ConcertDTO concertDTO = ConcertDTO.builder()
                         .title(concert.title())
@@ -367,18 +370,12 @@ public class ConcertService {
                         .link(concert.link())
                         .genre(concert.genre())
                         .location(concert.location())
-                        .supportBands(concert.supportBands())
+                        .supportBands(supportBands)
                         .addedAt(LocalDate.now())
                         .price(concert.price())
                         .calendarUri(CALENDAR_URL + StringUtil.getICSFilename(concert))
                         .build();
                 backstageConcerts.add(concertDTO);
-            } else {
-                // new URI is needed
-                // save for now in repo because its only needed for new backstage website
-                ConcertEntity concertEntity = byTitleAndDate.getFirst();
-                concertEntity.setLink(concert.link());
-                concertRepository.saveAndFlush(concertEntity);
             }
         });
         if (concerts.isEmpty()) {
