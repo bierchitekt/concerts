@@ -146,20 +146,8 @@ public class ConcertService {
 
         List<ConcertDTO> allConcerts = new ArrayList<>();
 
-        allConcerts.addAll(getStromConcerts());
-        allConcerts.addAll(getZenithConcerts());
         allConcerts.addAll(getBackstageConcerts());
-        allConcerts.addAll(getImportExportConcerts());
-        allConcerts.addAll(getMuffathalleConcerts());
-        allConcerts.addAll(getEventfabrikConcerts());
-        allConcerts.addAll(getCircusKroneConcerts());
-        allConcerts.addAll(getFeierwerkConcerts());
-        allConcerts.addAll(getOlympiaparkConcerts());
-        allConcerts.addAll(getKult9Concerts());
-       // allConcerts.addAll(getTheaterfabrikConcerts());
-        allConcerts.addAll(getKafeKultConcerts());
-        allConcerts.addAll(getTollwoodConcerts());
-       // allConcerts.addAll(getWinterTollwoodConcerts());
+
 
         log.info("found {} concerts, saving now", allConcerts.size());
 
@@ -362,11 +350,6 @@ public class ConcertService {
         concerts.forEach(concert -> {
             List<ConcertEntity> byTitleAndDate = concertRepository.findByTitleAndDate(concert.title(), concert.date());
             if (byTitleAndDate.isEmpty()) {
-                List<BackstageService.Event> events = backstageService.getEvents();
-                int lastSlash = concert.link().lastIndexOf("/")+1;
-                String eventId = concert.link().substring(lastSlash);
-                String supportBands = backstageService.getSupportBands(events, eventId);
-
                 ConcertDTO concertDTO = ConcertDTO.builder()
                         .title(concert.title())
                         .date(concert.date())
@@ -374,7 +357,7 @@ public class ConcertService {
                         .link(concert.link())
                         .genre(concert.genre())
                         .location(concert.location())
-                        .supportBands(supportBands)
+                        .supportBands(concert.supportBands())
                         .addedAt(LocalDate.now())
                         .price(concert.price())
                         .calendarUri(CALENDAR_URL + StringUtil.getICSFilename(concert))

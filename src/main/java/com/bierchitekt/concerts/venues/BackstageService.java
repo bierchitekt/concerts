@@ -1,29 +1,41 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.bierchitekt.concerts.venues.Venue.BACKSTAGE;
 
@@ -33,78 +45,208 @@ import static com.bierchitekt.concerts.venues.Venue.BACKSTAGE;
 public class BackstageService {
 
     private static final String URL = "https://www.backstage.eu";
-    private static final String OVERVIEW_URL = URL + "/events";
+    private static final String GRAPHQL_URL = "https://backstage-strapi-temp.etvide-client.com/graphql";
 
     public static final String VENUE_NAME = BACKSTAGE.getName();
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
+    public static final String EVENT_URL = "https://www.backstage.eu/events";
 
     public List<ConcertDTO> getConcerts() {
-        log.info("getting {} concerts", VENUE_NAME);
-        List<ConcertDTO> allConcerts = new ArrayList<>();
-        try {
+        try (HttpClient client = HttpClient.newHttpClient()) {
 
-            Document document = Jsoup.connect(OVERVIEW_URL).get();
-
-            Elements allEvents = document.select("a.my-5");
-
-            for (Element event : allEvents) {
-                Optional<ConcertDTO> concert = getConcert(event);
-                concert.ifPresent(allConcerts::add);
-
+            String jsonBody = """
+                    {
+                      "operationName": "getUpcomingEventsQuery",
+                      "variables": {
+                        "publicationStatus": "PUBLISHED"
+                      },
+                      "query": "query getUpcomingEventsQuery($publicationStatus: PublicationStatus!) {  events(    sort: \\"StartZeit:asc\\"    pagination: {limit: -1}    status: $publicationStatus  ) {    ...EventFragment    __typename  }}fragment UploadFileFragment on UploadFile {  url  alternativeText  previewUrl  mime  blurhash  width  height  __typename}fragment EventFragment on Event {  EventId  Titel  Untertitel  Headline  Beschreibung  Kategorie  FilterId  StartZeit  EndZeit  LocationName  MainImage {    ...UploadFileFragment    __typename  }  HighlightFeedImage {    ...UploadFileFragment    __typename  }  HighlightModuleImage {    ...UploadFileFragment    __typename  }  DetailImage {    ...UploadFileFragment    __typename  }  Logo {    ...UploadFileFragment    __typename  }  Gallery {    ...UploadFileFragment    __typename  }  HighlightSection  HighlightFeed  UpcomingSection  MinPreisCents  VorverkaufAktiv  VorverkaufDatum  VideoUrl  ExternerProviderLink  ExternerProviderLink2  Genres {    GenreId    Name    __typename  }  Preise {    PriceId    Titel    PreisCents    TicketVerfuegbar    Gebuehren    __typename  }  ShopSections {    Position    Titel    Content    __typename  }  __typename}"
+                    }
+                    """;
+            String token = getToken();
+            if (token == null) {
+                return List.of();
             }
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(GRAPHQL_URL))
+                    .header("authorization", token)
+                    .headers("content-type", "application/json")
+                    .method("POST", HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
+            String body = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
 
-            log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode node = (ObjectNode) objectMapper.readTree(body);
+            JsonNode jsonNode = node.get("data").get("events");
+
+
+            objectMapper.registerModule(new JavaTimeModule())
+                    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            List<Event> events = objectMapper.treeToValue(jsonNode, new TypeReference<>() {
+            });
+            events.removeIf(event -> event.category == null);
+            events.removeIf(event -> event.category.toLowerCase().contains("liveübertragung"));
+            events.removeIf(event -> event.category.toLowerCase().contains("party"));
+            events.removeIf(event -> event.category.toLowerCase().contains("fussball"));
+            events.removeIf(event -> event.category.toLowerCase().contains("biergarten"));
+            events.removeIf(event -> event.category.toLowerCase().contains("lesung"));
+            events.removeIf(event -> event.category.toLowerCase().contains("pop! reloaded"));
+            events.removeIf(event -> event.category.toLowerCase().contains("rollschuh"));
+            events.removeIf(event -> event.category.toLowerCase().contains("caribbean vibes"));
+            events.removeIf(event -> event.category.isEmpty());
+            List<ConcertDTO> allConcerts = new ArrayList<>();
+
+            for (Event event : getEvents()) {
+                String title = event.getTitle();
+
+                LocalDate date = event.getStartTime().toLocalDate();
+                LocalDateTime dateAndTime = event.getStartTime();
+                String link = event.getLink();
+                Set<String> genres = event.getGenres();
+                String location = event.getLocationName();
+                String price = event.getPrice();
+                String supportBands = event.getSupportBands();
+                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, genres, location, supportBands, LocalDate.now(), price, "");
+                allConcerts.add(concertDTO);
+            }
             return allConcerts;
-        } catch (Exception ex) {
-            log.error("exception: ", ex);
-            return allConcerts;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private Optional<ConcertDTO> getConcert(Element event) {
-        Set<String> genres = new HashSet<>();
-        String link = URL + event.select("a[href]").getFirst().attr("href");
-        Elements select = event.select("p.Text_headline4__NpUZq");
-        Elements genreElements = event.select("p.Text_text5__NsFNS.break-words.w-fit.h-fit");
-        for (Element genre : genreElements) {
-            String genreText = genre.text();
-            String genreTextLowerCase = genreText.toLowerCase();
-            if (genreTextLowerCase.isEmpty() || genreTextLowerCase.contains("fussball") || genreTextLowerCase.contains("party")
-                    || genreTextLowerCase.contains("biergarten") || genreTextLowerCase.contains("lesung") ||
-                    genreTextLowerCase.contains("pop! reloaded") || genreTextLowerCase.contains("rollschuh") ||
-                    genreTextLowerCase.contains("caribbean vibes")) {
-                return Optional.empty();
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @Getter
+    public static class Event {
+        //@JsonProperty("event")
+        @JsonProperty("event_id")
+        private String eventId;
+
+        //@JsonProperty("Titel")
+        @JsonProperty("title")
+        private String title;
+
+    //    @JsonProperty("LocationName")
+        @JsonProperty("location_name")
+        private String locationName;
+
+        private String headline;
+
+        //@JsonProperty("Kategorie")
+        private String category;
+
+        @JsonProperty("min_price_cents")
+        //@JsonProperty("MinPreisCents")
+        private Integer priceInCents;
+
+     //   @JsonProperty("StartZeit")
+        @JsonProperty("start_time")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+        private LocalDateTime startTime;
+
+        public String getTitle() {
+            return StringUtil.capitalizeWords(title);
+        }
+
+        public String getLink() {
+            return "https://www.backstage.eu/event/" + eventId;
+        }
+
+        public String getLocationName() {
+            return StringUtil.capitalizeWords(locationName);
+        }
+
+        public String getPrice() {
+            if (priceInCents == null) {
+                return null;
+            } else {
+                return priceInCents / 100 + " €";
             }
-            genres.add(genreText);
         }
 
-        String title = StringUtil.capitalizeWords(select.text());
-        if (title.toLowerCase().contains("rollschuh") || title.toLowerCase().contains("caribbean vibes")||title.toLowerCase().contains("party")) {
-            return Optional.empty();
+        public String getHeadline() {
+            return StringUtil.capitalizeWords(headline);
         }
-        Elements select1 = event.select("p.Text_text5__NsFNS.w-fit.h-fit");
-        String eventDate = select1.getLast().text();
-        LocalDate date = LocalDate.parse(eventDate.substring(3, 13), formatter);
-        if (date.isBefore(LocalDate.now())) {
-            return Optional.empty();
-        }
-        String[] timeAndLocationAndPrice = event.select("p.Text_text7__vd_Lx.w-fit.h-fit").text().split("\\|");
-        String startTime = timeAndLocationAndPrice[0].trim();
-        String location = StringUtil.capitalizeWords(timeAndLocationAndPrice[1].trim());
-        String price = "";
-        if (timeAndLocationAndPrice.length > 2) {
-            price = timeAndLocationAndPrice[2].trim();
-        }
-        LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
 
-        ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, genres, location, "", LocalDate.now(), price, "");
-        return Optional.of(concertDTO);
+        public Set<String> getGenres() {
+            return Arrays.stream(category.split(","))
+                    .map(String::trim)
+                    .collect(Collectors.toSet());
+        }
+
+        public String getSupportBands() {
+            if (headline == null) {
+                return "";
+            }
+            String result = getHeadline().replace("Supports: ", "");
+            result = result.replace("+ special guest: ", "");
+            result = result.replace("+ Special Guest: ", "");
+            return result;
+
+        }
     }
 
+
+    public String getToken() {
+        try (Playwright playwright = Playwright.create()) {
+            // Launch browser (set headless to false if you want to see it working)
+            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
+
+            try (Page page = browser.newPage()) {
+
+                // Set a realistic User-Agent to avoid being flagged as a bot
+                page.setExtraHTTPHeaders(java.util.Map.of(
+                        "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                ));
+
+                // Variable to store the found token
+                final String[] bearerToken = {null};
+
+                // Intercept network requests
+                page.onResponse(response -> {
+                    if (response.url().contains("/graphql")) {
+                        // Get headers from the request associated with this response
+                        String authHeader = response.request().headers().get("authorization");
+                        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                            bearerToken[0] = authHeader;
+                            System.out.println("Found Token: " + bearerToken[0]);
+                        }
+                    }
+                });
+
+                // Navigate to the events page
+                log.info("Navigating and solving Vercel checkpoint...");
+                page.navigate(EVENT_URL);
+
+                // Wait for the GraphQL request to trigger (adjust timeout as needed)
+                page.waitForLoadState();
+
+                // Give the site a few seconds to run its internal API calls
+                Thread.sleep(5000);
+
+                if (bearerToken[0] == null) {
+                    log.info("Token not found. You might need to log in manually first.");
+                }
+
+                browser.close();
+                return bearerToken[0];
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "";
+        }
+    }
+
+
+    @PostConstruct
     public List<Event> getEvents() {
         try {
-            Document document = Jsoup.connect(OVERVIEW_URL).get();
+            Document document = Jsoup.connect(EVENT_URL).get();
             String script = document.getElementsByTag("script").getLast()
                     .toString();
 
@@ -116,7 +258,8 @@ public class BackstageService {
             allEvents = allEvents.replace("\\\\\"", "'");
             ObjectMapper mapper = new ObjectMapper();
 
-
+            mapper.registerModule(new JavaTimeModule())
+                    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             List<Event> events = mapper.readValue(allEvents, new TypeReference<List<Event>>() {
             });
 
@@ -137,93 +280,4 @@ public class BackstageService {
         }
     }
 
-    public String getSupportBands(List<Event> events, String eventId) {
-
-        Optional<Event> matchingEvent = events.stream()
-                .filter(event -> eventId.equals(event.eventId))
-                .findFirst();
-        return matchingEvent.map(event -> event.headline.replace("Supports: ", "")).orElse("");
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Event {
-        @JsonProperty("event_id")
-        private String eventId;
-
-        private String title;
-
-        @JsonProperty("location_name")
-        private String locationName;
-
-        private String headline;
-        private String category;
-
-        public String getTitle() {
-            return StringUtil.capitalizeWords(title);
-        }
-        public String getLocationName() {
-            return StringUtil.capitalizeWords(locationName);
-        }
-
-        /*
-        private String description;
-        private String subtitle;
-
-        @JsonProperty("filter_id")
-        private String filterId;
-
-        @JsonProperty("start_time")
-        private String startTime;
-
-        @JsonProperty("end_time")
-        private String endTime;
-
-
-        @JsonProperty("highlight_feed_image")
-        private String highlightFeedImage;
-
-        @JsonProperty("highlight_module_image")
-        private String highlightModuleImage;
-
-        @JsonProperty("detail_image")
-        private String detailImage;
-
-        private String logo;
-        private List<Object> gallery; // Use a specific type if you know the gallery object structure
-
-        @JsonProperty("highlight_section")
-        private boolean highlightSection;
-
-        @JsonProperty("highlight_feed")
-        private boolean highlightFeed;
-
-        @JsonProperty("upcoming_section")
-        private boolean upcomingSection;
-
-        @JsonProperty("min_price_cents")
-        private int minPriceCents;
-
-        @JsonProperty("presale_active")
-        private boolean presaleActive;
-
-        @JsonProperty("presale_date")
-        private String presaleDate;
-
-        @JsonProperty("video_url")
-        private String videoUrl;
-
-        @JsonProperty("external_provider_link")
-        private String externalProviderLink;
-
-        @JsonProperty("external_provider_link_2")
-        private String externalProviderLink2;
-
-        private List<String> genres;
-        private List<Object> prices;
-
-        @JsonProperty("shop_sections")
-        private List<Object> shopSections;
-*/
-    }
 }
