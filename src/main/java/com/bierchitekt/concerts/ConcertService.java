@@ -146,8 +146,20 @@ public class ConcertService {
 
         List<ConcertDTO> allConcerts = new ArrayList<>();
 
+        allConcerts.addAll(getStromConcerts());
+        allConcerts.addAll(getZenithConcerts());
         allConcerts.addAll(getBackstageConcerts());
-
+        allConcerts.addAll(getImportExportConcerts());
+        allConcerts.addAll(getMuffathalleConcerts());
+        allConcerts.addAll(getEventfabrikConcerts());
+        allConcerts.addAll(getCircusKroneConcerts());
+        allConcerts.addAll(getFeierwerkConcerts());
+        allConcerts.addAll(getOlympiaparkConcerts());
+        allConcerts.addAll(getKult9Concerts());
+        // allConcerts.addAll(getTheaterfabrikConcerts());
+        allConcerts.addAll(getKafeKultConcerts());
+        allConcerts.addAll(getTollwoodConcerts());
+        // allConcerts.addAll(getWinterTollwoodConcerts());
 
         log.info("found {} concerts, saving now", allConcerts.size());
 

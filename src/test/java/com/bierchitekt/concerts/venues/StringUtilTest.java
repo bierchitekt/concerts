@@ -26,8 +26,10 @@ class StringUtilTest {
 
     @ParameterizedTest
     @CsvSource({
+            "strung out + belvedere  + the corps ,Strung Out + Belvedere + The Corps",
             "FOO ,Foo",
-            "FOO BAR ,Foo Bar"
+            "FOO BAR ,Foo Bar",
+            " +Support: SHOO BEE DOOM, +support: Shoo Bee Doom"
     })
     void capitalizeWords(String title, String expected) {
         String actual = StringUtil.capitalizeWords(title);

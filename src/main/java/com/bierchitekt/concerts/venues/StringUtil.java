@@ -26,12 +26,13 @@ public class StringUtil {
 
         // iterate through each word
         for (String word : words) {
-            // capitalize the first letter, append the rest of the word, and add a space
-            result.append(Character.toTitleCase(word.charAt(0)))
-                    .append(word.substring(1))
-                    .append(" ");
+            if (!word.equalsIgnoreCase("")) {
+                // capitalize the first letter, append the rest of the word, and add a space
+                result.append(Character.toTitleCase(word.charAt(0)))
+                        .append(word.substring(1))
+                        .append(" ");
+            }
         }
-
         // convert StringBuilder to String and trim leading/trailing spaces
         return result.toString().trim();
     }
