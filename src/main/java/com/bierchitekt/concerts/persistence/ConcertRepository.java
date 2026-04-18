@@ -1,5 +1,6 @@
 package com.bierchitekt.concerts.persistence;
 
+import com.bierchitekt.concerts.ConcertDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +32,6 @@ public interface ConcertRepository extends JpaRepository<ConcertEntity, String> 
     List<ConcertEntity> findByGenreAndDateAfterAndDateBeforeOrderByDate(String genre, LocalDate from, LocalDate to);
 
     Optional<ConcertEntity> findByLinkAndDate(String title, LocalDate date);
+
+    List<ConcertEntity> findByLocation(String location);
 }
