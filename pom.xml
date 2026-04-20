@@ -15,7 +15,7 @@
     <description>Getting concerts in munich</description>
     <properties>
         <java.version>25</java.version>
-        <jsoup.version>1.22.1</jsoup.version>
+        <jsoup.version>1.22.2</jsoup.version>
         <commons-text.version>1.15.0</commons-text.version>
         <gson.version>2.13.2</gson.version>
         <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
@@ -23,7 +23,7 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
-        <testcontainers.version>2.0.4</testcontainers.version>
+        <testcontainers.version>2.0.5</testcontainers.version>
         <junit-jupiter.version>6.0.3</junit-jupiter.version>
         <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
         <lombok.version>1.18.44</lombok.version>
