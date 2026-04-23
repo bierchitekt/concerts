@@ -4,11 +4,6 @@ import com.bierchitekt.concerts.ConcertDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -37,7 +36,6 @@ public class BackstageService {
     public static final String VENUE_NAME = BACKSTAGE.getName();
     public static final String EVENT_URL = "https://www.backstage.eu/events";
 
-    @PostConstruct
     public List<ConcertDTO> getConcerts() {
         log.info("starting getting concerts for venue {}", VENUE_NAME);
         long start = System.currentTimeMillis();
@@ -73,10 +71,7 @@ public class BackstageService {
             allEvents = allEvents.replace("\\\"", "\"");
 
             allEvents = allEvents.replace("\\\\\"", "'");
-            ObjectMapper mapper = new ObjectMapper();
-
-            mapper.registerModule(new JavaTimeModule())
-                    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            ObjectMapper mapper = new JsonMapper();
             List<Event> events = mapper.readValue(allEvents, new TypeReference<>() {
             });
 
@@ -94,7 +89,7 @@ public class BackstageService {
             events.removeIf(event -> event.category.isEmpty());
 
             return events;
-        } catch (IOException e) {
+        } catch (JacksonException | IOException e) {
             log.error("error getting backstage events", e);
             return List.of();
         }
