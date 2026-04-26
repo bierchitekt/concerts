@@ -346,7 +346,7 @@ public class ConcertService {
                 concertOptional.ifPresent(feierwerkConcerts::add);
             }
         }
-        if (feierwerkConcerts.isEmpty()) {
+        if (concertLinks.isEmpty()) {
             notifyNoConcertsFoundForVenue(FEIERWERK);
         }
         log.info("received {} new concerts for {}", feierwerkConcerts.size(), FEIERWERK.getName());
