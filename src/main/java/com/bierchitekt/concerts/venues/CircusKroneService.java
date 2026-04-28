@@ -28,7 +28,7 @@ public class CircusKroneService {
             Map.entry("Februar", 2), Map.entry("Feb", 2),
             Map.entry("März", 3),
             Map.entry("April", 4), Map.entry("Apr", 4), Map.entry("Apr.", 4),
-            Map.entry("Mai", 5),
+            Map.entry("Mai", 5), Map.entry("MAI", 5),
             Map.entry("Juni", 6),
             Map.entry("Juli", 7),
             Map.entry("August", 8),
@@ -70,8 +70,7 @@ public class CircusKroneService {
                     }
                 }
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             if (!(e instanceof HttpStatusException)) {
                 log.warn("error getting concerts from {}}", VENUE_NAME, e);
             }
