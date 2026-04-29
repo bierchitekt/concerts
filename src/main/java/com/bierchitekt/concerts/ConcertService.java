@@ -20,6 +20,7 @@ import com.bierchitekt.concerts.venues.Venue;
 import com.bierchitekt.concerts.venues.WinterTollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +63,22 @@ public class ConcertService {
     @Value("${disabled.venues}")
     private final Set<Venue> disabledVenues;
 
+    @Value("${whatsapp.metalChannel}")
+    @NotEmpty
+    private String whatsappMetalChannel;
+
+    @Value("${whatsapp.rockChannel}")
+    @NotEmpty
+    private String whatsappRockChannel;
+
+    @Value("${whatsapp.punkChannel}")
+    @NotEmpty
+    private String whatsappPunkChannel;
+
+    @Value("${whatsapp.hardcoreChannel}")
+    @NotEmpty
+    private String whatsappHardcoreChannel;
+
     private final BackstageService backstageService;
     private final ZenithService zenithService;
     private final StromService stromService;
@@ -91,6 +108,7 @@ public class ConcertService {
     public static final String CALENDAR_URL = "https://bierchitekt.github.io/MunichConcertsCalendar/";
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy").localizedBy(ENGLISH);
+    private final WhatsappService whatsappService;
 
     @Transactional
     public void notifyNewConcerts() {
@@ -104,6 +122,14 @@ public class ConcertService {
         notifyNewConcerts("Good news everyone! I found some new rock concerts for you\n\n", newRockConcerts, "@MunichRockConcerts");
         notifyNewConcerts("Good news everyone! I found some new punk concerts for you\n\n", newPunkConcerts, "@MunichPunkConcerts");
         notifyNewConcerts("Good news everyone! I found some new hardcore concerts for you\n\n", newHardcoreConcerts, "@MunichHardcoreConcerts");
+
+
+
+        notifyNewConcertsForWhatsapp("Good news everyone! I found some new metal concerts for you\n\n", newMetalConcerts, whatsappMetalChannel);
+        notifyNewConcertsForWhatsapp("Good news everyone! I found some new rock concerts for you\n\n", newRockConcerts, whatsappRockChannel);
+        notifyNewConcertsForWhatsapp("Good news everyone! I found some new punk concerts for you\n\n", newPunkConcerts, whatsappPunkChannel);
+        notifyNewConcertsForWhatsapp("Good news everyone! I found some new hardcore concerts for you\n\n", newHardcoreConcerts, whatsappHardcoreChannel);
+
     }
 
     public void notifyNextWeekConcerts() {
@@ -393,14 +419,28 @@ public class ConcertService {
     }
 
     private void notifyNewConcerts(String message, List<ConcertEntity> newConcerts, String channelName) {
+
+        telegramService.sendMessage(channelName, getFormattedMessage(message, newConcerts,
+                "<b>", "</b>", true));
+
+        setNotified(newConcerts);
+    }
+
+    private void notifyNewConcertsForWhatsapp(String message, List<ConcertEntity> newConcerts, @NotEmpty String whatsappChannel) {
+        whatsappService.sendMessage(whatsappChannel, getFormattedMessage(message, newConcerts, "*",
+                "*", false));
+    }
+
+
+    private String getFormattedMessage(String message, List<ConcertEntity> newConcerts, String boldFormattingStart,
+                                       String boldFormattingEnd, boolean isHtml) {
         StringBuilder stringBuilder = new StringBuilder(message);
         if (!newConcerts.isEmpty()) {
             for (ConcertEntity concert : newConcerts) {
                 stringBuilder
-                        .append("<b>").append(concert.getTitle()).append("</b> \n");
+                        .append(boldFormattingStart).append(concert.getTitle()).append(boldFormattingEnd).append(" \n");
                 if (!concert.getPrice().isEmpty()) {
-                    stringBuilder
-                            .append("price is ").append(concert.getPrice()).append(" \n");
+                    stringBuilder.append("price is ").append(concert.getPrice()).append(" \n");
                 }
                 stringBuilder
                         .append("on ").append(concert.getDate().format(formatter)).append(" \n")
@@ -408,19 +448,40 @@ public class ConcertService {
                 if (!concert.getSupportBands().isEmpty()) {
                     stringBuilder.append("support bands are ").append(concert.getSupportBands()).append("\n");
                 }
-                stringBuilder
-                        .append("<a href=\"")
-                        .append(CALENDAR_URL)
-                        .append(StringUtil.getICSFilename(concertMapper.toConcertDto(concert)))
-                        .append("\">")
-                        .append("add to calendar")
-                        .append("</a>\n");
+                if (isHtml) {
+                    stringBuilder
+                            .append("<a href=\"")
+                            .append(CALENDAR_URL)
+                            .append(StringUtil.getICSFilename(concertMapper.toConcertDto(concert)))
+                            .append("\">")
+                            .append("add to calendar")
+                            .append("</a>")
+                            .append("\n");
 
-                stringBuilder.append("playing at <a href=\"").append(concert.getLink()).append("\">").append(concert.getLocation()).append("</a>\n\n");
+                    stringBuilder
+                            .append("playing at <a href=\"")
+                            .append(concert.getLink()).append("\">")
+                            .append(concert.getLocation()).append("</a>")
+                            .append("\n")
+                            .append("\n");
+                } else {
+
+                    stringBuilder.append("playing at ")
+                            .append(concert.getLocation())
+                            .append("\n")
+                            .append(concert.getLink())
+                            .append("\n")
+                            .append("\n");
+
+                    stringBuilder.append("link for calendar: ")
+                            .append(CALENDAR_URL)
+                            .append(StringUtil.getICSFilename(concertMapper.toConcertDto(concert)))
+                            .append("\n")
+                            .append("\n");
+                }
             }
-            telegramService.sendMessage(channelName, stringBuilder.toString());
         }
-        setNotified(newConcerts);
+        return stringBuilder.toString();
     }
 
     private void setNotified(List<ConcertEntity> concerts) {
