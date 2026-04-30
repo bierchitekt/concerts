@@ -118,11 +118,10 @@ public class ConcertService {
         List<ConcertEntity> newPunkConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(PUNK);
         List<ConcertEntity> newHardcoreConcerts = concertRepository.findConcertsByGenreAndNotNotifiedOrderByDate(HARDCORE);
 
-        notifyNewConcerts("Good news everyone! I found some new metal concerts for you\n\n", newMetalConcerts, "@MunichMetalConcerts");
-        notifyNewConcerts("Good news everyone! I found some new rock concerts for you\n\n", newRockConcerts, "@MunichRockConcerts");
-        notifyNewConcerts("Good news everyone! I found some new punk concerts for you\n\n", newPunkConcerts, "@MunichPunkConcerts");
-        notifyNewConcerts("Good news everyone! I found some new hardcore concerts for you\n\n", newHardcoreConcerts, "@MunichHardcoreConcerts");
-
+        notifyNewConcertsForTelegram("Good news everyone! I found some new metal concerts for you\n\n", newMetalConcerts, "@MunichMetalConcerts");
+        notifyNewConcertsForTelegram("Good news everyone! I found some new rock concerts for you\n\n", newRockConcerts, "@MunichRockConcerts");
+        notifyNewConcertsForTelegram("Good news everyone! I found some new punk concerts for you\n\n", newPunkConcerts, "@MunichPunkConcerts");
+        notifyNewConcertsForTelegram("Good news everyone! I found some new hardcore concerts for you\n\n", newHardcoreConcerts, "@MunichHardcoreConcerts");
 
 
         notifyNewConcertsForWhatsapp("Good news everyone! I found some new metal concerts for you\n\n", newMetalConcerts, whatsappMetalChannel);
@@ -164,7 +163,7 @@ public class ConcertService {
         List<ConcertEntity> concerts = concertRepository.findByGenreAndDateAfterAndDateBeforeOrderByDate(genreName,
                 LocalDate.now(), LocalDate.now().plusDays(8));
 
-        notifyNewConcerts("Upcoming " + genreName + " concerts for next week: \n\n", concerts, channelName);
+        notifyNewConcertsForTelegram("Upcoming " + genreName + " concerts for next week: \n\n", concerts, channelName);
     }
 
     public void getNewConcerts() {
@@ -418,17 +417,20 @@ public class ConcertService {
         log.error("did not get any concerts for venue: {}", venue.getName());
     }
 
-    private void notifyNewConcerts(String message, List<ConcertEntity> newConcerts, String channelName) {
+    private void notifyNewConcertsForTelegram(String message, List<ConcertEntity> newConcerts, String channelName) {
+        if (!newConcerts.isEmpty()) {
+            telegramService.sendMessage(channelName, getFormattedMessage(message, newConcerts,
+                    "<b>", "</b>", true));
 
-        telegramService.sendMessage(channelName, getFormattedMessage(message, newConcerts,
-                "<b>", "</b>", true));
-
-        setNotified(newConcerts);
+            setNotified(newConcerts);
+        }
     }
 
     private void notifyNewConcertsForWhatsapp(String message, List<ConcertEntity> newConcerts, @NotEmpty String whatsappChannel) {
-        whatsappService.sendMessage(whatsappChannel, getFormattedMessage(message, newConcerts, "*",
-                "*", false));
+        if (!newConcerts.isEmpty()) {
+            whatsappService.sendMessage(whatsappChannel, getFormattedMessage(message, newConcerts, "*",
+                    "*", false));
+        }
     }
 
 
