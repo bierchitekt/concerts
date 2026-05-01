@@ -24,18 +24,18 @@ import java.util.Optional;
 public class CircusKroneService {
 
     private static final Map<String, Integer> calendarMap = Map.ofEntries(
-            Map.entry("Januar", 1),
-            Map.entry("Februar", 2), Map.entry("Feb", 2),
-            Map.entry("März", 3),
-            Map.entry("April", 4), Map.entry("Apr", 4), Map.entry("Apr.", 4),
-            Map.entry("Mai", 5), Map.entry("MAI", 5),
-            Map.entry("Juni", 6),
-            Map.entry("Juli", 7),
-            Map.entry("August", 8),
-            Map.entry("Sept.", 9),
-            Map.entry("Okt.", 10), Map.entry("Okt", 10),
-            Map.entry("Nov.", 11),
-            Map.entry("Dezember", 12));
+            Map.entry("januar", 1),
+            Map.entry("februar", 2), Map.entry("Feb", 2),
+            Map.entry("märz", 3),
+            Map.entry("april", 4), Map.entry("Apr", 4), Map.entry("Apr.", 4),
+            Map.entry("mai", 5),
+            Map.entry("juni", 6),
+            Map.entry("juli", 7),
+            Map.entry("august", 8),
+            Map.entry("sept.", 9),
+            Map.entry("okt.", 10), Map.entry("Okt", 10),
+            Map.entry("nov.", 11),
+            Map.entry("dezember", 12));
 
     public static final String VENUE_NAME = Venue.CIRCUSKRONE.getName();
 
@@ -120,7 +120,7 @@ public class CircusKroneService {
             log.warn("cannot parse date {}", dateString);
             return Optional.empty();
         }
-        Integer i = calendarMap.get(s);
+        Integer i = calendarMap.get(s.toLowerCase());
         if (i == null) {
             log.warn("Cannot get month for input {}", dateString);
             return Optional.empty();
