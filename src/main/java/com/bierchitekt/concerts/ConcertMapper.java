@@ -17,5 +17,7 @@ public interface ConcertMapper {
 
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "notified", ignore = true)
+        @Mapping(target = "notified_whatsapp", ignore = true)
+        @Mapping(target = "notified_telegram", ignore = true)
         ConcertEntity toConcertEntity(ConcertDTO concertDTO);
 }

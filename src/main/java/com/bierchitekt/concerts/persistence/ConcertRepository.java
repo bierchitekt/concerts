@@ -24,8 +24,11 @@ public interface ConcertRepository extends JpaRepository<ConcertEntity, String> 
 
     Optional<ConcertEntity> findByLink(String url);
 
-    @NativeQuery("SELECT distinct * FROM concert_entity ce where genre::text ilike CONCAT('%', :genre, '%') and date >= now() and notified = false order by date;")
+    @NativeQuery("SELECT distinct * FROM concert_entity ce where genre::text ilike CONCAT('%', :genre, '%') and date >= now() and notified_telegram = false order by date;")
     List<ConcertEntity> findConcertsByGenreAndNotNotifiedOrderByDate(@Param("genre") String genre);
+
+    @NativeQuery("SELECT distinct * FROM concert_entity ce where genre::text ilike CONCAT('%', :genre, '%') and date >= now() and notified_whatsapp = false order by date;")
+    List<ConcertEntity> findConcertsByGenreAndNotNotifiedInWhatsappOrderByDate(@Param("genre") String genre);
 
     @NativeQuery("SELECT distinct * FROM concert_entity ce where genre::text ilike CONCAT('%', :genre, '%') and date >= :from and date < :to order by date;")
     List<ConcertEntity> findByGenreAndDateAfterAndDateBeforeOrderByDate(String genre, LocalDate from, LocalDate to);

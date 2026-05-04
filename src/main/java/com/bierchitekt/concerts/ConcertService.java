@@ -124,6 +124,11 @@ public class ConcertService {
         notifyNewConcertsForTelegram("Good news everyone! I found some new hardcore concerts for you\n\n", newHardcoreConcerts, "@MunichHardcoreConcerts");
 
 
+        newMetalConcerts = concertRepository.findConcertsByGenreAndNotNotifiedInWhatsappOrderByDate(METAL);
+        newRockConcerts = concertRepository.findConcertsByGenreAndNotNotifiedInWhatsappOrderByDate(ROCK);
+        newPunkConcerts = concertRepository.findConcertsByGenreAndNotNotifiedInWhatsappOrderByDate(PUNK);
+        newHardcoreConcerts = concertRepository.findConcertsByGenreAndNotNotifiedInWhatsappOrderByDate(HARDCORE);
+
         notifyNewConcertsForWhatsapp("Good news everyone! I found some new metal concerts for you\n\n", newMetalConcerts, whatsappMetalChannel);
         notifyNewConcertsForWhatsapp("Good news everyone! I found some new rock concerts for you\n\n", newRockConcerts, whatsappRockChannel);
         notifyNewConcertsForWhatsapp("Good news everyone! I found some new punk concerts for you\n\n", newPunkConcerts, whatsappPunkChannel);
@@ -422,7 +427,7 @@ public class ConcertService {
             telegramService.sendMessage(channelName, getFormattedMessage(message, newConcerts,
                     "<b>", "</b>", true));
 
-            setNotified(newConcerts);
+            setNotifiedInTelegram(newConcerts);
         }
     }
 
@@ -430,6 +435,8 @@ public class ConcertService {
         if (!newConcerts.isEmpty()) {
             whatsappService.sendMessage(whatsappChannel, getFormattedMessage(message, newConcerts, "*",
                     "*", false));
+
+            setNotifiedInWhatsapp(newConcerts);
         }
     }
 
@@ -486,9 +493,16 @@ public class ConcertService {
         return stringBuilder.toString();
     }
 
-    private void setNotified(List<ConcertEntity> concerts) {
+    private void setNotifiedInTelegram(List<ConcertEntity> concerts) {
         for (ConcertEntity concert : concerts) {
-            concert.setNotified(true);
+            concert.setNotifiedTelegram(true);
+            concertRepository.save(concert);
+        }
+    }
+
+    private void setNotifiedInWhatsapp(List<ConcertEntity> concerts) {
+        for (ConcertEntity concert : concerts) {
+            concert.setNotifiedWhatsapp(true);
             concertRepository.save(concert);
         }
     }

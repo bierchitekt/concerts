@@ -40,6 +40,8 @@ public class ConcertEntity implements Comparable<ConcertEntity> {
     private Set<String> genre;
     private String location;
     private boolean notified;
+    private boolean notifiedTelegram;
+    private boolean notifiedWhatsapp;
     private LocalDate addedAt;
     @NotNull
     private String price;
