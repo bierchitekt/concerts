@@ -311,10 +311,10 @@ public class ConcertService {
         concerts.forEach(concert -> {
             if (concertRepository.similarTitleAtSameDate(concert.title(), concert.date()).isEmpty()) {
                 Set<String> genres;
-                if (concert.genre() != null) {
-                    genres = concert.genre();
-                } else {
+                if (concert.genre() == null || concert.genre().isEmpty()) {
                     genres = genreService.getGenres(concert.title());
+                } else {
+                    genres = concert.genre();
                 }
                 switch (venue) {
                     case ZENITH -> {
