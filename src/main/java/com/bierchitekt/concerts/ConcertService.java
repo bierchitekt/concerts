@@ -14,6 +14,7 @@ import com.bierchitekt.concerts.venues.MuffathalleService;
 import com.bierchitekt.concerts.venues.OlympiaparkService;
 import com.bierchitekt.concerts.venues.StringUtil;
 import com.bierchitekt.concerts.venues.StromService;
+import com.bierchitekt.concerts.venues.TheaterDrehleierService;
 import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.Venue;
@@ -47,6 +48,7 @@ import static com.bierchitekt.concerts.venues.Venue.KULT9;
 import static com.bierchitekt.concerts.venues.Venue.MUFFATHALLE;
 import static com.bierchitekt.concerts.venues.Venue.OLYMPIAPARK;
 import static com.bierchitekt.concerts.venues.Venue.STROM;
+import static com.bierchitekt.concerts.venues.Venue.THEATERDREHLEIER;
 import static com.bierchitekt.concerts.venues.Venue.THEATERFABRIK;
 import static com.bierchitekt.concerts.venues.Venue.TOLLWOOD;
 import static com.bierchitekt.concerts.venues.Venue.WINTER_TOLLWOOD;
@@ -93,6 +95,7 @@ public class ConcertService {
     private final ImportExportService importExportService;
     private final TollwoodService tollwoodService;
     private final WinterTollwoodService winterTollwoodService;
+    private final TheaterDrehleierService theaterDrehleierService;
     private final JsonWriter jsonWriter;
 
     private final ICalService icalService;
@@ -186,6 +189,7 @@ public class ConcertService {
         allConcerts.addAll(getFeierwerkConcerts());
         allConcerts.addAll(getOlympiaparkConcerts());
         allConcerts.addAll(getKult9Concerts());
+        allConcerts.addAll(getTheaterDrehleierConcerts());
         // allConcerts.addAll(getTheaterfabrikConcerts());
         allConcerts.addAll(getKafeKultConcerts());
         allConcerts.addAll(getTollwoodConcerts());
@@ -230,6 +234,7 @@ public class ConcertService {
         sendErrorsToTelegram();
     }
 
+
     public List<ConcertDTO> getNextWeekConcerts() {
 
         List<ConcertEntity> byDateAfterAndDateBeforeOrderByDate = concertRepository.findByDateAfterAndDateBeforeOrderByDate(LocalDate.now(), LocalDate.now().plusDays(8));
@@ -247,6 +252,11 @@ public class ConcertService {
 
     private Collection<ConcertDTO> getCircusKroneConcerts() {
         return getNewConcerts(circusKroneService.getConcerts(), CIRCUSKRONE);
+    }
+
+    private Collection<ConcertDTO> getTheaterDrehleierConcerts() {
+        return getNewConcerts(theaterDrehleierService.getConcerts(), THEATERDREHLEIER);
+
     }
 
     private Collection<ConcertDTO> getEventfabrikConcerts() {
@@ -336,9 +346,7 @@ public class ConcertService {
                         String supportBands = eventFabrikService.getSupportBands(concert.link());
                         newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                     }
-                    default ->
-                            newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
-
+                    default -> newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                 }
             }
         });
