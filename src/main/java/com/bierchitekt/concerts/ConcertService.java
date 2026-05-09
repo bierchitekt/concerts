@@ -20,7 +20,6 @@ import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.Venue;
 import com.bierchitekt.concerts.venues.WinterTollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
@@ -175,7 +174,6 @@ public class ConcertService {
         notifyNewConcertsForTelegram("Upcoming " + genreName + " concerts for next week: \n\n", concerts, channelName);
     }
 
-    @PostConstruct
     public void getNewConcerts() {
         log.info("starting getting new concerts");
 
@@ -348,7 +346,8 @@ public class ConcertService {
                         String supportBands = eventFabrikService.getSupportBands(concert.link());
                         newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                     }
-                    default -> newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                    default ->
+                            newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                 }
             }
         });

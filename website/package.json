@@ -23,7 +23,7 @@
         "@iconify-json/game-icons": "1.2.4",
         "@iconify-json/mdi": "1.2.3",
         "@iconify/tailwind": "1.2.0",
-        "@tailwindcss/postcss": "4.2.4",
+        "@tailwindcss/postcss": "4.3.0",
         "@types/react": "19.2.14",
         "@types/react-dom": "19.2.3",
         "@vitejs/plugin-react-swc": "4.3.0",
@@ -35,7 +35,7 @@
         "postcss": "8.5.14",
         "prettier": "3.8.3",
         "prettier-plugin-tailwindcss": "0.8.0",
-        "tailwindcss": "4.2.4",
+        "tailwindcss": "4.3.0",
         "typescript": "6.0.3",
         "typescript-eslint": "8.59.2",
         "vite": "8.0.11"
