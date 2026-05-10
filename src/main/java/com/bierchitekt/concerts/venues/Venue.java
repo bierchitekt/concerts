@@ -16,6 +16,7 @@ public enum Venue {
     MUFFATHALLE("Muffathalle"),
     OLYMPIAPARK("Olympiapark"),
     STROM("Strom"),
+    STUSTACULUM("StuStaCulum"),
     THEATERDREHLEIER("Theater Drehleier"),
     THEATERFABRIK("TheaterFabrik"),
     TOLLWOOD("Tollwood"),

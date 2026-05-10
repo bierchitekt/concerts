@@ -14,6 +14,7 @@ import com.bierchitekt.concerts.venues.MuffathalleService;
 import com.bierchitekt.concerts.venues.OlympiaparkService;
 import com.bierchitekt.concerts.venues.StringUtil;
 import com.bierchitekt.concerts.venues.StromService;
+import com.bierchitekt.concerts.venues.StuStaCulumService;
 import com.bierchitekt.concerts.venues.TheaterDrehleierService;
 import com.bierchitekt.concerts.venues.Theaterfabrik;
 import com.bierchitekt.concerts.venues.TollwoodService;
@@ -48,6 +49,7 @@ import static com.bierchitekt.concerts.venues.Venue.KULT9;
 import static com.bierchitekt.concerts.venues.Venue.MUFFATHALLE;
 import static com.bierchitekt.concerts.venues.Venue.OLYMPIAPARK;
 import static com.bierchitekt.concerts.venues.Venue.STROM;
+import static com.bierchitekt.concerts.venues.Venue.STUSTACULUM;
 import static com.bierchitekt.concerts.venues.Venue.THEATERDREHLEIER;
 import static com.bierchitekt.concerts.venues.Venue.THEATERFABRIK;
 import static com.bierchitekt.concerts.venues.Venue.TOLLWOOD;
@@ -94,6 +96,7 @@ public class ConcertService {
     private final KafeKultService kafeKultService;
     private final ImportExportService importExportService;
     private final TollwoodService tollwoodService;
+    private final StuStaCulumService stuStaCulumService;
     private final WinterTollwoodService winterTollwoodService;
     private final TheaterDrehleierService theaterDrehleierService;
     private final JsonWriter jsonWriter;
@@ -189,6 +192,8 @@ public class ConcertService {
         allConcerts.addAll(getFeierwerkConcerts());
         allConcerts.addAll(getOlympiaparkConcerts());
         allConcerts.addAll(getKult9Concerts());
+        allConcerts.addAll(getStuStaCulumConcerts());
+
         allConcerts.addAll(getTheaterDrehleierConcerts());
         // allConcerts.addAll(getTheaterfabrikConcerts());
         allConcerts.addAll(getKafeKultConcerts());
@@ -232,6 +237,10 @@ public class ConcertService {
         jsonWriter.writeJsonToDisk(getConcertDTOs());
         icalService.createICalEntries(getConcertDTOs());
         sendErrorsToTelegram();
+    }
+
+    private Collection<ConcertDTO> getStuStaCulumConcerts() {
+        return getNewConcerts(stuStaCulumService.getConcerts(), STUSTACULUM);
     }
 
 

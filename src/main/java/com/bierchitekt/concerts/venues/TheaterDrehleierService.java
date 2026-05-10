@@ -59,7 +59,7 @@ public class TheaterDrehleierService {
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(beginn));
                 Pair bands = getBands(title);
 
-                allConcerts.add(new ConcertDTO(bands.mainAct, date, dateAndTime, link, null, "Drehleier", bands.supportBands, LocalDate.now(), "", ""));
+                allConcerts.add(new ConcertDTO(bands.mainAct, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(), "", ""));
             }
 
 
