@@ -12,12 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
-import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,6 +48,9 @@ public class BackstageService {
             Set<String> genres = event.getGenres();
             String location = event.getLocationName();
             String price = event.getPrice();
+            if (price == null) {
+                price = "";
+            }
             String supportBands = event.getSupportBands();
             ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, genres, location, supportBands,
                     LocalDate.now(), price, "");
@@ -62,12 +63,11 @@ public class BackstageService {
     public List<Event> getEvents() {
         try {
             Document document = Jsoup.connect(EVENT_URL).get();
-            String script = document.getElementsByTag("script").getLast()
-                    .toString();
+            String script = document.toString();
 
             int eventIdIndex = script.indexOf("event_id");
-            int shopSections = script.lastIndexOf("shop_sections");
-            String allEvents = "[{\"" + script.substring(eventIdIndex, shopSections) + "shop_sections\":[]}]";
+            int shopSections = script.lastIndexOf("has_seating_plan");
+            String allEvents = "[{\"" + script.substring(eventIdIndex, shopSections) + "has_seating_plan\":[]}]";
             allEvents = allEvents.replace("\\\"", "\"");
 
             allEvents = allEvents.replace("\\\\\"", "'");
@@ -78,6 +78,7 @@ public class BackstageService {
             events.removeIf(event -> event.category == null);
             events.removeIf(event -> event.category.toLowerCase().contains("liveübertragung"));
             events.removeIf(event -> event.category.toLowerCase().contains("party"));
+            events.removeIf(event -> event.category.toLowerCase().contains("feiern"));
             events.removeIf(event -> event.category.toLowerCase().contains("fussball"));
             events.removeIf(event -> event.category.toLowerCase().contains("biergarten"));
             events.removeIf(event -> event.category.toLowerCase().contains("lesung"));
@@ -89,10 +90,11 @@ public class BackstageService {
             events.removeIf(event -> event.category.isEmpty());
 
             return events;
-        } catch (JacksonException | IOException e) {
+        } catch (Exception e) {
             log.error("error getting backstage events", e);
             return List.of();
         }
+
     }
 
     @AllArgsConstructor
@@ -116,8 +118,8 @@ public class BackstageService {
         @JsonProperty("min_price_cents")
         private Integer priceInCents;
 
-        @JsonProperty("start_time")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+        @JsonProperty("start_time") //  "start_time" : "2026-05-13T18:00:00+00:00",
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
         private LocalDateTime startTime;
 
         public String getTitle() {
