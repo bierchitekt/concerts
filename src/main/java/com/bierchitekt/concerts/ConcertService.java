@@ -410,12 +410,16 @@ public class ConcertService {
         concerts.forEach(concert -> {
             List<ConcertEntity> byTitleAndDate = concertRepository.findByTitleAndDate(concert.title(), concert.date());
             if (byTitleAndDate.isEmpty()) {
+                Set<String> genre = concert.genre();
+                if (genre.isEmpty()) {
+                    genre = genreService.getGenres(concert.title());
+                }
                 ConcertDTO concertDTO = ConcertDTO.builder()
                         .title(concert.title())
                         .date(concert.date())
                         .dateAndTime(concert.dateAndTime())
                         .link(concert.link())
-                        .genre(concert.genre())
+                        .genre(genre)
                         .location(concert.location())
                         .supportBands(concert.supportBands())
                         .addedAt(LocalDate.now())

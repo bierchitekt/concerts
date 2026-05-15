@@ -46,11 +46,10 @@ public class BackstageService {
             LocalDateTime dateAndTime = event.getStartTime();
             String link = event.getLink();
             Set<String> genres = event.getGenres();
+
             String location = event.getLocationName();
             String price = event.getPrice();
-            if (price == null) {
-                price = "";
-            }
+
             String supportBands = event.getSupportBands();
             ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, genres, location, supportBands,
                     LocalDate.now(), price, "");
@@ -123,7 +122,16 @@ public class BackstageService {
         private LocalDateTime startTime;
 
         public String getTitle() {
+            if (isFreeAndEasy() && title.contains("+")) {
+                int index = title.indexOf("+");
+
+                return StringUtil.capitalizeWords(title.substring(0, index - 1));
+            }
             return StringUtil.capitalizeWords(title);
+        }
+
+        public boolean isFreeAndEasy() {
+            return category.equals("free & easy");
         }
 
         public String getLink() {
@@ -136,10 +144,13 @@ public class BackstageService {
 
         public String getPrice() {
             if (priceInCents == null) {
-                return null;
-            } else {
-                return priceInCents / 100 + " €";
+                return "";
             }
+            if (isFreeAndEasy()) {
+                return "";
+            }
+            return priceInCents / 100 + " €";
+
         }
 
         public String getHeadline() {
@@ -147,12 +158,23 @@ public class BackstageService {
         }
 
         public Set<String> getGenres() {
+            if (isFreeAndEasy()) {
+                return Set.of();
+            }
             return Arrays.stream(category.split(","))
                     .map(String::trim)
                     .collect(Collectors.toSet());
         }
 
         public String getSupportBands() {
+            if (isFreeAndEasy() && title.contains("+")) {
+                int index = title.indexOf("+");
+                String afterPlus = title.substring(index + 1);
+
+                // Replace all remaining '+' signs with ','
+                return StringUtil.capitalizeWords(afterPlus.replace("+", ",")).replace(" ,", ",");
+            }
+
             if (headline == null || headline.isEmpty()) {
                 return "";
             }
