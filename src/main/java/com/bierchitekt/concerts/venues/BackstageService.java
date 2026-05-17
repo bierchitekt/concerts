@@ -147,7 +147,7 @@ public class BackstageService {
                 return "";
             }
             if (isFreeAndEasy()) {
-                return "";
+                return "0 € free & easy";
             }
             return priceInCents / 100 + " €";
 
