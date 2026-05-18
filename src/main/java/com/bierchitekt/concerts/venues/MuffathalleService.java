@@ -45,7 +45,7 @@ public class MuffathalleService {
                 if (firstElement != null) {
                     String title = firstElement.text().replace("ausverkauft", "").trim();
                     title = title.replaceAll("verlegt auf \\d\\d\\.\\d\\d.\\d\\d ", "").trim();
-                    if (title.contains("abgesagt") || title.startsWith("Münchener Biennale")) {
+                    if (title.contains("abgesagt") || title.startsWith("Münchener Biennale") || title.startsWith("Think Big! Festival")) {
                         continue;
                     }
                     Elements select = event.select("div.entry-data.right");
