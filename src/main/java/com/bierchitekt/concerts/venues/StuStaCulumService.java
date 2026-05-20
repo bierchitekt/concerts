@@ -47,18 +47,7 @@ public class StuStaCulumService {
                 continue;
             }
             String title = node.get("title").get("de").asString();
-            String genre = node.get("genre_custom").asString();
-            JsonNode jsonNode = node.get("genre_by_selection");
-            Set<String> genres = new HashSet<>();
-            genres.add(genre);
-            if (jsonNode != null) {
-                ArrayNode arrayNode = jsonNode.asArray();
-                genres = StreamSupport.stream(arrayNode.spliterator(), false)
-                        .map(JsonNode::asString)
-                        .collect(Collectors.toSet());
-            }
-
-
+            Set<String> genres = getGenres(node);
             Optional<LocalDateTime> dateAndTime = getStartDate(node);
             if (dateAndTime.isEmpty()) {
                 continue;
@@ -71,6 +60,23 @@ public class StuStaCulumService {
         }
         log.info("found {} concerts for {}", allConcerts.size(), VENUE_NAME);
         return allConcerts;
+    }
+
+    private Set<String> getGenres(JsonNode node) {
+        JsonNode jsonNode = node.get("genre_by_selection");
+        Set<String> genres = new HashSet<>();
+        JsonNode genreNode = node.get("genre_custom");
+        if(genreNode != null){
+            String genre = genreNode.asString();
+            genres.add(genre);
+        }
+        if (jsonNode != null) {
+            ArrayNode arrayNode = jsonNode.asArray();
+            genres = StreamSupport.stream(arrayNode.spliterator(), false)
+                    .map(JsonNode::asString)
+                    .collect(Collectors.toSet());
+        }
+        return genres;
     }
 
     private Optional<LocalDateTime> getStartDate(JsonNode node) {
