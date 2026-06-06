@@ -192,7 +192,7 @@ public class ConcertService {
         allConcerts.addAll(getFeierwerkConcerts());
         allConcerts.addAll(getOlympiaparkConcerts());
         allConcerts.addAll(getKult9Concerts());
-        allConcerts.addAll(getStuStaCulumConcerts());
+//        allConcerts.addAll(getStuStaCulumConcerts());
 
         allConcerts.addAll(getTheaterDrehleierConcerts());
         // allConcerts.addAll(getTheaterfabrikConcerts());
