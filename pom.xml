@@ -28,7 +28,7 @@
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
         <lombok.version>1.18.46</lombok.version>
         <jna.version>5.19.0</jna.version>
-        <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <ical4j.version>4.2.5</ical4j.version>
         <sonar.organization>bierchitekt</sonar.organization>
         <springdoc-openapi-starter-webmvc-ui.version>3.0.3</springdoc-openapi-starter-webmvc-ui.version>
