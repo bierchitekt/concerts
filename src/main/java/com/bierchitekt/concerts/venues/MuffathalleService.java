@@ -58,7 +58,7 @@ public class MuffathalleService {
                     try {
                         parse = LocalTime.parse(startTime);
                     } catch (Exception e) {
-                        log.warn("cannot parse {} as a start time", startTime, e);
+                        log.warn("cannot parse {} as a start time for event with link {}", startTime, link, e);
                     }
                     LocalDateTime localTime = LocalDateTime.of(date, parse);
                     ConcertDTO concertDTO = new ConcertDTO(title, date, localTime, link, null, VENUE_NAME, "", LocalDate.now(), "", "");
