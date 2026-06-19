@@ -7,11 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
@@ -19,20 +19,56 @@ import tools.jackson.databind.json.JsonMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.bierchitekt.concerts.venues.Venue.BACKSTAGE;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class BackstageService {
 
     public static final String VENUE_NAME = BACKSTAGE.getName();
     public static final String EVENT_URL = "https://www.backstage.eu/events";
+    private final RestClient restClient;
+
+    // Die Basis-URL und die statischen API-Keys können auch in die application.properties
+    // ausgelagert und per @Value injected werden.
+    private static final String BASE_URL = "https://vhhdjliwckyzbqtjrjpp.supabase.co";
+    private static final String API_KEY = "sb_publishable__7zXOMfMEPpplHogPxLazQ_iaXgzJfS";
+
+    public BackstageService(RestClient.Builder restClientBuilder) {
+        this.restClient = restClientBuilder.baseUrl(BASE_URL).build();
+    }
+
+    public String fetchUpcomingEvents() {
+        EventRequestBody requestBody = new EventRequestBody(1000, 0);
+
+        // Der URI-Pfad inklusive Query-Parametern
+        String uriPath = "/rest/v1/rpc/get_upcoming_events" +
+                "?start_time=gte.2026-06-18T22:16:34.388Z" +
+                "&order=start_time.asc" +
+                "&offset=0" +
+                "&limit=1000";
+
+        ResponseEntity<String> response = restClient.post()
+                .uri(uriPath)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("apikey", API_KEY)
+                .header("authorization", "Bearer " + API_KEY)
+                .header("content-profile", "shop_cms")
+                .header("origin", "https://www.backstage.eu")
+                .header("referer", "https://www.backstage.eu/")
+                .header("x-client-info", "supabase-js-web/2.105.3")
+                // User-Agent simulieren, falls die API einen Bot-Schutz hat
+                .header("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36")
+                .body(requestBody)
+                .retrieve()
+                .toEntity(String.class); // Gibt das Ergebnis als JSON-String zurück
+
+        return response.getBody();
+    }
 
     public List<ConcertDTO> getConcerts() {
         log.info("starting getting concerts for venue {}", VENUE_NAME);
@@ -61,32 +97,24 @@ public class BackstageService {
 
     public List<Event> getEvents() {
         try {
-            Document document = Jsoup.connect(EVENT_URL).get();
-            String script = document.toString();
-
-            int eventIdIndex = script.indexOf("event_id");
-            int shopSections = script.lastIndexOf("has_seating_plan");
-            String allEvents = "[{\"" + script.substring(eventIdIndex, shopSections) + "has_seating_plan\":[]}]";
-            allEvents = allEvents.replace("\\\"", "\"");
-
-            allEvents = allEvents.replace("\\\\\"", "'");
+            String s = fetchUpcomingEvents();
             ObjectMapper mapper = new JsonMapper();
-            List<Event> events = mapper.readValue(allEvents, new TypeReference<>() {
+            List<Event> events = mapper.readValue(s, new TypeReference<>() {
             });
 
-            events.removeIf(event -> event.category == null);
-            events.removeIf(event -> event.category.toLowerCase().contains("liveübertragung"));
-            events.removeIf(event -> event.category.toLowerCase().contains("party"));
-            events.removeIf(event -> event.category.toLowerCase().contains("feiern"));
-            events.removeIf(event -> event.category.toLowerCase().contains("fussball"));
-            events.removeIf(event -> event.category.toLowerCase().contains("biergarten"));
-            events.removeIf(event -> event.category.toLowerCase().contains("lesung"));
-            events.removeIf(event -> event.category.toLowerCase().contains("pop! reloaded"));
-            events.removeIf(event -> event.category.toLowerCase().contains("rollschuh"));
+            events.removeIf(event -> event.genres == null);
+            events.removeIf(event -> event.getGenres().contains("liveübertragung"));
+            events.removeIf(event -> event.getGenres().contains("party"));
+            events.removeIf(event -> event.getGenres().contains("feiern"));
+            events.removeIf(event -> event.getGenres().contains("fussball"));
+            events.removeIf(event -> event.getGenres().contains("biergarten"));
+            events.removeIf(event -> event.getGenres().contains("lesung"));
+            events.removeIf(event -> event.getGenres().contains("pop! reloaded"));
+            events.removeIf(event -> event.getGenres().contains("rollschuh"));
             events.removeIf(event -> event.title.toLowerCase().contains("rollschuh"));
-            events.removeIf(event -> event.category.toLowerCase().contains("caribbean vibes"));
+            events.removeIf(event -> event.getGenres().contains("caribbean vibes"));
             events.removeIf(event -> event.title.toLowerCase().contains("caribbean vibes"));
-            events.removeIf(event -> event.category.isEmpty());
+            events.removeIf(event -> event.genres.isEmpty());
 
             return events;
         } catch (Exception e) {
@@ -112,7 +140,7 @@ public class BackstageService {
 
         private String headline;
 
-        private String category;
+        private Set<Genres> genres;
 
         @JsonProperty("min_price_cents")
         private Integer priceInCents;
@@ -131,7 +159,7 @@ public class BackstageService {
         }
 
         public boolean isFreeAndEasy() {
-            return category.equals("free & easy");
+            return genres.equals("free & easy");
         }
 
         public String getLink() {
@@ -161,9 +189,12 @@ public class BackstageService {
             if (isFreeAndEasy()) {
                 return Set.of();
             }
-            return Arrays.stream(category.split(","))
-                    .map(String::trim)
-                    .collect(Collectors.toSet());
+
+            Set<String> genresNames = new HashSet<>();
+            for (Genres genre : genres) {
+                genresNames.add(genre.name);
+            }
+            return genresNames;
         }
 
         public String getSupportBands() {
@@ -183,6 +214,10 @@ public class BackstageService {
             result = result.replace("+ special guest: ", "");
             result = result.replace("+ Special Guest: ", "");
             return result;
+        }
+
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        private record Genres(String name) {
         }
     }
 
