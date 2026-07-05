@@ -24,12 +24,12 @@
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <testcontainers.version>2.0.5</testcontainers.version>
-        <junit-jupiter.version>6.1.0</junit-jupiter.version>
+        <junit-jupiter.version>6.1.1</junit-jupiter.version>
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
         <lombok.version>1.18.46</lombok.version>
         <jna.version>5.19.1</jna.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
-        <ical4j.version>4.2.5</ical4j.version>
+        <ical4j.version>4.3.0</ical4j.version>
         <sonar.organization>bierchitekt</sonar.organization>
         <springdoc-openapi-starter-webmvc-ui.version>3.0.3</springdoc-openapi-starter-webmvc-ui.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
