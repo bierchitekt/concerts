@@ -21,7 +21,6 @@ import com.bierchitekt.concerts.venues.TollwoodService;
 import com.bierchitekt.concerts.venues.Venue;
 import com.bierchitekt.concerts.venues.WinterTollwoodService;
 import com.bierchitekt.concerts.venues.ZenithService;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
@@ -548,21 +547,20 @@ public class ConcertService {
         icalService.createICalEntries(concertMapper.toConcertDto(all));
     }
 
-    @PostConstruct
-    public void fixBackstageLinks(){
+    public void fixBackstageLinks() {
         log.info("start");
         List<ConcertDTO> concerts = backstageService.getConcerts();
-        for(ConcertDTO concert: concerts){
+        for (ConcertDTO concert : concerts) {
             List<ConcertEntity> byTitleAndDate = concertRepository.findByTitleAndDate(concert.title(), concert.date());
 
-            if(byTitleAndDate.size() == 1){
+            if (byTitleAndDate.size() == 1) {
                 ConcertEntity first = byTitleAndDate.getFirst();
                 first.setLink(concert.link());
                 concertRepository.save(first);
 
             }
         }
-log.info("done");
+        log.info("done");
     }
 }
 
