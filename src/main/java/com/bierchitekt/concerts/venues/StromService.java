@@ -45,7 +45,7 @@ public class StromService {
             for (Element element : scriptElements) {
                 if (element.data().contains("events.push")) {
                     String data = element.data();
-                    String answer = data.substring(data.indexOf("(") + 1, data.indexOf(")"));
+                    String answer = data.substring(data.indexOf("(") + 1, data.indexOf("})")) + "}";
 
                     String type = JsonParser.parseString(answer).getAsJsonObject().get("location").getAsString();
 
