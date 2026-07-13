@@ -106,6 +106,9 @@ public class CircusKroneService {
             if (beginn == null) {
                 beginn = StringUtils.substringBetween(text, "Einlass: ", " Uhr");
             }
+            if (beginn == null) {
+                return LocalTime.of(19, 0);
+            }
             return LocalTime.parse(beginn);
         } catch (IOException e) {
             log.warn("error getting price for circusKrone url {} ", link, e);
