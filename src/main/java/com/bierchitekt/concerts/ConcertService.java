@@ -197,7 +197,7 @@ public class ConcertService {
         allConcerts.addAll(getTheaterDrehleierConcerts());
         // allConcerts.addAll(getTheaterfabrikConcerts());
         allConcerts.addAll(getKafeKultConcerts());
-        allConcerts.addAll(getTollwoodConcerts());
+       // allConcerts.addAll(getTollwoodConcerts());
         // allConcerts.addAll(getWinterTollwoodConcerts());
 
         log.info("found {} concerts, saving now", allConcerts.size());
