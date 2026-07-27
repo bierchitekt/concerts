@@ -118,6 +118,9 @@ public class CircusKroneService {
     }
 
     private Optional<Integer> getMonth(String dateString) {
+    if(dateString.equals("HINWEIS")){
+        return Optional.empty();
+    }
         String s = StringUtils.substringBetween(dateString, " ", " ");
         if (s == null) {
             log.warn("cannot parse date {}", dateString);
