@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.bierchitekt.concerts.venues.Venue.MUFFATHALLE;
 
@@ -50,7 +51,9 @@ public class MuffathalleService {
                     }
                     Elements select = event.select("div.entry-data.right");
                     String link = BASE_URL + select.select("a[href]").getFirst().attr("href");
-                    LocalDate date = getDate(event.select("div.date").text());
+                    Optional<LocalDate> date = getDate(event.select("div.date").text());
+                    if (date.isEmpty())
+                        continue;
                     String startTime = event.select("div.entry-data.center").get(1).text();
 
                     startTime = startTime.substring(startTime.length() - 5);
@@ -58,10 +61,12 @@ public class MuffathalleService {
                     try {
                         parse = LocalTime.parse(startTime);
                     } catch (Exception e) {
-                        log.warn("cannot parse {} as a start time for event with link {}", startTime, link, e);
+                        if (!e.getLocalizedMessage().equals("Text '9.09.' could not be parsed at index 0")) {
+                            log.warn("cannot parse {} as a start time for event with link {}", startTime, link, e);
+                        }
                     }
-                    LocalDateTime localTime = LocalDateTime.of(date, parse);
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, localTime, link, null, VENUE_NAME, "", LocalDate.now(), "", "");
+                    LocalDateTime localTime = LocalDateTime.of(date.get(), parse);
+                    ConcertDTO concertDTO = new ConcertDTO(title, date.get(), localTime, link, null, VENUE_NAME, "", LocalDate.now(), "", "");
 
                     allConcerts.add(concertDTO);
                 }
@@ -75,24 +80,26 @@ public class MuffathalleService {
         }
     }
 
-    private LocalDate getDate(String dateString) {
+    private Optional<LocalDate> getDate(String dateString) {
         try {
             if ("heute".equalsIgnoreCase(dateString)) {
-                return LocalDate.now();
+                return Optional.of(LocalDate.now());
             }
             if ("morgen".equalsIgnoreCase(dateString)) {
-                return LocalDate.now().plusDays(1);
+                return Optional.of(LocalDate.now().plusDays(1));
             }
 
             String substring = dateString.substring(3);
 
             substring = substring.replace(". ", " ");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM yy");
-            return LocalDate.parse(substring, formatter);
+            return Optional.of(LocalDate.parse(substring, formatter));
         } catch (Exception e) {
-            log.warn("could not parse date string {} for muffathalle", dateString, e);
-            // return yesterday so the concert wont be saved
-            return LocalDate.now().minusDays(1);
+            if (!e.getLocalizedMessage().equals("Text '09 bis 05.09' could not be parsed at index 2")) {
+                log.warn("could not parse date string {} for muffathalle", dateString, e);
+            }
+            // return yesterday so the concert won't be saved
+            return Optional.empty();
         }
     }
 
