@@ -95,7 +95,9 @@ public class MuffathalleService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM yy");
             return Optional.of(LocalDate.parse(substring, formatter));
         } catch (Exception e) {
-            if (!e.getLocalizedMessage().equals("Text '09 bis 05.09' could not be parsed at index 2")) {
+            if (!(e.getLocalizedMessage().equals("Text '09 bis 05.09' could not be parsed at index 2")
+                    || e.getLocalizedMessage().equals("Text '10 & 10.10' could not be parsed at index 2"))) {
+                log.warn(e.getLocalizedMessage());
                 log.warn("could not parse date string {} for muffathalle", dateString, e);
             }
             // return yesterday so the concert won't be saved
