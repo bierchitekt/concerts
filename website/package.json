@@ -27,8 +27,8 @@
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.4",
         "@vitejs/plugin-react-swc": "4.3.3",
-        "daisyui": "5.7.17",
-        "eslint": "10.8.1",
+        "daisyui": "5.7.20",
+        "eslint": "10.9.0",
         "eslint-plugin-react-hooks": "7.1.1",
         "eslint-plugin-react-refresh": "0.5.4",
         "globals": "17.11.0",
@@ -38,6 +38,6 @@
         "tailwindcss": "4.3.3",
         "typescript": "6.0.3",
         "typescript-eslint": "8.67.0",
-        "vite": "8.2.1"
+        "vite": "8.2.2"
     }
 }
