@@ -114,6 +114,8 @@ public class BackstageService {
             events.removeIf(event -> event.title.toLowerCase().contains("rollschuh"));
             events.removeIf(event -> event.getGenres().contains("caribbean vibes"));
             events.removeIf(event -> event.title.toLowerCase().contains("caribbean vibes"));
+            events.removeIf(event -> event.title.toLowerCase().contains("core all over"));
+            events.removeIf(event -> event.title.toLowerCase().contains("teenage dirtbag"));
             events.removeIf(event -> event.genres.isEmpty());
 
             return events;
