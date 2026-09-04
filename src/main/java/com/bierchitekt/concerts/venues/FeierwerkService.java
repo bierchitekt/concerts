@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.bierchitekt.concerts.ConcertService.CALENDAR_URL;
 import static com.bierchitekt.concerts.venues.Venue.FEIERWERK;
@@ -84,7 +86,13 @@ public class FeierwerkService {
 
     private String getPrice(Document doc) {
         Elements select = doc.select("div.additional-info");
-        return StringUtils.substringBetween(select.text(), "VVK: ", " EURO") + " €";
+        String regex = "(?i)(\\d+(?:[,.]\\d{1,2})?)\\s*(EURO)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(select.text().toLowerCase());
+        if (matcher.find()) {
+            return matcher.group(1) + " €";
+        }
+        return "";
     }
 
     private Set<String> getGenres(Document doc) {
