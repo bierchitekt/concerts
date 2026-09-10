@@ -21,17 +21,17 @@
         <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
         <java-telegram-bot-api.version>10.1.0</java-telegram-bot-api.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <testcontainers.version>2.0.5</testcontainers.version>
-        <junit-jupiter.version>6.1.2</junit-jupiter.version>
+        <junit-jupiter.version>6.1.3</junit-jupiter.version>
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
-        <lombok.version>1.18.46</lombok.version>
+        <lombok.version>1.18.48</lombok.version>
         <jna.version>5.19.1</jna.version>
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <ical4j.version>4.3.0</ical4j.version>
         <sonar.organization>bierchitekt</sonar.organization>
-        <springdoc-openapi-starter-webmvc-ui.version>3.1.0</springdoc-openapi-starter-webmvc-ui.version>
+        <springdoc-openapi-starter-webmvc-ui.version>3.1.1</springdoc-openapi-starter-webmvc-ui.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
     </properties>
     <dependencies>
