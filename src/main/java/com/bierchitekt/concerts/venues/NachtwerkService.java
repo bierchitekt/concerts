@@ -24,7 +24,7 @@ import static com.bierchitekt.concerts.venues.Venue.NACHTWERK;
 @Service
 public class NachtwerkService {
 
-    public static final String URL = "https://www.nachtwerk.de/";
+    public static final String URL = "https://www.nachtwerk.de";
     public static final String VENUE_NAME = NACHTWERK.getName();
     private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
             .parseCaseInsensitive()
