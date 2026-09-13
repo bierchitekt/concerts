@@ -14,6 +14,7 @@ public enum Venue {
     KAFE_KULT("kafekult"),
     KULT9("Kult9"),
     MUFFATHALLE("Muffathalle"),
+    NACHTWERK("Nachtwerk"),
     OLYMPIAPARK("Olympiapark"),
     STROM("Strom"),
     STUSTACULUM("StuStaCulum"),

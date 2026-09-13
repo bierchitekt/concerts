@@ -11,6 +11,7 @@ import com.bierchitekt.concerts.venues.ImportExportService;
 import com.bierchitekt.concerts.venues.KafeKultService;
 import com.bierchitekt.concerts.venues.Kult9Service;
 import com.bierchitekt.concerts.venues.MuffathalleService;
+import com.bierchitekt.concerts.venues.NachtwerkService;
 import com.bierchitekt.concerts.venues.OlympiaparkService;
 import com.bierchitekt.concerts.venues.StringUtil;
 import com.bierchitekt.concerts.venues.StromService;
@@ -47,6 +48,7 @@ import static com.bierchitekt.concerts.venues.Venue.IMPORT_EXPORT;
 import static com.bierchitekt.concerts.venues.Venue.KAFE_KULT;
 import static com.bierchitekt.concerts.venues.Venue.KULT9;
 import static com.bierchitekt.concerts.venues.Venue.MUFFATHALLE;
+import static com.bierchitekt.concerts.venues.Venue.NACHTWERK;
 import static com.bierchitekt.concerts.venues.Venue.OLYMPIAPARK;
 import static com.bierchitekt.concerts.venues.Venue.STROM;
 import static com.bierchitekt.concerts.venues.Venue.STUSTACULUM;
@@ -89,6 +91,7 @@ public class ConcertService {
     private final MuffathalleService muffathalleService;
     private final FeierwerkService feierwerkService;
     private final OlympiaparkService olympiaparkService;
+    private final NachtwerkService nachtwerkService;
     private final Theaterfabrik theaterfabrikService;
     private final Kult9Service kult9Service;
     private final EventFabrikService eventFabrikService;
@@ -187,6 +190,7 @@ public class ConcertService {
         allConcerts.addAll(getBackstageConcerts());
         allConcerts.addAll(getImportExportConcerts());
         allConcerts.addAll(getMuffathalleConcerts());
+        allConcerts.addAll(getNachtwerkConcerts());
         allConcerts.addAll(getEventfabrikConcerts());
         allConcerts.addAll(getCircusKroneConcerts());
         allConcerts.addAll(getFeierwerkConcerts());
@@ -274,6 +278,9 @@ public class ConcertService {
 
     private Collection<ConcertDTO> getMuffathalleConcerts() {
         return getNewConcerts(muffathalleService.getConcerts(), MUFFATHALLE);
+    }
+    private Collection<ConcertDTO> getNachtwerkConcerts() {
+        return getNewConcerts(nachtwerkService.getConcerts(), NACHTWERK);
     }
 
     private Collection<ConcertDTO> getTheaterfabrikConcerts() {
