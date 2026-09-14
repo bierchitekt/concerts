@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -175,7 +176,7 @@ public class ConcertService {
     private void notifyNextWeekConcerts(String genreName, String channelName) {
 
         List<ConcertEntity> concerts = concertRepository.findByGenreAndDateAfterAndDateBeforeOrderByDate(genreName,
-                LocalDate.now(), LocalDate.now().plusDays(8));
+                LocalDate.now(ZoneId.of("Europe/Berlin")), LocalDate.now(ZoneId.of("Europe/Berlin")).plusDays(8));
 
         notifyNewConcertsForTelegram("Upcoming " + genreName + " concerts for next week: \n\n", concerts, channelName);
     }
@@ -215,7 +216,7 @@ public class ConcertService {
                 log.error("concert title is missing for link {}", concertDTO.link());
                 continue;
             }
-            if (concertDTO.date().isBefore(LocalDate.now())) {
+            if (concertDTO.date().isBefore(LocalDate.now(ZoneId.of("Europe/Berlin")))) {
                 log.debug("Not adding concert {} because it's on {} and older than today", concertDTO.title(), concertDTO.date());
                 continue;
             }
@@ -234,7 +235,7 @@ public class ConcertService {
             if (concertRepository.similarTitleAtSameDate(concertDTO.title(), concertDTO.date()).isEmpty()) {
                 log.info("new concert found. Title: {}, date: {}, venue: {}", concertDTO.title(), concertDTO.date(), concertDTO.location());
                 ConcertEntity concertEntity = concertMapper.toConcertEntity(concertDTO);
-                concertEntity.setAddedAt(LocalDate.now());
+                concertEntity.setAddedAt(LocalDate.now(ZoneId.of("Europe/Berlin")));
                 concertRepository.save(concertEntity);
             }
         }
@@ -250,13 +251,13 @@ public class ConcertService {
 
     public List<ConcertDTO> getNextWeekConcerts() {
 
-        List<ConcertEntity> byDateAfterAndDateBeforeOrderByDate = concertRepository.findByDateAfterAndDateBeforeOrderByDate(LocalDate.now(), LocalDate.now().plusDays(8));
+        List<ConcertEntity> byDateAfterAndDateBeforeOrderByDate = concertRepository.findByDateAfterAndDateBeforeOrderByDate(LocalDate.now(ZoneId.of("Europe/Berlin")), LocalDate.now(ZoneId.of("Europe/Berlin")).plusDays(8));
 
         return concertMapper.toConcertDto(byDateAfterAndDateBeforeOrderByDate);
     }
 
     public void deleteOldConcerts() {
-        List<ConcertEntity> allByDateBefore = concertRepository.findAllByDateBefore(LocalDate.now());
+        List<ConcertEntity> allByDateBefore = concertRepository.findAllByDateBefore(LocalDate.now(ZoneId.of("Europe/Berlin")));
         if (!allByDateBefore.isEmpty()) {
             log.info("deleting {} old concerts", allByDateBefore.size());
             concertRepository.deleteAll(allByDateBefore);
@@ -337,33 +338,33 @@ public class ConcertService {
                         String beginn = zenithService.getTime(concert.link());
                         String supportBands = zenithService.getSupportBands(concert.link());
                         LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
-                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                     }
                     case STROM -> {
                         String beginn = stromService.getTime(concert.link());
                         LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), LocalTime.parse(beginn));
-                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(ZoneId.of("Europe/Berlin")), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                     }
                     case CIRCUSKRONE -> {
                         LocalTime beginn = circusKroneService.getBeginn(concert.link());
                         LocalDateTime dateAndTime = LocalDateTime.of(concert.date(), beginn);
-                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), dateAndTime, concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(ZoneId.of("Europe/Berlin")), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                     }
                     case TOLLWOOD -> {
                         String price = tollwoodService.getPrice(concert.link());
-                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(ZoneId.of("Europe/Berlin")), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
                     }
                     case MUFFATHALLE -> {
                         genres = genreService.getGenres(concert.title());
                         String price = muffathalleService.getPrice(concert.link());
-                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), "", LocalDate.now(), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), "", LocalDate.now(ZoneId.of("Europe/Berlin")), price, CALENDAR_URL + StringUtil.getICSFilename(concert)));
                     }
                     case EVENTFABRIK -> {
                         String supportBands = eventFabrikService.getSupportBands(concert.link());
-                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), supportBands, LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                        newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                     }
                     default ->
-                            newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                            newConcerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), genres, concert.location(), concert.supportBands(), LocalDate.now(ZoneId.of("Europe/Berlin")), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
                 }
             }
         });
@@ -382,7 +383,7 @@ public class ConcertService {
         }
         concerts.forEach(concert -> {
             if (concertRepository.findByTitleAndDate(concert.title(), concert.date()).isEmpty()) {
-                kult9Concerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), concert.genre(), concert.location(), concert.supportBands(), LocalDate.now(), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
+                kult9Concerts.add(new ConcertDTO(concert.title(), concert.date(), concert.dateAndTime(), concert.link(), concert.genre(), concert.location(), concert.supportBands(), LocalDate.now(ZoneId.of("Europe/Berlin")), concert.price(), CALENDAR_URL + StringUtil.getICSFilename(concert)));
             }
         });
 
@@ -429,7 +430,7 @@ public class ConcertService {
                         .genre(genre)
                         .location(concert.location())
                         .supportBands(concert.supportBands())
-                        .addedAt(LocalDate.now())
+                        .addedAt(LocalDate.now(ZoneId.of("Europe/Berlin")))
                         .price(concert.price())
                         .calendarUri(CALENDAR_URL + StringUtil.getICSFilename(concert))
                         .build();
@@ -443,7 +444,7 @@ public class ConcertService {
     }
 
     private List<ConcertDTO> getConcertDTOs() {
-        List<ConcertEntity> concerts = concertRepository.findByDateAfterOrderByDate(LocalDate.now().minusDays(1));
+        List<ConcertEntity> concerts = concertRepository.findByDateAfterOrderByDate(LocalDate.now(ZoneId.of("Europe/Berlin")).minusDays(1));
         return concertMapper.toConcertDto(concerts);
     }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -77,7 +78,7 @@ public class FeierwerkService {
 
             LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
 
-            return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(), price,
+            return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), price,
                     CALENDAR_URL + StringUtil.getICSFilename(bands.getFirst(), date)));
         } catch (Exception _) {
             return Optional.empty();

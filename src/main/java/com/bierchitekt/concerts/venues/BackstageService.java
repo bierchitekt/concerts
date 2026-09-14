@@ -4,10 +4,12 @@ import com.bierchitekt.concerts.ConcertDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,18 +33,19 @@ import static com.bierchitekt.concerts.venues.Venue.BACKSTAGE;
 public class BackstageService {
 
     public static final String VENUE_NAME = BACKSTAGE.getName();
-    public static final String EVENT_URL = "https://www.backstage.eu/events";
     private final RestClient restClient;
+
+    @Value("${backstage.apiKey}")
+    @NotEmpty
+    private String apiKey;
 
     // Die Basis-URL und die statischen API-Keys können auch in die application.properties
     // ausgelagert und per @Value injected werden.
     private static final String BASE_URL = "https://vhhdjliwckyzbqtjrjpp.supabase.co";
-    private static final String API_KEY = "sb_publishable__7zXOMfMEPpplHogPxLazQ_iaXgzJfS";
 
     public BackstageService(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder.baseUrl(BASE_URL).build();
     }
-
     public String fetchUpcomingEvents() {
         EventRequestBody requestBody = new EventRequestBody(1000, 0);
 
@@ -55,8 +59,8 @@ public class BackstageService {
         ResponseEntity<String> response = restClient.post()
                 .uri(uriPath)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("apikey", API_KEY)
-                .header("authorization", "Bearer " + API_KEY)
+                .header("apikey", apiKey)
+                .header("authorization", "Bearer " + apiKey)
                 .header("content-profile", "shop_cms")
                 .header("origin", "https://www.backstage.eu")
                 .header("referer", "https://www.backstage.eu/")
@@ -69,7 +73,6 @@ public class BackstageService {
 
         return response.getBody();
     }
-
     public List<ConcertDTO> getConcerts() {
         log.info("starting getting concerts for venue {}", VENUE_NAME);
         long start = System.currentTimeMillis();
@@ -88,7 +91,7 @@ public class BackstageService {
 
             String supportBands = event.getSupportBands();
             ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, genres, location, supportBands,
-                    LocalDate.now(), price, "");
+                    LocalDate.now(ZoneId.of("Europe/Berlin")), price, "");
             allConcerts.add(concertDTO);
         }
         log.info("found {} new concerts for venue {}, took {} ms", allConcerts.size(), VENUE_NAME, (System.currentTimeMillis() - start));

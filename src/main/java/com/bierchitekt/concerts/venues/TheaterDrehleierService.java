@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class TheaterDrehleierService {
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(beginn));
                 Pair bands = getBands(title);
 
-                allConcerts.add(new ConcertDTO(bands.mainAct, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(), "", ""));
+                allConcerts.add(new ConcertDTO(bands.mainAct, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), "", ""));
             }
 
 

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,7 @@ public class MuffathalleService {
                         }
                     }
                     LocalDateTime localTime = LocalDateTime.of(date.get(), parse);
-                    ConcertDTO concertDTO = new ConcertDTO(title, date.get(), localTime, link, null, VENUE_NAME, "", LocalDate.now(), "", "");
+                    ConcertDTO concertDTO = new ConcertDTO(title, date.get(), localTime, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
 
                     allConcerts.add(concertDTO);
                 }
@@ -83,10 +84,10 @@ public class MuffathalleService {
     private Optional<LocalDate> getDate(String dateString) {
         try {
             if ("heute".equalsIgnoreCase(dateString)) {
-                return Optional.of(LocalDate.now());
+                return Optional.of(LocalDate.now(ZoneId.of("Europe/Berlin")));
             }
             if ("morgen".equalsIgnoreCase(dateString)) {
-                return Optional.of(LocalDate.now().plusDays(1));
+                return Optional.of(LocalDate.now(ZoneId.of("Europe/Berlin")).plusDays(1));
             }
 
             String substring = dateString.substring(3);

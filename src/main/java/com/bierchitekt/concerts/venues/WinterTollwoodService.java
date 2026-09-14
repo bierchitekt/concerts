@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -86,7 +87,7 @@ public class WinterTollwoodService {
                     allGenres.add(genres.trim());
                 }
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, concertLink, allGenres, VENUE_NAME, "", LocalDate.now(), price, "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, concertLink, allGenres, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), price, "");
                 allConcerts.add(concertDTO);
             }
         } catch (Exception e) {

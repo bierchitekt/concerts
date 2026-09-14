@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +57,7 @@ public class KafeKultService {
                 LocalDateTime dateAndTime = getDateAndTime(concertDetail);
                 LocalDate date = getDate(concertDetail);
 
-                ConcertDTO concertDto = new ConcertDTO(mainAct, date, dateAndTime, link, null, VENUE_NAME, supportBands.trim(), LocalDate.now(), "", "");
+                ConcertDTO concertDto = new ConcertDTO(mainAct, date, dateAndTime, link, null, VENUE_NAME, supportBands.trim(), LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
                 allConcerts.add(concertDto);
             }
 
@@ -81,7 +82,7 @@ public class KafeKultService {
 
             }
         }
-        return LocalDate.now().minusDays(1);
+        return LocalDate.now(ZoneId.of("Europe/Berlin")).minusDays(1);
     }
 
     private LocalDateTime getDateAndTime(Document doc) {

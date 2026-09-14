@@ -14,6 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
@@ -34,9 +35,9 @@ class ConcertServiceIntegrationTest {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy").localizedBy(ENGLISH);
 
 
-    private final LocalDate tomorrow = LocalDate.now().plusDays(1);
-    private final LocalDate today = LocalDate.now();
-    private final LocalDate yesterday = LocalDate.now().minusDays(1);
+    private final LocalDate tomorrow = LocalDate.now(ZoneId.of("Europe/Berlin")).plusDays(1);
+    private final LocalDate today = LocalDate.now(ZoneId.of("Europe/Berlin"));
+    private final LocalDate yesterday = LocalDate.now(ZoneId.of("Europe/Berlin")).minusDays(1);
 
     private ConcertEntity maiden;
     private ConcertEntity blindGuardian;

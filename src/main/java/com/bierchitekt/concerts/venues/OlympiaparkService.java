@@ -12,6 +12,7 @@ import org.springframework.web.client.RestClient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,7 +68,7 @@ public class OlympiaparkService {
             }
             for (LocalDate date : concertDates) {
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                allConcerts.add(new ConcertDTO(title, date, dateAndTime, BASE_URL + link, genres, location, "", LocalDate.now(), "", ""));
+                allConcerts.add(new ConcertDTO(title, date, dateAndTime, BASE_URL + link, genres, location, "", LocalDate.now(ZoneId.of("Europe/Berlin")), "", ""));
             }
         }
         log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);

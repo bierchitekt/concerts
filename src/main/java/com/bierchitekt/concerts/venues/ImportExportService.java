@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class ImportExportService {
                 LocalDate date = LocalDate.parse(elementDate.text().substring(4, 12), formatter);
                 String startTime = StringUtils.substringAfter(elementDate.text(), "Beginn:").trim();
                 LocalDateTime localDateTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                ConcertDTO concertDTO = new ConcertDTO(title, date, localDateTime, link.get(), null, VENUE_NAME, supportBands, LocalDate.now(), "", "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date, localDateTime, link.get(), null, VENUE_NAME, supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {

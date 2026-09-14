@@ -11,6 +11,7 @@ import tools.jackson.databind.node.ArrayNode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +56,7 @@ public class StuStaCulumService {
 
             String link = getLink(node);
 
-            allConcerts.add(new ConcertDTO(title, LocalDate.from(dateAndTime.get()), dateAndTime.get(), link, genres, VENUE_NAME, "", LocalDate.now(), "", ""));
+            allConcerts.add(new ConcertDTO(title, LocalDate.from(dateAndTime.get()), dateAndTime.get(), link, genres, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), "", ""));
 
         }
         log.info("found {} concerts for {}", allConcerts.size(), VENUE_NAME);

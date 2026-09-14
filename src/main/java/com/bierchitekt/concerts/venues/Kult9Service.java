@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,7 +73,7 @@ public class Kult9Service {
                     link = event.select("div.btnarea").select("a[href]").getFirst().attr("href");
                 }
                 String price = "";
-                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, allGenres, VENUE_NAME, "", LocalDate.now(), price,
+                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, allGenres, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), price,
                         CALENDAR_URL + StringUtil.getICSFilename(title, date));
                 allConcerts.add(concertDTO);
             }

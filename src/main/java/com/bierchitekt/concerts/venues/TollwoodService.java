@@ -17,6 +17,7 @@ import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -73,7 +74,7 @@ public class TollwoodService {
                         price = eintritt;
                     }
                     LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(start.substring(0, 5)));
-                    ConcertDTO concertDTO = new ConcertDTO(bands.title, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(), price, "");
+                    ConcertDTO concertDTO = new ConcertDTO(bands.title, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), price, "");
                     allConcerts.add(concertDTO);
                 }
 

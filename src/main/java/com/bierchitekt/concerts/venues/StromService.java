@@ -63,7 +63,7 @@ public class StromService {
                     String link = JsonParser.parseString(answer).getAsJsonObject().get("permalink").getAsString();
 
 
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, VENUE_NAME, "", LocalDate.now(), "", "");
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
                     allConcerts.add(concertDTO);
                 }
 

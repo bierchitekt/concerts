@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,12 +63,12 @@ public class Theaterfabrik {
                     }
                     LocalDate date = LocalDate.parse(dateString.trim(), formatter);
                     LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, null, VENUE_NAME, "", LocalDate.now(), price, "");
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), price, "");
                     allConcerts.add(concertDTO);
                 } else {
                     for (LocalDate singleDate : dates) {
                         LocalDateTime dateAndTime = LocalDateTime.of(singleDate, LocalTime.parse(startTime));
-                        ConcertDTO concertDTO = new ConcertDTO(title, singleDate, dateAndTime, link, null, VENUE_NAME, "", LocalDate.now(), price, "");
+                        ConcertDTO concertDTO = new ConcertDTO(title, singleDate, dateAndTime, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), price, "");
                         allConcerts.add(concertDTO);
 
                     }

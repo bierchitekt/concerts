@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class NachtwerkService {
                     dateAndTime = LocalDateTime.of(date, LocalTime.parse(dateAndTimeElements.get(1).text()));
                 }
 
-                ConcertDTO concertDTO = new ConcertDTO(bands.title, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(), "", "");
+                ConcertDTO concertDTO = new ConcertDTO(bands.title, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
                 allConcerts.add(concertDTO);
             }
         } catch (IOException ex) {
