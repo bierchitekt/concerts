@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.Venue.OLYMPIAPARK;
 
 @Service
@@ -68,7 +69,7 @@ public class OlympiaparkService {
             }
             for (LocalDate date : concertDates) {
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                allConcerts.add(new ConcertDTO(title, date, dateAndTime, BASE_URL + link, genres, location, "", LocalDate.now(ZoneId.of("Europe/Berlin")), "", ""));
+                allConcerts.add(new ConcertDTO(title, date, dateAndTime, BASE_URL + link, genres, location, "", LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", ""));
             }
         }
         log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);

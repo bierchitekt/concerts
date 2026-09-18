@@ -35,9 +35,9 @@ class ConcertServiceIntegrationTest {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy").localizedBy(ENGLISH);
 
 
-    private final LocalDate tomorrow = LocalDate.now(ZoneId.of("Europe/Berlin")).plusDays(1);
-    private final LocalDate today = LocalDate.now(ZoneId.of("Europe/Berlin"));
-    private final LocalDate yesterday = LocalDate.now(ZoneId.of("Europe/Berlin")).minusDays(1);
+    private final LocalDate tomorrow = LocalDate.now(ZoneId.of(EUROPE_BERLIN)).plusDays(1);
+    private final LocalDate today = LocalDate.now(ZoneId.of(EUROPE_BERLIN));
+    private final LocalDate yesterday = LocalDate.now(ZoneId.of(EUROPE_BERLIN)).minusDays(1);
 
     private ConcertEntity maiden;
     private ConcertEntity blindGuardian;

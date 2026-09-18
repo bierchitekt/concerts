@@ -19,11 +19,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.Venue.TOLLWOOD;
 import static java.util.Locale.GERMAN;
 
@@ -32,13 +33,12 @@ import static java.util.Locale.GERMAN;
 @RequiredArgsConstructor
 public class TollwoodService {
 
-    private static final String URL = "https://www.tollwood.de/kalender-sommer-2026/";
+    private static final String URL = "https://www.tollwood.de/veranstaltungsort/musik-arena/";
 
     public static final String VENUE_NAME = TOLLWOOD.getName();
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLLL yyyy").localizedBy(GERMAN);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy").localizedBy(GERMAN);
 
 
-    @SuppressWarnings("java:S2142")
     public List<ConcertDTO> getConcerts() {
         log.info("getting {} concerts", VENUE_NAME);
 
@@ -47,39 +47,27 @@ public class TollwoodService {
             String html = getHTML(URL);
             Document doc = Jsoup.parse(html);
 
-            Elements allEvents = doc.select("div.panel-calendar-tile");
+            Elements allEvents = doc.select("div.teaser-content ");
 
             for (Element event : allEvents) {
-                LocalDate date = LocalDate.parse(event.select("span.date").text(), formatter);
 
-                Elements elementsForDay = event.select("tr");
-                for (Element concertElement : elementsForDay) {
-                    String category = concertElement.select("td.cell-category").text();
-
-
-                    if (!"Musik".equals(category)) {
-                        continue;
-                    }
-                    String title = concertElement.select("td.cell-title").text();
-                    if (title.startsWith("Live-Musik") || title.startsWith("DJ Lounge") || title.startsWith("Rudelsingen") || title.startsWith("Pub-Musik")) {
-                        continue;
-                    }
-                    Pair bands = getBands(title);
-                    String link = concertElement.select("td.cell-details").select("a[href]").getFirst().attr("href");
-
-                    String start = concertElement.select("td.cell-time").text();
-                    String eintritt = concertElement.select("td.cell-admission").text();
-                    String price = "";
-                    if ("Eintritt frei".equals(eintritt)) {
-                        price = eintritt;
-                    }
-                    LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(start.substring(0, 5)));
-                    ConcertDTO concertDTO = new ConcertDTO(bands.title, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), price, "");
-                    allConcerts.add(concertDTO);
+                String title = StringUtil.capitalizeWords(event.select("h3.headline").text());
+                LocalDate date;
+                LocalDateTime dateAndTime;
+                try {
+                    String text = event.select("h4.subline").text();
+                    date = LocalDate.parse(text.substring(0, 10), formatter);
+                    dateAndTime = LocalDateTime.of(date, LocalTime.parse(text.substring(13, 18)));
+                } catch (DateTimeParseException e) {
+                    continue;
                 }
+                String link = event.select("a[href]").getFirst().attr("href");
 
-
+                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", "");
+                allConcerts.add(concertDTO);
             }
+
+
             log.info("received {} {} concerts", allConcerts.size(), VENUE_NAME);
 
             return allConcerts.stream().toList();
@@ -99,6 +87,9 @@ public class TollwoodService {
             String price = select.text();
             price = price.replaceAll("[^0-9,]", "");
 
+            if (price.isBlank()) {
+                return "";
+            }
             return price + " €";
         } catch (IOException | InterruptedException ex) {
             log.warn("cannot get price for {}", link, ex);
@@ -106,31 +97,6 @@ public class TollwoodService {
         }
     }
 
-    private Pair getBands(String allBands) {
-        String title = allBands;
-        List<String> supportBandsList = new ArrayList<>();
-
-        if (allBands.contains("&")) {
-            String[] split = allBands.split("&");
-            title = split[0].trim();
-            for (int i = 1; i < split.length; i++) {
-                supportBandsList.add(split[i].trim());
-            }
-        }
-        if (allBands.contains(",")) {
-            String[] split = allBands.split(",");
-            title = split[0].trim();
-            for (int i = 1; i < split.length; i++) {
-
-                supportBandsList.add(split[i].trim());
-            }
-        }
-        String supportBands = String.join(", ", supportBandsList);
-        return new Pair(title, supportBands);
-    }
-
-    private record Pair(String title, String supportBands) {
-    }
 
     private String getHTML(String url) throws IOException, InterruptedException {
 

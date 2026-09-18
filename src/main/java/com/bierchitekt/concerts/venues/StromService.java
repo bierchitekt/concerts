@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.StringUtil.capitalizeWords;
 import static com.bierchitekt.concerts.venues.Venue.STROM;
 
@@ -63,7 +64,7 @@ public class StromService {
                     String link = JsonParser.parseString(answer).getAsJsonObject().get("permalink").getAsString();
 
 
-                    ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
+                    ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", "");
                     allConcerts.add(concertDTO);
                 }
 

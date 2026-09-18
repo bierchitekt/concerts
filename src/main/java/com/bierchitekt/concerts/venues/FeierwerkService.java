@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.bierchitekt.concerts.ConcertService.CALENDAR_URL;
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.Venue.FEIERWERK;
 
 @Service
@@ -78,7 +79,7 @@ public class FeierwerkService {
 
             LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(startTime));
 
-            return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), price,
+            return Optional.of(new ConcertDTO(bands.getFirst(), date, dateAndTime, url, genres, VENUE_NAME, supportBands, LocalDate.now(ZoneId.of(EUROPE_BERLIN)), price,
                     CALENDAR_URL + StringUtil.getICSFilename(bands.getFirst(), date)));
         } catch (Exception _) {
             return Optional.empty();

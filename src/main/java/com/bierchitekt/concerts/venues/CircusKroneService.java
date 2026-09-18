@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
+
 @Slf4j
 @Service
 public class CircusKroneService {
@@ -66,7 +68,7 @@ public class CircusKroneService {
 
                     for (Integer day : days) {
                         LocalDate date = LocalDate.of(year, month, day);
-                        ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
+                        ConcertDTO concertDTO = new ConcertDTO(title, date, null, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", "");
                         allConcerts.add(concertDTO);
                     }
                 }

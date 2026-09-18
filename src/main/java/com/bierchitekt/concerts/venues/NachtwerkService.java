@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.Venue.NACHTWERK;
 
 @Slf4j
@@ -54,7 +55,7 @@ public class NachtwerkService {
                     dateAndTime = LocalDateTime.of(date, LocalTime.parse(dateAndTimeElements.get(1).text()));
                 }
 
-                ConcertDTO concertDTO = new ConcertDTO(bands.title, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
+                ConcertDTO concertDTO = new ConcertDTO(bands.title, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", "");
                 allConcerts.add(concertDTO);
             }
         } catch (IOException ex) {

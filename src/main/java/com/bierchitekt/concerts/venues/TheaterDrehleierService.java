@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.Venue.THEATERDREHLEIER;
 
 @Slf4j
@@ -60,7 +61,7 @@ public class TheaterDrehleierService {
                 LocalDateTime dateAndTime = LocalDateTime.of(date, LocalTime.parse(beginn));
                 Pair bands = getBands(title);
 
-                allConcerts.add(new ConcertDTO(bands.mainAct, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), "", ""));
+                allConcerts.add(new ConcertDTO(bands.mainAct, date, dateAndTime, link, null, VENUE_NAME, bands.supportBands, LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", ""));
             }
 
 

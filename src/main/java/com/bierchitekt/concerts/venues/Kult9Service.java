@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.bierchitekt.concerts.ConcertService.CALENDAR_URL;
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static java.util.Locale.GERMAN;
 
 @Service
@@ -73,7 +74,7 @@ public class Kult9Service {
                     link = event.select("div.btnarea").select("a[href]").getFirst().attr("href");
                 }
                 String price = "";
-                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, allGenres, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), price,
+                ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, allGenres, VENUE_NAME, "", LocalDate.now(ZoneId.of(EUROPE_BERLIN)), price,
                         CALENDAR_URL + StringUtil.getICSFilename(title, date));
                 allConcerts.add(concertDTO);
             }

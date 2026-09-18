@@ -32,6 +32,8 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
+
 
 @Slf4j
 @Service
@@ -45,7 +47,7 @@ public class ICalService {
     public void createICalEntry(ConcertDTO concertDTO) {
 
         TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-        TimeZone timezone = registry.getTimeZone("Europe/Berlin");
+        TimeZone timezone = registry.getTimeZone(EUROPE_BERLIN);
         VTimeZone tz = timezone.getVTimeZone();
 
 

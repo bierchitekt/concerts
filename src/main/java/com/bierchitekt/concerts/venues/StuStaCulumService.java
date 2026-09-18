@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
+
 @Service
 @Slf4j
 public class StuStaCulumService {
@@ -56,7 +58,7 @@ public class StuStaCulumService {
 
             String link = getLink(node);
 
-            allConcerts.add(new ConcertDTO(title, LocalDate.from(dateAndTime.get()), dateAndTime.get(), link, genres, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), "", ""));
+            allConcerts.add(new ConcertDTO(title, LocalDate.from(dateAndTime.get()), dateAndTime.get(), link, genres, VENUE_NAME, "", LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", ""));
 
         }
         log.info("found {} concerts for {}", allConcerts.size(), VENUE_NAME);

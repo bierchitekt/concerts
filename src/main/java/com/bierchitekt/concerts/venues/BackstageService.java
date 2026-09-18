@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.Venue.BACKSTAGE;
 
 @Slf4j
@@ -91,7 +92,7 @@ public class BackstageService {
 
             String supportBands = event.getSupportBands();
             ConcertDTO concertDTO = new ConcertDTO(title, date, dateAndTime, link, genres, location, supportBands,
-                    LocalDate.now(ZoneId.of("Europe/Berlin")), price, "");
+                    LocalDate.now(ZoneId.of(EUROPE_BERLIN)), price, "");
             allConcerts.add(concertDTO);
         }
         log.info("found {} new concerts for venue {}, took {} ms", allConcerts.size(), VENUE_NAME, (System.currentTimeMillis() - start));

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.Venue.IMPORT_EXPORT;
 
 @Slf4j
@@ -73,7 +74,7 @@ public class ImportExportService {
                 LocalDate date = LocalDate.parse(elementDate.text().substring(4, 12), formatter);
                 String startTime = StringUtils.substringAfter(elementDate.text(), "Beginn:").trim();
                 LocalDateTime localDateTime = LocalDateTime.of(date, LocalTime.parse(startTime));
-                ConcertDTO concertDTO = new ConcertDTO(title, date, localDateTime, link.get(), null, VENUE_NAME, supportBands, LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
+                ConcertDTO concertDTO = new ConcertDTO(title, date, localDateTime, link.get(), null, VENUE_NAME, supportBands, LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", "");
                 allConcerts.add(concertDTO);
             }
         } catch (Exception ex) {

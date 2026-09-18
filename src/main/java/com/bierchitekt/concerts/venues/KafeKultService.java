@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.Venue.KAFE_KULT;
 
 @Slf4j
@@ -57,7 +58,7 @@ public class KafeKultService {
                 LocalDateTime dateAndTime = getDateAndTime(concertDetail);
                 LocalDate date = getDate(concertDetail);
 
-                ConcertDTO concertDto = new ConcertDTO(mainAct, date, dateAndTime, link, null, VENUE_NAME, supportBands.trim(), LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
+                ConcertDTO concertDto = new ConcertDTO(mainAct, date, dateAndTime, link, null, VENUE_NAME, supportBands.trim(), LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", "");
                 allConcerts.add(concertDto);
             }
 
@@ -82,7 +83,7 @@ public class KafeKultService {
 
             }
         }
-        return LocalDate.now(ZoneId.of("Europe/Berlin")).minusDays(1);
+        return LocalDate.now(ZoneId.of(EUROPE_BERLIN)).minusDays(1);
     }
 
     private LocalDateTime getDateAndTime(Document doc) {

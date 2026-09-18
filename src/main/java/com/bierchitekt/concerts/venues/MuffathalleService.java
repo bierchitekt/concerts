@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static com.bierchitekt.concerts.venues.Venue.MUFFATHALLE;
 
 @Slf4j
@@ -67,7 +68,7 @@ public class MuffathalleService {
                         }
                     }
                     LocalDateTime localTime = LocalDateTime.of(date.get(), parse);
-                    ConcertDTO concertDTO = new ConcertDTO(title, date.get(), localTime, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of("Europe/Berlin")), "", "");
+                    ConcertDTO concertDTO = new ConcertDTO(title, date.get(), localTime, link, null, VENUE_NAME, "", LocalDate.now(ZoneId.of(EUROPE_BERLIN)), "", "");
 
                     allConcerts.add(concertDTO);
                 }
@@ -84,10 +85,10 @@ public class MuffathalleService {
     private Optional<LocalDate> getDate(String dateString) {
         try {
             if ("heute".equalsIgnoreCase(dateString)) {
-                return Optional.of(LocalDate.now(ZoneId.of("Europe/Berlin")));
+                return Optional.of(LocalDate.now(ZoneId.of(EUROPE_BERLIN)));
             }
             if ("morgen".equalsIgnoreCase(dateString)) {
-                return Optional.of(LocalDate.now(ZoneId.of("Europe/Berlin")).plusDays(1));
+                return Optional.of(LocalDate.now(ZoneId.of(EUROPE_BERLIN)).plusDays(1));
             }
 
             String substring = dateString.substring(3);
