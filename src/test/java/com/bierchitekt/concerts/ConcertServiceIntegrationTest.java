@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
+import static com.bierchitekt.concerts.ConcertService.EUROPE_BERLIN;
 import static java.util.Locale.ENGLISH;
 import static org.mockito.Mockito.verify;
 
