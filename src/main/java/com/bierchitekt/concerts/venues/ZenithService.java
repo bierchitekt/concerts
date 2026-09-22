@@ -109,7 +109,7 @@ public class ZenithService {
                 return time.trim();
             }
             log.warn("Could not get time from {}, time is {}", link, text);
-            return null;
+            return "19:00";
         } catch (IOException e) {
             log.warn("error getting time for zenith url {} ", "link", e);
             return "";
