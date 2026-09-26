@@ -35,9 +35,9 @@ public class CircusKroneService {
             Map.entry("juni", 6),
             Map.entry("juli", 7),
             Map.entry("august", 8),
-            Map.entry("sept.", 9),
-            Map.entry("okt.", 10), Map.entry("Okt", 10),
-            Map.entry("nov.", 11),
+            Map.entry("sept", 9),
+            Map.entry("okt", 10), Map.entry("Okt", 10), Map.entry("okt.", 10), Map.entry("Okt.", 10),
+            Map.entry("nov", 11),
             Map.entry("dezember", 12));
 
     public static final String VENUE_NAME = Venue.CIRCUSKRONE.getName();
@@ -88,6 +88,13 @@ public class CircusKroneService {
             for (String s : split) {
                 days.add(Integer.parseInt(s.substring(0, 2)));
             }
+        }
+        else if (dateString.contains("+")) {
+            String[] split = dateString.split("\\+");
+            for (String s : split) {
+                s = s.trim();
+                days.add(Integer.parseInt(s.substring(0, 2)));
+            }
         } else {
             days.add(Integer.parseInt(dateString.substring(0, 2)));
         }
@@ -121,15 +128,11 @@ public class CircusKroneService {
     }
 
     private Optional<Integer> getMonth(String dateString) {
-    if(dateString.equals("HINWEIS")){
-        return Optional.empty();
-    }
-        String s = StringUtils.substringBetween(dateString, " ", " ");
-        if (s == null) {
-            log.warn("cannot parse date {}", dateString);
+        if (dateString.equals("HINWEIS")) {
             return Optional.empty();
         }
-        Integer i = calendarMap.get(s.toLowerCase());
+        String result = dateString.replaceAll("[^A-Za-zÄÖÜäöüß]", "");
+        Integer i = calendarMap.get(result.toLowerCase());
         if (i == null) {
             log.warn("Cannot get month for input {}", dateString);
             return Optional.empty();
