@@ -63,7 +63,7 @@ public class MuffathalleService {
                     try {
                         parse = LocalTime.parse(startTime);
                     } catch (Exception e) {
-                        if (!e.getLocalizedMessage().equals("Text '9.09.' could not be parsed at index 0")) {
+                        if (!e.getLocalizedMessage().equals("Text '2.12.' could not be parsed at index 0")) {
                             log.warn("cannot parse {} as a start time for event with link {}", startTime, link, e);
                         }
                     }
