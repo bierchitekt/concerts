@@ -86,7 +86,7 @@ public class OlympiaparkService {
 
     private int getNumberOfPages() throws CannotGetResultException {
 
-        String result = restClient.get().uri(BASE_URL + "/api/event-list?locale=de&phrase&eventType=konzerte&genre&premium&startDate&endDate&sort=asc&location&limit=" + PAGE_LIMIT + "&page=1").retrieve().body(String.class);
+        String result = restClient.get().uri(BASE_URL + "/api/event-list?locale=de&phrase&eventType=konzerte&sort=asc&limit=" + PAGE_LIMIT + "&page=1").retrieve().body(String.class);
 
         if (result == null) {
             throw new CannotGetResultException();
