@@ -54,6 +54,8 @@ public class EventFabrikService {
                     JsonElement en = concert.getAsJsonObject().get("@type");
                     if ("\"Event\"".equals(en.toString())) {
                         String title = concert.getAsJsonObject().get("name").getAsString().trim();
+
+                        title = StringEscapeUtils.unescapeHtml4(title);
                         title = StringUtil.capitalizeWords(title);
                         String price = getPrice(concert);
 
