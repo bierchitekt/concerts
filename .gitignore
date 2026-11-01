@@ -21,3 +21,4 @@ buildNumber.properties
 
 /logs.txt
 /logs.txt.*
+/.sonar/spring-context-model.json
