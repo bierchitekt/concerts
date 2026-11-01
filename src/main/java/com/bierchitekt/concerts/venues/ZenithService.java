@@ -1,6 +1,7 @@
 package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -52,7 +53,7 @@ public class ZenithService {
                 }
                 String link = concert.select("a[href]").getFirst().attr("href");
                 Elements details = concert.select("div.elementor-element.elementor-widget.elementor-widget-text-editor");
-
+//                                                              elementor-element elementor-widget elementor-widget-text-editor
                 LocalDate date = getDate(details);
 
                 if (date == null) {
@@ -98,14 +99,23 @@ public class ZenithService {
     public String getTime(String link) {
         try {
             Document doc = Jsoup.connect(link).get();
-            String text = doc.select("div.elementor-widget-container").text();
+            String text = doc.select("div.elementor-element.elementor-widget.elementor-widget-text-editor").text();
+
+            if (text.isEmpty()) {
+                Elements select = doc.select("div.elementor-element.elementor-widget.elementor-widget-text-editor");
+                for (Element element : select) {
+                    if (element.text().contains("Beginn")) {
+                        text = select.text();
+                    }
+                }
+            }
             String time = StringUtils.substringBetween(text, "Beginn: ", " Uhr");
             if (time != null) {
                 return time.trim();
             } else {
                 time = StringUtils.substringBetween(text, "Einlass: ", " Uhr");
             }
-            if(time != null) {
+            if (time != null) {
                 return time.trim();
             }
             log.warn("Could not get time from {}, time is {}", link, text);

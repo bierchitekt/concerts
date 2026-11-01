@@ -2,6 +2,7 @@ package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,6 +10,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,7 +38,17 @@ public class MuffathalleService {
 
         List<ConcertDTO> allConcerts = new ArrayList<>();
         try {
-            Document doc = Jsoup.connect(URL).get();
+
+            Connection.Response response = Jsoup.connect(URL)
+                    .ignoreContentType(true)
+                    .execute();
+
+// Den Body direkt als UTF-8 Bytes erzwingen
+            String html = new String(response.bodyAsBytes(), StandardCharsets.UTF_8);
+            Document doc = Jsoup.parse(html);
+
+
+            //Document doc = Jsoup.connect(URL).get();
             Elements allEvents = doc.select("div[id~=event[0-9]+]");
             for (Element event : allEvents) {
                 Element first = event.select("div.circle").first();
@@ -47,6 +59,11 @@ public class MuffathalleService {
 
                 if (firstElement != null) {
                     String title = firstElement.text().replace("ausverkauft", "").trim();
+
+                    if(title.startsWith("Mor")){
+                        System.out.println(title);
+                    }
+                    title = new String(title.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
                     title = title.replaceAll("verlegt auf \\d\\d\\.\\d\\d.\\d\\d ", "").trim();
                     if (title.contains("abgesagt") || title.startsWith("Münchener Biennale") || title.startsWith("Think Big! Festival")) {
                         continue;
