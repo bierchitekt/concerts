@@ -47,6 +47,7 @@ public class BackstageService {
     public BackstageService(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder.baseUrl(BASE_URL).build();
     }
+
     public String fetchUpcomingEvents() {
         EventRequestBody requestBody = new EventRequestBody(1000, 0);
 
@@ -74,6 +75,7 @@ public class BackstageService {
 
         return response.getBody();
     }
+
     public List<ConcertDTO> getConcerts() {
         log.info("starting getting concerts for venue {}", VENUE_NAME);
         long start = System.currentTimeMillis();
@@ -106,6 +108,7 @@ public class BackstageService {
             List<Event> events = mapper.readValue(s, new TypeReference<>() {
             });
 
+            events.removeIf(event -> !event.getCategory().equalsIgnoreCase("Live"));
             events.removeIf(event -> event.genres == null);
             events.removeIf(event -> event.getGenres().contains("liveübertragung"));
             events.removeIf(event -> event.getGenres().contains("party"));
@@ -147,6 +150,7 @@ public class BackstageService {
         private String headline;
 
         private Set<Genres> genres;
+        private String category;
 
         @JsonProperty("min_price_cents")
         private Integer priceInCents;
