@@ -109,22 +109,6 @@ public class BackstageService {
             });
 
             events.removeIf(event -> !event.getCategory().equalsIgnoreCase("Live"));
-            events.removeIf(event -> event.genres == null);
-            events.removeIf(event -> event.getGenres().contains("liveübertragung"));
-            events.removeIf(event -> event.getGenres().contains("party"));
-            events.removeIf(event -> event.getGenres().contains("feiern"));
-            events.removeIf(event -> event.getGenres().contains("fussball"));
-            events.removeIf(event -> event.getGenres().contains("biergarten"));
-            events.removeIf(event -> event.getGenres().contains("lesung"));
-            events.removeIf(event -> event.getGenres().contains("pop! reloaded"));
-            events.removeIf(event -> event.getGenres().contains("rollschuh"));
-            events.removeIf(event -> event.title.toLowerCase().contains("rollschuh"));
-            events.removeIf(event -> event.getGenres().contains("caribbean vibes"));
-            events.removeIf(event -> event.title.toLowerCase().contains("caribbean vibes"));
-            events.removeIf(event -> event.title.toLowerCase().contains("core all over"));
-            events.removeIf(event -> event.title.toLowerCase().contains("teenage dirtbag"));
-            events.removeIf(event -> event.genres.isEmpty());
-
             return events;
         } catch (Exception e) {
             log.error("error getting backstage events", e);
