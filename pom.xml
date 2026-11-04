@@ -15,17 +15,17 @@
     <description>Getting concerts in munich</description>
     <properties>
         <java.version>25</java.version>
-        <jsoup.version>1.23.2</jsoup.version>
+        <jsoup.version>1.24.1</jsoup.version>
         <commons-text.version>1.15.0</commons-text.version>
-        <gson.version>2.14.0</gson.version>
-        <versions-maven-plugin.version>2.22.0</versions-maven-plugin.version>
+        <gson.version>2.15.0</gson.version>
+        <versions-maven-plugin.version>2.23.0</versions-maven-plugin.version>
         <java-telegram-bot-api.version>10.3.0</java-telegram-bot-api.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <testcontainers.version>2.0.5</testcontainers.version>
         <junit-jupiter.version>6.1.3</junit-jupiter.version>
-        <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.7.0</maven-enforcer-plugin.version>
         <lombok.version>1.18.48</lombok.version>
         <jna.version>5.19.1</jna.version>
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
