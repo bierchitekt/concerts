@@ -419,7 +419,7 @@ public class ConcertService {
         List<ConcertDTO> backstageConcerts = new ArrayList<>();
         List<ConcertDTO> concerts = backstageService.getConcerts();
         concerts.forEach(concert -> {
-            List<ConcertEntity> byTitleAndDate = concertRepository.findByTitleAndDate(concert.title(), concert.date());
+            List<ConcertEntity> byTitleAndDate = concertRepository.similarTitleAtSameDate(concert.title(), concert.date());
             if (byTitleAndDate.isEmpty()) {
                 Set<String> genre = concert.genre();
                 if (genre.isEmpty()) {
@@ -566,8 +566,13 @@ public class ConcertService {
 
             if (byTitleAndDate.size() == 1) {
                 ConcertEntity first = byTitleAndDate.getFirst();
-                first.setLink(concert.link());
-                concertRepository.save(first);
+                if (!first.getLink().equalsIgnoreCase(concert.link())) {
+
+                    log.info("link changed from {} to {}", first.getLink(), concert.link());
+                    first.setLink(concert.link());
+                    concertRepository.save(first);
+
+                }
 
             }
         }
