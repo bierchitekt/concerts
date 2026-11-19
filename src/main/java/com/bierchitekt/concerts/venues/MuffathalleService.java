@@ -2,7 +2,6 @@ package com.bierchitekt.concerts.venues;
 
 import com.bierchitekt.concerts.ConcertDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,7 +9,6 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -38,18 +36,8 @@ public class MuffathalleService {
 
         List<ConcertDTO> allConcerts = new ArrayList<>();
         try {
-
-            Connection.Response response = Jsoup.connect(URL)
-                    .ignoreContentType(true)
-                    .execute();
-
-// Den Body direkt als UTF-8 Bytes erzwingen
-            String html = new String(response.bodyAsBytes(), StandardCharsets.UTF_8);
-            Document doc = Jsoup.parse(html);
-
-
-            //Document doc = Jsoup.connect(URL).get();
-            Elements allEvents = doc.select("div[id~=event[0-9]+]");
+            Document doc = Jsoup.connect(URL).get();
+            Elements allEvents = doc.select("div.entry-content");
             for (Element event : allEvents) {
                 Element first = event.select("div.circle").first();
                 if (first != null && !"Konzert".equalsIgnoreCase(first.text())) {
@@ -59,11 +47,6 @@ public class MuffathalleService {
 
                 if (firstElement != null) {
                     String title = firstElement.text().replace("ausverkauft", "").trim();
-
-                    if(title.startsWith("Mor")){
-                        System.out.println(title);
-                    }
-                    title = new String(title.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
                     title = title.replaceAll("verlegt auf \\d\\d\\.\\d\\d.\\d\\d ", "").trim();
                     if (title.contains("abgesagt") || title.startsWith("Münchener Biennale") || title.startsWith("Think Big! Festival")) {
                         continue;
@@ -71,11 +54,16 @@ public class MuffathalleService {
                     Elements select = event.select("div.entry-data.right");
                     String link = BASE_URL + select.select("a[href]").getFirst().attr("href");
                     Optional<LocalDate> date = getDate(event.select("div.date").text());
-                    if (date.isEmpty())
+                    if (date.isEmpty()) {
                         continue;
-                    String startTime = event.select("div.entry-data.center").get(1).text();
+                    }
+                    String startTime = "20:00";
+                    if(event.select("div.entry-data.center").size() > 1){
+                        startTime = event.select("div.entry-data.center").get(1).text();
 
-                    startTime = startTime.substring(startTime.length() - 5);
+                        startTime = startTime.substring(startTime.length() - 5);
+                    }
+
                     LocalTime parse = LocalTime.of(20, 0);
                     try {
                         parse = LocalTime.parse(startTime);
